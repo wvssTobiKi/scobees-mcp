@@ -87,14 +87,23 @@ function taskToForm(t) {
   };
 }
 
+// Differenzierungen: die Schule definiert Niveaus (school-diffs, z. B. „Hauptschulabschluss“), jedes zeigt auf ein
+// Bibliotheks-Tag (defaultTag, z. B. TAG-0060 „Regulär“). Aufgaben tragen das Tag. Lernende sind einem Niveau zugeordnet
+// und sehen nur Aufgaben mit passendem Tag (Frontend: DIFFERENTIATION_MISMATCH). Ohne Angabe → alle Niveaus der Schule,
+// damit die Aufgabe für alle sichtbar ist; die Weboberfläche verlangt beim Speichern mindestens eine Auswahl.
 async function resolveDiffTags(names) {
-  if (!names || !names.length) return [];
-  const tags = await api.libraryTags();
-  const diffs = tags.filter((t) => t.type === "differentiation");
+  const schoolDiffs = await api.schoolDiffs();
+  const asTag = (d) => ({ id: d.defaultTag?.id || d.id, name: d.name, type: "differentiation" });
+  if (!names || !names.length) return schoolDiffs.map(asTag);
+  if (names.length === 1 && /^alle$/i.test(names[0])) return schoolDiffs.map(asTag);
+  const tags = (await api.libraryTags()).filter((t) => t.type === "differentiation");
   return names.map((n) => {
-    const hit = diffs.find((d) => d.id === n || d.name.toLowerCase() === String(n).toLowerCase());
-    if (!hit) throw new Error(`Differenzierung „${n}“ unbekannt. Verfügbar: ${diffs.map((d) => d.name).join(", ")}`);
-    return { id: hit.id, name: hit.name, type: "differentiation" };
+    const q = String(n).toLowerCase();
+    const sd = schoolDiffs.find((d) => d.id === n || d.name.toLowerCase() === q || d.defaultTag?.id === n);
+    if (sd) return asTag(sd);
+    const lt = tags.find((t) => t.id === n || t.name.toLowerCase() === q);
+    if (lt) return { id: lt.id, name: lt.name, type: "differentiation" };
+    throw new Error(`Differenzierung „${n}“ unbekannt. Verfügbar: ${schoolDiffs.map((d) => d.name).join(", ")}`);
   });
 }
 
@@ -156,7 +165,8 @@ const TOOLS = [
       const tags = await api.libraryTags();
       return {
         jahrgaenge: tags.filter((t) => t.type === "grade").map((t) => ({ id: t.id, name: t.name })),
-        differenzierungen: tags.filter((t) => t.type === "differentiation").map((t) => ({ id: t.id, name: t.name })),
+        differenzierungen: (await api.schoolDiffs()).map((d) => ({ id: d.defaultTag?.id || d.id, name: d.name })),
+        hinweis_differenzierungen: "Niveaus der Schule. Lernende sind einem Niveau zugeordnet und sehen nur Aufgaben, die dieses Niveau tragen. Der Lernpfad selbst hat kein Niveau; seine Anzeige fasst die Niveaus der enthaltenen Aufgaben zusammen.",
       };
     },
   },
@@ -401,7 +411,7 @@ const TOOLS = [
         arbeitsblatt_markdown: { type: "string", description: "Inhalt des interaktiven Arbeitsblatts als Markdown" },
         serlo_json: { type: "string", description: "Alternativ: fertiges Serlo-Dokument (JSON-String, Wurzel plugin rows)" },
         estimated_time: { type: "number", default: 0, description: "Minuten" },
-        differenzierungen: { type: "array", items: { type: "string" }, description: "Namen/IDs, z. B. [\"Regulär\"]; leer = alle" },
+        differenzierungen: { type: "array", items: { type: "string" }, description: "Niveaus der Schule (scobees_list_tags), z. B. [\"Hauptschulabschluss\",\"Realschulabschluss\"]. Leer = alle Niveaus (Aufgabe für alle sichtbar). Lernende sehen nur Aufgaben ihres Niveaus." },
         links: { type: "array", items: { type: "object", properties: { url: { type: "string" }, name: { type: "string" } }, required: ["url"] } },
         interne_notiz: { type: "string", description: "Nur für Lehrkräfte sichtbar" },
         wahlaufgabe: { type: "boolean", default: false, description: "true = Wahl- statt Pflichtaufgabe" },

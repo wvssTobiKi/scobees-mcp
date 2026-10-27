@@ -8,7 +8,7 @@ Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle
 
 - **Keine Schülerdaten.** Der Server ruft ausschließlich Inhaltsfunktionen auf. Alle Pfade mit Schüler-, Klassen-, Lernstands-, Bewertungs- oder Personendaten stehen auf einer festen Sperrliste (`src/api.js`) und werden nicht aufgerufen – auch nicht auf Wunsch. Personennamen in Antworten werden auf IDs reduziert.
 - **Verwaltung bleibt beim Admin.** Lernbereiche und Fächer werden nur gelesen; die Lehrkraft wählt das Fach, in dem ein Lernpfad entsteht.
-- **Keine Schüler sehen etwas ohne Lehrkraft-Handlung.** Neue Lernpfade liegen in der schuleigenen Bib (Status INACTIVE = keiner Lerngruppe zugewiesen). Die Zuweisung an Lerngruppen ist Schülerverwaltung und erfolgt ausschließlich in der Weboberfläche.
+- **Keine Schüler sehen etwas ohne Lehrkraft-Handlung.** Neue Lernpfade liegen nur in der schuleigenen Bib. Die Zuweisung an Lerngruppen ist Schülerverwaltung und erfolgt ausschließlich in der Weboberfläche.
 - **Inoffizielle Schnittstelle.** scobees hat keine öffentliche API. Der Server nutzt dieselben Aufrufe wie die Weboberfläche (dokumentiert in [`docs/scobees-api-map.md`](docs/scobees-api-map.md)). Bei Änderungen an scobees muss nachgezogen werden – deshalb liegt das Projekt in Git.
 
 ## Begriffe
@@ -45,6 +45,10 @@ Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `
 6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche einer Lerngruppe zuweisen.
 
 Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit IDs) → `scobees_get_aufgabe` (Arbeitsblatt als Markdown) → `scobees_update_aufgabe` / `scobees_update_gliederung` / `scobees_move` / `scobees_delete`.
+
+## Differenzierungen (scobees-Denke)
+
+Die Schule definiert Niveaus (bei der WvSS: Hauptschulabschluss, Realschulabschluss, Erweiterter Realschulabschluss). **Aufgaben** tragen ein oder mehrere Niveaus; Lernende sind einem Niveau zugeordnet und sehen nur Aufgaben mit ihrem Niveau. Der **Lernpfad** hat kein eigenes Niveau – was die Oberfläche dort anzeigt, ist die Zusammenfassung der enthaltenen Aufgaben. `scobees_create_aufgabe` setzt ohne Angabe **alle** Niveaus der Schule (Aufgabe für alle sichtbar); wer differenzieren will, gibt `differenzierungen` gezielt an. Die Weboberfläche verlangt beim Speichern mindestens ein Niveau.
 
 ## Markdown für Arbeitsblätter
 
@@ -104,7 +108,7 @@ node src/server.js --login  # Anmeldung prüfen
 
 Testumgebung in scobees (WvSS): Lernbereich „testbereich“ `LB-9QX4VN79SPUN59XTXC`, Lernpfad „TEST MCP“ `LI-M1SUFLY8QBQBD65MHU`.
 
-Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Statusmodell: DRAFT = nicht in der Bib, INACTIVE = in der Bib (keiner Lerngruppe zugewiesen), ACTIVE = zugewiesen; die Zuweisung ist bewusst nicht im Server.
+Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Statusmodell: DRAFT = nicht in der Bib, INACTIVE = in der Bib (beides live geprüft über `in_bib`). ACTIVE wird vom Backend gesetzt – vermutlich durch die Zuweisung an eine Lerngruppe; das ist nicht belegt und für den Server ohne Belang, da die Zuweisung bewusst außerhalb bleibt.
 
 ## Lizenz
 

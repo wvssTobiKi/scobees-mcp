@@ -177,7 +177,7 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
     editors ["USER-<eigene id>"], order "none", published true, isMandatoryProgressVisible true, isExtraTaskCounterVisible true,
     tags [] (Stichwörter), id "", coverImage=<Datei> | coverImagePath undefined, description (Klartext/HTML)
   → 200 {id:"LI-M1SUFLY8QBQBD65MHU", state:"INACTIVE", isPublished:true, parentId:null, coverImage:{…}, subjects:[…], tags:{grades:[…]}}
-  → Statusmodell (geklärt 27.10.2026): DRAFT = nicht in der Bib (`published:false`), INACTIVE = in der Bib, aber keiner Lerngruppe zugewiesen, ACTIVE = zugewiesen. `published`/`isPublished` = Schalter „In schuleigener Bib veröffentlichen“; beim Umschalten wechselt state zwischen DRAFT und INACTIVE.
+  → Statusmodell: `published`/`isPublished` = Schalter „In schuleigener Bib veröffentlichen“; beim Umschalten wechselt `state` zwischen DRAFT (false) und INACTIVE (true) – live geprüft 27.10.2026. ACTIVE: im Frontend-Bundle nur als Enum-Wert vorhanden, nirgends gesetzt/ausgewertet → Backend-Feld. **Hypothese (unbelegt):** ACTIVE = einer Lerngruppe zugewiesen.
   → UI lädt vorher GET school/{schoolId}/teachers?withDeleted=false (Editor-Auswahl, enthält Lehrkräfte-E-Mails) → Server: nicht abrufen, editors = nur eigene id aus users/me.
 - Material: POST attachments mit type "lerninput_attachment" (statt samplesolution) → erscheint nach dem nächsten Speichern in attachments[].
 - Link: Feld links = [{"url":"https://…","name":"Aufgabenlink","type":"url"}]
@@ -204,7 +204,8 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
   1. `GET https://editor.serlo.org/media/presigned-url?mimeType=image/png&editorVariant=unknown&parentHost=teach.scobees.com` (ohne Auth) → `{signedUrl, fileUrl}`
   2. `PUT signedUrl` mit dem Bild als Body (S3, ionoscloud, `editor-media-assets-production/all/<id>/image.png`)
   3. `fileUrl` (`https://editor.serlo.org/media/all/<id>/image.png`) als `image.src` im Dokument. Die Bilder sind öffentlich erreichbar.
-- **Geklärt:** Es gibt keinen Aktivieren-Schalter. Der einzige Schalter ist „In schuleigener Bib veröffentlichen“ (= `published`). `state` wechselt auf ACTIVE, sobald der Pfad einer Lerngruppe zugewiesen wird (Zuweisen-Dialog, gesperrter Bereich).
+- **Geklärt:** Es gibt keinen Aktivieren-Schalter; der einzige Schalter ist „In schuleigener Bib veröffentlichen“ (= `published`, DRAFT ↔ INACTIVE). Wodurch ACTIVE entsteht, ist nicht belegt (Vermutung: Zuweisung; `assignments/*` bleibt gesperrt).
+- **Differenzierungen:** `GET school-diffs` liefert die Niveaus der Schule (`DIFF-…`, name z. B. „Hauptschulabschluss“, `defaultTag` → `TAG-…`). Aufgaben speichern `diffs:[{id:TAG-…,name,type:"differentiation"}]` (Tag-ID, nicht DIFF-ID); in Antworten erscheint `tags.differentiations` mit dem Schul-Namen. Die Wurzel hat kein Differenzierungs-Feld; `GET school-diffs/root-lerninput/{id}` fasst die Niveaus der enthaltenen Aufgaben zusammen (so entsteht die Anzeige am Pfad). Frontend-Enum `DIFFERENTIATION_MISMATCH` („keine passenden Aufgaben für das Niveau des Lernenden“) belegt, dass Lernende nur Aufgaben ihres Niveaus sehen.
 - Nebenbei gesehen (gesperrt, nicht genutzt): `assignments/check-assignable-students/{id}`, `lerninput/{id}/sharings`, `school-classes`, `school-groups`, `school/{id}/teachers`, `school-competency-matrices?grades=…&subjectIds=…`, `library/categories`, `school/{id}/custom-labels`.
 
 ## Serlo-Dokument: Stolperfallen (Live-Test 27.10.2026)
