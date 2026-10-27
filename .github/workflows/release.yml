@@ -1,0 +1,56 @@
+name: Release
+
+# Bei jedem Tag vX.Y.Z: Tests, .mcpb bauen und als Release-Anhang veröffentlichen.
+# Ablauf: Version in package.json/manifest.json anheben, CHANGELOG ergänzen, committen,
+#   git tag -a vX.Y.Z -m "…" && git push origin vX.Y.Z
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Bestehender Tag, für den das Release gebaut wird (z. B. v0.1.0)"
+        required: true
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test
+      - name: Version gegen Tag prüfen
+        run: |
+          TAG="${TAG#v}"
+          PKG=$(node -p "require('./package.json').version")
+          MAN=$(node -p "require('./manifest.json').version")
+          echo "Tag=$TAG package.json=$PKG manifest.json=$MAN"
+          test "$TAG" = "$PKG" -a "$TAG" = "$MAN" || { echo "Version in package.json/manifest.json passt nicht zum Tag"; exit 1; }
+      - name: .mcpb bauen
+        run: npx --yes @anthropic-ai/mcpb pack . "scobees-mcp-${TAG}.mcpb"
+      - name: Changelog-Abschnitt extrahieren
+        run: |
+          VER="${TAG#v}"
+          awk -v v="$VER" '
+            $0 ~ "^## " v { on=1; next }
+            on && /^## / { exit }
+            on { print }
+          ' CHANGELOG.md > release-notes.md
+          echo "" >> release-notes.md
+          echo "Installation: \`.mcpb\` herunterladen und in Claude Desktop per Doppelklick installieren (Node.js ≥ 18 erforderlich). Details im README." >> release-notes.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: scobees-mcp-${{ env.TAG }}.mcpb
+          tag_name: ${{ env.TAG }}
+          body_path: release-notes.md

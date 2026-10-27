@@ -54,7 +54,7 @@ Neue Bausteine entstehen immer aus einem echten Beispiel: Den Baustein im Editor
 ## Versionierung
 
 - `MAJOR.MINOR.PATCH`: PATCH für Reparaturen nach scobees-Änderungen, MINOR für neue Werkzeuge, MAJOR bei geänderten Werkzeugnamen oder -parametern (bricht bestehende Skills).
-- Jeder Release bekommt ein Git-Tag `vX.Y.Z` und eine `.mcpb` als Release-Anhang.
+- Release = Git-Tag `vX.Y.Z` pushen. Der Workflow `release.yml` prüft, dass Tag, `package.json` und `manifest.json` dieselbe Version tragen, baut die `.mcpb` und hängt sie mit dem passenden CHANGELOG-Abschnitt an ein GitHub-Release. Nichts von Hand hochladen.
 
 ## Commit-Konvention
 

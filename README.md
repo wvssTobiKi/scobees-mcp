@@ -30,7 +30,7 @@ Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle
 ## Installation (Claude Desktop)
 
 1. Node.js ≥ 18 installieren.
-2. Paket bauen: `npx @anthropic-ai/mcpb pack` im Projektordner → `scobees-mcp.mcpb`.
+2. `scobees-mcp-vX.Y.Z.mcpb` von der [Releases-Seite](https://github.com/wvssTobiKi/scobees-mcp/releases) laden (oder selbst bauen: `npm run pack`).
 3. Datei in Claude Desktop per Doppelklick installieren (Einstellungen → Erweiterungen) und scobees-Benutzername/Passwort eintragen. Die Zugangsdaten speichert Claude Desktop verschlüsselt; der Server nutzt sie nur für die Anmeldung bei `auth.scobees.com` und legt danach Tokens unter `~/.scobees-mcp/tokens.json` ab.
 
 Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `SCOBEES_PASSWORD` setzen und `node src/server.js` als stdio-Server eintragen. Anmeldung testen mit `node src/server.js --login`.
