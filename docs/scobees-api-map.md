@@ -213,6 +213,14 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
 - **Differenzierungen:** `GET school-diffs` liefert die Niveaus der Schule (`DIFF-…`, name z. B. „Hauptschulabschluss“, `defaultTag` → `TAG-…`). Aufgaben speichern `diffs:[{id:TAG-…,name,type:"differentiation"}]` (Tag-ID, nicht DIFF-ID); in Antworten erscheint `tags.differentiations` mit dem Schul-Namen. Die Wurzel hat kein Differenzierungs-Feld; `GET school-diffs/root-lerninput/{id}` fasst die Niveaus der enthaltenen Aufgaben zusammen (so entsteht die Anzeige am Pfad). Frontend-Enum `DIFFERENTIATION_MISMATCH` („keine passenden Aufgaben für das Niveau des Lernenden“) belegt, dass Lernende nur Aufgaben ihres Niveaus sehen.
 - Nebenbei gesehen (gesperrt, nicht genutzt): `assignments/check-assignable-students/{id}`, `lerninput/{id}/sharings`, `school-classes`, `school-groups`, `school/{id}/teachers`, `school-competency-matrices?grades=…&subjectIds=…`, `library/categories`, `school/{id}/custom-labels`.
 
+## Abgabe und Selbstkorrektur (Frontend-Logik `vZ`, v93.3)
+
+- `requiredSubmissions` ⊂ {file, pen, link} + `submissionRule` all|any: ist die Liste **nicht leer**, ist die Abgabe Pflicht (Schüler-App: „Zum Abgeben musst du eine Datei hochladen“). Leer → Rückfall: Abgabe nur Pflicht, wenn `isUploadRequired && solutionMustBeUploaded`.
+- `isSelfCorrectionNecessary` → Reiter „Selbstkorrektur“ nach der Abgabe (Vergleich mit Musterlösung); `selfCorrectionUploadRequired` → korrigierte Fassung muss hochgeladen werden.
+- `kind` ist ein abgeleiteter Anzeige-Wert aus diesen Flags (Funktion `GK`): task, task+sc, task+sc-upload-required, task+upload-optional, task+upload-optional+sc, task+upload-optional+sc-upload-required, task+upload-required, …
+- Backend-Standard nach `POST lerninput/task` (leer): `kind:"task"`, `isUploadRequired:false`, **kein** `requiredSubmissions`. Der Server darf hier nichts erfinden (0.1.0/0.1.1 setzten `["file"]` → erzwungene Datei-Abgabe bei jeder Aufgabe).
+- `solveOrder` (Aufgabenwahl des Lernpfads): none („Frei“), after_solving („Nach Reihenfolge“), after_selfcorrection („… mit Selbstkorrektur“), after_teacher_correction („… mit Feedback“).
+
 ## Aufgabentypen (`taskType`, Frontend-Enum v93.3)
 
 `Pflichtaufgabe`, `Extraaufgabe`, `Trainingsaufgabe`, `Wahlpflichtaufgabe` (nur Container/choice), `Info`, `Diagnose`, `Gelingensnachweis`, `Unterschiedlich`, `nicht spezifiziert`. Ein Wert „Wahlaufgabe“ existiert nicht – `POST lerninput/task` antwortet damit HTTP 500 (27.10.2026). Server-Parameter `aufgabentyp`: pflicht → Pflichtaufgabe, extra → Extraaufgabe, training → Trainingsaufgabe, info → Info (alle live angelegt).

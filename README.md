@@ -42,11 +42,23 @@ Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `
 1. `scobees_list_subjects` → Fach wählen.
 2. `scobees_create_lernpfad` (Name, Beschreibung, Jahrgang, Titelbild).
 3. Je Phase `scobees_create_gliederung`.
-4. Je Aufgabe `scobees_create_aufgabe` mit `art` (Abgabeform: info, selbstkontrolle, abgabe_optional, abgabe_pflicht), `aufgabentyp` (pflicht, extra, training, info) und `arbeitsblatt_markdown`. Hinweise für gute Lernpfade: [`docs/skill-notizen.md`](docs/skill-notizen.md).
+4. Je Aufgabe `scobees_create_aufgabe` mit `art` (Abgabeform, s. u.), `aufgabentyp` (pflicht, extra, training, info) und `arbeitsblatt_markdown`. Hinweise für gute Lernpfade: [`docs/skill-notizen.md`](docs/skill-notizen.md).
 5. Dateien mit `scobees_upload_material` anhängen (PDF, HTML-Simulationen, interaktive Seiten, GeoGebra-Dateien). Bilder, die *im* Arbeitsblatt erscheinen sollen, vorher mit `scobees_upload_bild` hochladen und die URL per `![…](url)` einbinden.
 6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche einer Lerngruppe zuweisen.
 
 Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit IDs) → `scobees_get_aufgabe` (Arbeitsblatt als Markdown) → `scobees_update_aufgabe` / `scobees_update_gliederung` / `scobees_move` / `scobees_delete`.
+
+## Abgabeformen (`art`) – scobees-Denke
+
+| `art` | Lernende … | scobees-Felder |
+|---|---|---|
+| `info` | lesen/erkunden, schließen die Aufgabe ab | kind `task`, keine Abgabe |
+| `selbstkontrolle` (Standard) | bearbeiten das Serlo-Arbeitsblatt, das Quiz prüft sich selbst | kind `task`, keine Abgabe |
+| `abgabe_optional` | geben ein Ergebnis ab (`abgabeformen`: file, pen, link) | `task+upload-optional`, requiredSubmissions |
+| `abgabe_pflicht` | müssen abgeben, sonst gilt die Aufgabe nicht als erledigt | `task+upload-required` |
+| `abgabe_selbstkorrektur` | geben ab und vergleichen danach mit der Musterlösung | `task+upload-optional+sc`, Musterlösung per `scobees_upload_material als_musterloesung` |
+
+„Selbstkorrektur“ ist in scobees ein eigener Schritt *nach* der Abgabe (Reiter „Selbstkorrektur“ in der Schüler-App) und hat nichts mit den sich selbst prüfenden Serlo-Quizzen zu tun. Steht in `requiredSubmissions` etwas, verlangt scobees die Abgabe zwingend („Zum Abgeben musst du eine Datei hochladen“).
 
 ## Differenzierungen (scobees-Denke)
 

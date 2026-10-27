@@ -51,3 +51,12 @@ test("Aufgabentypen entsprechen dem scobees-Enum (kein „Wahlaufgabe“)", () =
   assert.deepEqual(create.inputSchema.properties.aufgabentyp.enum, ["pflicht", "extra", "training", "info"]);
   assert.equal("wahlaufgabe" in create.inputSchema.properties, false);
 });
+
+test("Abgabeformen: selbstkontrolle ohne Abgabe, abgabe_* mit requiredSubmissions", () => {
+  const { KIND } = require("../src/tools");
+  assert.equal(KIND.selbstkontrolle.kind, "task");
+  assert.deepEqual(KIND.selbstkontrolle.requiredSubmissions, []);
+  assert.equal(KIND.selbstkontrolle.isSelfCorrectionNecessary, false);
+  assert.equal(KIND.abgabe_selbstkorrektur.isSelfCorrectionNecessary, true);
+  assert.equal("abgabe_optional_sc" in KIND, false);
+});

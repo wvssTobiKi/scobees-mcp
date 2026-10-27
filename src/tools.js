@@ -19,13 +19,24 @@ const { markdownToSerlo, serloToMarkdown, listPlugins } = require("./serlo");
 const AUFGABENTYP = { pflicht: "Pflichtaufgabe", extra: "Extraaufgabe", training: "Trainingsaufgabe", info: "Info" };
 const taskTypeOf = (a) => AUFGABENTYP[a.aufgabentyp] || (a.wahlaufgabe ? "Extraaufgabe" : "Pflichtaufgabe");
 
+// Abgabeform. Logik des Frontends (vZ in main-Bundle): requiredSubmissions (file|pen|link) + submissionRule (all|any)
+// bestimmen, was Lernende abgeben MÜSSEN – ist die Liste nicht leer, geht ohne Abgabe nichts („Zum Abgeben musst du eine
+// Datei hochladen“). isSelfCorrectionNecessary = scobees-„Selbstkorrektur“: eigener Schritt NACH der Abgabe, Vergleich mit
+// der Musterlösung (nicht zu verwechseln mit Serlo-Quiz, das sich im Arbeitsblatt selbst prüft).
 const KIND = {
-  info:              { kind: "task",                   isUploadRequired: false, solutionMustBeUploaded: false, isSelfCorrectionNecessary: false },
-  selbstkontrolle:   { kind: "task+sc",                isUploadRequired: false, solutionMustBeUploaded: false, isSelfCorrectionNecessary: true },
-  abgabe_optional:   { kind: "task+upload-optional",   isUploadRequired: true,  solutionMustBeUploaded: false, isSelfCorrectionNecessary: false },
-  abgabe_pflicht:    { kind: "task+upload-required",   isUploadRequired: true,  solutionMustBeUploaded: true,  isSelfCorrectionNecessary: false },
-  abgabe_optional_sc:{ kind: "task+upload-optional+sc",isUploadRequired: true,  solutionMustBeUploaded: false, isSelfCorrectionNecessary: true },
+  info:                 { kind: "task",                    isUploadRequired: false, solutionMustBeUploaded: false, isSelfCorrectionNecessary: false, selfCorrectionUploadRequired: false, requiredSubmissions: [] },
+  selbstkontrolle:      { kind: "task",                    isUploadRequired: false, solutionMustBeUploaded: false, isSelfCorrectionNecessary: false, selfCorrectionUploadRequired: false, requiredSubmissions: [] },
+  abgabe_optional:      { kind: "task+upload-optional",    isUploadRequired: true,  solutionMustBeUploaded: false, isSelfCorrectionNecessary: false, selfCorrectionUploadRequired: false },
+  abgabe_pflicht:       { kind: "task+upload-required",    isUploadRequired: true,  solutionMustBeUploaded: true,  isSelfCorrectionNecessary: false, selfCorrectionUploadRequired: false },
+  abgabe_selbstkorrektur:{ kind: "task+upload-optional+sc", isUploadRequired: true,  solutionMustBeUploaded: false, isSelfCorrectionNecessary: true,  selfCorrectionUploadRequired: false },
 };
+const ABGABEFORM = ["file", "pen", "link"];
+// Abgabeformen für abgabe_*: Standard Datei; mehrere → „mindestens eine reicht“ (any)
+function submissionFields(art, abgabeformen) {
+  if (!/^abgabe_/.test(art)) return {};
+  const kinds = (abgabeformen && abgabeformen.length ? abgabeformen : ["file"]).filter((k) => ABGABEFORM.includes(k));
+  return { requiredSubmissions: kinds, submissionRule: kinds.length > 1 ? "any" : "all", isPenEnabled: kinds.includes("pen"), isLinkSubmissionEnabled: kinds.includes("link") };
+}
 
 /** Kompakte Baumansicht eines Lerninputs (für get_lernpfad). */
 function compact(node, depth = 0) {
@@ -76,7 +87,7 @@ function taskToForm(t) {
     solutionMustBeUploaded: !!t.solutionMustBeUploaded,
     isSelfCorrectionNecessary: !!t.isSelfCorrectionNecessary,
     selfCorrectionUploadRequired: !!t.selfCorrectionUploadRequired,
-    requiredSubmissions: t.requiredSubmissions || ["file"],
+    requiredSubmissions: t.requiredSubmissions || [],
     removedSampleSolutionIds: [],
     submissionRule: t.submissionRule || "all",
     isPenEnabled: !!t.isPenEnabled,
@@ -242,7 +253,7 @@ const TOOLS = [
         jahrgaenge: { type: "array", items: { type: "string" }, description: "z. B. [\"Jg 1\"] oder Tag-IDs" },
         stichwoerter: { type: "array", items: { type: "string" }, description: "Freie Schlagworte" },
         cover_image_path: { type: "string", description: "Lokaler Pfad zu einem Titelbild (png/jpg), optional" },
-        solve_order: { type: "string", enum: ["none", "after_solving"], default: "none", description: "none = frei, after_solving = Reihenfolge einhalten" },
+        solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], default: "none", description: "Aufgabenwahl: none = frei; after_solving = nach Reihenfolge; after_selfcorrection = nach Reihenfolge mit Selbstkorrektur; after_teacher_correction = nach Reihenfolge mit Feedback der Lehrkraft" },
       },
       required: ["subject_id", "name"],
     },
@@ -278,7 +289,7 @@ const TOOLS = [
         jahrgaenge: { type: "array", items: { type: "string" } },
         stichwoerter: { type: "array", items: { type: "string" } },
         cover_image_path: { type: "string", description: "Neues Titelbild (lokaler Pfad), optional" },
-        solve_order: { type: "string", enum: ["none", "after_solving"] },
+        solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"] },
         in_bib: { type: "boolean", description: "In schuleigener Bib veröffentlichen (true/false)" },
       },
       required: ["id"],
@@ -403,8 +414,8 @@ const TOOLS = [
   {
     name: "scobees_create_aufgabe",
     description:
-      "Legt eine Aufgabe in einer Gliederung/Wahlpflicht/einem Lernpfad an. art: info (nur lesen), selbstkontrolle (Serlo-Quiz mit Selbstkontrolle), " +
-      "abgabe_optional, abgabe_pflicht (Datei-Abgabe), abgabe_optional_sc. Das Arbeitsblatt kommt als Markdown (arbeitsblatt_markdown, " +
+      "Legt eine Aufgabe in einer Gliederung/Wahlpflicht/einem Lernpfad an. art = Abgabeform: info, selbstkontrolle (Standard: Serlo-Arbeitsblatt, Quiz prüft sich selbst, keine Abgabe), " +
+      "abgabe_optional, abgabe_pflicht, abgabe_selbstkorrektur (Abgabe + Vergleich mit Musterlösung). Das Arbeitsblatt kommt als Markdown (arbeitsblatt_markdown, " +
       "inkl. ```quiz-sc/quiz-mc/quiz-input/quiz-blanks/quiz-text-Blöcken) oder als fertiges serlo_json. Dateien danach mit scobees_upload_material anhängen.",
     inputSchema: {
       type: "object",
@@ -412,7 +423,8 @@ const TOOLS = [
         parent_id: { type: "string" },
         name: { type: "string" },
         description_html: { type: "string", description: "Kurzbeschreibung (HTML), erscheint über dem Arbeitsblatt" },
-        art: { type: "string", enum: Object.keys(KIND), default: "info", description: "Abgabeform: info = nur lesen/bearbeiten, KEIN Abgabefeld; selbstkontrolle = Arbeitsblatt mit Quiz, Lernende kontrollieren selbst; abgabe_optional = Datei-/Text-Abgabe möglich; abgabe_pflicht = Abgabe erforderlich; abgabe_optional_sc = Abgabe möglich + Selbstkontrolle. Wenn die Aufgabe ein Ergebnis verlangt (Dokument, Foto, Text), eine abgabe_*-Art wählen und in description_html sagen, WAS abzugeben ist." },
+        art: { type: "string", enum: Object.keys(KIND), default: "selbstkontrolle", description: "Abgabeform. info = Infobaustein ohne Abgabe; selbstkontrolle = Arbeitsblatt mit Serlo-Quiz, prüft sich selbst, keine Abgabe (Standard für Theorie + Quiz); abgabe_optional = Lernende geben ein Ergebnis ab (Datei/Stift-PDF/Link); abgabe_pflicht = Abgabe zwingend; abgabe_selbstkorrektur = Abgabe, danach Vergleich mit der Musterlösung (scobees-„Selbstkorrektur“; Musterlösung per scobees_upload_material als_musterloesung). Wenn ein Ergebnis erwartet wird, abgabe_* wählen und in description_html sagen, WAS abzugeben ist." },
+        abgabeformen: { type: "array", items: { type: "string", enum: ABGABEFORM }, description: "Nur für abgabe_*: file (Datei hochladen), pen (PDF mit Stift bearbeiten), link (Videolink). Standard [\"file\"]; mehrere = eine reicht." },
         arbeitsblatt_markdown: { type: "string", description: "Inhalt des interaktiven Arbeitsblatts als Markdown" },
         serlo_json: { type: "string", description: "Alternativ: fertiges Serlo-Dokument (JSON-String, Wurzel plugin rows)" },
         estimated_time: { type: "number", default: 0, description: "Minuten" },
@@ -424,7 +436,7 @@ const TOOLS = [
       required: ["parent_id", "name"],
     },
     run: async (a) => {
-      const k = KIND[a.art || "info"];
+      const k = KIND[a.art || "selbstkontrolle"];
       const diffs = await resolveDiffTags(a.differenzierungen);
       // Schritt 1: leere Aufgabe anlegen (so macht es die Oberfläche) …
       const created = await api.saveTask({
@@ -443,6 +455,7 @@ const TOOLS = [
         estimatedTime: a.estimated_time || 0,
         diffs,
         ...k,
+        ...submissionFields(a.art || "selbstkontrolle", a.abgabeformen),
         links: (a.links || []).map((l) => ({ url: l.url, name: l.name || l.url, type: "url" })),
         taskDescription: buildTaskDescription(a) ?? null,
       });
@@ -460,6 +473,7 @@ const TOOLS = [
         name: { type: "string" },
         description_html: { type: "string" },
         art: { type: "string", enum: Object.keys(KIND) },
+        abgabeformen: { type: "array", items: { type: "string", enum: ABGABEFORM } },
         aufgabentyp: { type: "string", enum: Object.keys(AUFGABENTYP) },
         arbeitsblatt_markdown: { type: "string" },
         serlo_json: { type: "string" },
@@ -478,7 +492,7 @@ const TOOLS = [
       if (a.description_html != null) form.description = a.description_html;
       if (a.interne_notiz != null) form.internalTeacherNote = a.interne_notiz;
       if (a.estimated_time != null) form.estimatedTime = a.estimated_time;
-      if (a.art) Object.assign(form, KIND[a.art]);
+      if (a.art) Object.assign(form, KIND[a.art], submissionFields(a.art, a.abgabeformen));
       if (a.aufgabentyp) form.taskType = AUFGABENTYP[a.aufgabentyp];
       if (a.differenzierungen) form.diffs = await resolveDiffTags(a.differenzierungen);
       if (a.links) form.links = a.links.map((l) => ({ url: l.url, name: l.name || l.url, type: "url" }));
