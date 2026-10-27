@@ -149,11 +149,16 @@ const TOOLS = [
   // Lesen
   {
     name: "scobees_me",
-    description: "Zeigt das eigene scobees-Konto (ID, Rolle, Schule) und prüft die Anmeldung.",
+    description: "Zeigt das eigene scobees-Konto (ID, Rolle, Schule), prüft die Anmeldung und vergleicht die scobees-Version mit der, für die dieser Server geprüft wurde.",
     inputSchema: { type: "object", properties: {} },
     run: async () => {
-      const me = await api.me();
-      return { id: me.id, role: me.role, schoolId: me.schoolId, schoolName: me.schoolName };
+      const [me, fe] = await Promise.all([api.me(), api.frontendInfo()]);
+      const out = { id: me.id, role: me.role, schoolId: me.schoolId, schoolName: me.schoolName,
+        scobees: { version: fe.version, bundle: fe.bundle, geprueft_mit: `${fe.known.version} (${fe.known.bundle}, ${fe.known.checked})` } };
+      if (fe.error) out.scobees.hinweis = `Version nicht ermittelbar: ${fe.error}`;
+      else if (fe.unveraendert) out.scobees.hinweis = "scobees-Oberfläche unverändert seit der letzten Prüfung.";
+      else out.scobees.hinweis = `scobees wurde aktualisiert (${fe.version || "Version unbekannt"}, ${fe.bundle}). Die Werkzeuge sollten weiter laufen; bei Fehlern bitte Issue „scobees-Änderung“ im Repo anlegen.`;
+      return out;
     },
   },
   {

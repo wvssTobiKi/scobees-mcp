@@ -15,6 +15,12 @@ const { getAccessToken } = require("./auth");
 
 const API_URL = (process.env.SCOBEES_API_URL || "https://platform-api.scobees.com/api").replace(/\/$/, "");
 const SERLO_MEDIA_URL = process.env.SERLO_MEDIA_URL || "https://editor.serlo.org/media";
+const TEACH_URL = process.env.SCOBEES_TEACH_URL || "https://teach.scobees.com";
+
+// Mit welcher scobees-Oberfläche dieser Server zuletzt geprüft wurde (siehe CHANGELOG „Kompatibilität“).
+// scobees hat keinen Versions-Endpunkt; die Version steht als Konstante im Frontend-Bundle, dessen Dateiname
+// (main-XXXX.js) sich bei jedem Deploy ändert – ein billiger Fingerabdruck für „hat sich etwas geändert?“.
+const KNOWN_SCOBEES = { version: "93.3", bundle: "main-LKRB3D56.js", checked: "2026-10-27" };
 
 // ── Sperrliste (Schülerdaten, Lernstände, Personenlisten) ────────────────────
 const BLOCKED = [
@@ -162,6 +168,24 @@ const api = {
   // Bild für das Serlo-Arbeitsblatt: der eingebettete Serlo-Editor lädt Bilder nicht zu scobees,
   // sondern in Serlos Medienspeicher (Mitschrift 27.10.2026): GET presigned-url (ohne Anmeldung) → PUT zu S3.
   // Rückgabe: öffentliche URL für image.src.
+  // Version der scobees-Oberfläche ermitteln (ohne Anmeldung): index.html → main-Bundle-Name → Versionskonstante.
+  frontendInfo: async () => {
+    const out = { bundle: null, version: null, known: KNOWN_SCOBEES };
+    try {
+      const html = await (await fetch(`${TEACH_URL}/`)).text();
+      out.bundle = (html.match(/main-[A-Za-z0-9_-]+\.js/) || [null])[0];
+      if (out.bundle) {
+        const js = await (await fetch(`${TEACH_URL}/${out.bundle}`)).text();
+        const m = js.match(/=`(\d{2,3}\.\d+(?:\.\d+)?)`;var \w+=t=>\(\{id:t\.id,firstName/) || js.match(/var \w+=`(\d{2,3}\.\d+)`/);
+        out.version = m ? m[1] : null;
+      }
+    } catch (e) {
+      out.error = String(e.message || e);
+    }
+    out.unveraendert = !!out.bundle && out.bundle === KNOWN_SCOBEES.bundle;
+    return out;
+  },
+
   uploadSerloImage: async (filePath) => {
     const { blob, type } = fileBlob(filePath);
     if (!type.startsWith("image/")) throw new Error(`Kein Bild: ${filePath}`);
@@ -175,4 +199,4 @@ const api = {
   },
 };
 
-module.exports = { api, request, assertAllowed, sanitize, lerninputForm, API_URL, BLOCKED };
+module.exports = { api, request, assertAllowed, sanitize, lerninputForm, API_URL, BLOCKED, KNOWN_SCOBEES };

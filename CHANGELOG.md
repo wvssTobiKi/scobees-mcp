@@ -1,5 +1,18 @@
 # Changelog
 
+## Kompatibilität mit scobees
+
+scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in der Oberfläche und als Konstante im Frontend-Bundle. `scobees_me` liest sie aus und meldet, ob sich die Oberfläche seit der letzten Prüfung geändert hat (Fingerabdruck: Name des `main-….js`-Bundles). Bei jedem Release wird hier eingetragen, mit welcher scobees-Version live geprüft wurde.
+
+| scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
+|---|---|---|---|---|
+| 0.1.0 – 0.1.3 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.3 – 2026-10-27
+
+- `scobees_me` ermittelt die scobees-Version (ohne Anmeldung aus dem Frontend) und vergleicht sie mit der geprüften; Hinweis, wenn scobees aktualisiert wurde.
+- Kompatibilitätstabelle (oben) als feste Rubrik.
+
 ## 0.1.2 – 2026-10-27
 
 Sichtprüfung als Schüler (Testpfad, Aufgaben A–D): selbstkontrolle ohne Upload abschließbar; Datei/Link-Abgabe; Pflicht-Upload; Selbstkorrektur-Reiter nach Abgabe – alles wie vorgesehen.

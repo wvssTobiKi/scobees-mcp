@@ -112,6 +112,10 @@ I = \frac{U}{R} | Werte einsetzen
 
 Alles, was Markdown nicht abbildet (Bild-Zuordnung, Gleichungen, interaktives Video …), kann als fertiges Serlo-JSON über `serlo_json` übergeben werden – Vorlage: [`docs/serlo-beispiel.json`](docs/serlo-beispiel.json). `scobees_markdown_vorschau` zeigt das Ergebnis, ohne zu speichern.
 
+## Kompatibilität
+
+Der Server bildet eine inoffizielle Schnittstelle nach. Welche scobees-Version mit welcher Server-Version geprüft wurde, steht in der Tabelle „Kompatibilität“ in [CHANGELOG.md](CHANGELOG.md). `scobees_me` zeigt die aktuell laufende scobees-Version und warnt, wenn sie von der geprüften abweicht; dann bei Problemen ein Issue „scobees-Änderung“ anlegen.
+
 ## Entwicklung
 
 ```bash

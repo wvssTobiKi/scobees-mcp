@@ -37,7 +37,7 @@ Die Methode, mit der das Projekt entstanden ist, funktioniert auch für jede Erw
 4. **Werkzeug** in `src/tools.js` ergänzen: deutscher Name mit Präfix `scobees_`, verständliche Beschreibung (Claude liest sie – sie entscheidet, ob das Werkzeug richtig benutzt wird), Eingabeschema, `run`. Rückgabe über `ok(hinweis, daten)`.
 5. **Test** in `test/`: Alles, was ohne Netz prüfbar ist (Konverter, Sperrliste, Formularkodierung), wird getestet. Live-Tests laufen gegen den Testpfad (siehe README) und werden im Commit-Text beschrieben.
 6. **Live prüfen** – auch im Editor der Weboberfläche, nicht nur in der Schüleransicht (der Editor ist strenger, siehe „Stolperfallen“ in der API-Karte).
-7. `CHANGELOG.md` ergänzen, Version in `package.json` und `manifest.json` anheben, `.mcpb` neu bauen (`npm run pack`).
+7. `CHANGELOG.md` ergänzen (inkl. Zeile in der Tabelle „Kompatibilität“: scobees-Version unten rechts in der Oberfläche, Bundle-Name aus `scobees_me`), `KNOWN_SCOBEES` in `src/api.js` auf den geprüften Stand setzen, Version in `package.json` und `manifest.json` anheben, `.mcpb` neu bauen (`npm run pack`).
 
 ## Wenn scobees sich geändert hat
 
