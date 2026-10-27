@@ -20,6 +20,8 @@
  *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“
  *   ```quiz-blanks / -dnd         Lückentext: Lücken als [[Antwort|Variante]], Distraktoren „+ falsch“
  *   ```quiz-text                  Freitextaufgabe
+ *   ```math                       Gleichungskette (LaTeX): je Zeile „I = rac{U}{R} | Erklärung“;
+ *                                 erste Zeile mit linker Seite, weitere dürfen mit „= …“ beginnen
  */
 
 const crypto = require("crypto");
@@ -222,7 +224,26 @@ function fenceToPlugin(lang, body) {
   if (lang === "quiz-input") return inputExercise(body);
   if (lang === "quiz-blanks" || lang === "quiz-blanks-dnd") return blanksExercise(body, lang.endsWith("dnd"));
   if (lang === "quiz-text") return P("exercise", { content: rows(parseBlocks(body)), interactive: P("textAreaExercise", {}) });
+  if (lang === "math") return equations(body);
   return P("highlight", { code, language: lang || "text", showLineNumbers: true });
+}
+
+// ```math → Serlo-Baustein „equations“ (mehrzeilige, ausgerichtete Gleichungskette)
+const SIGNS = [["<=", "less-than-or-equal"], [">=", "greater-than-or-equal"], ["≤", "less-than-or-equal"], ["≥", "greater-than-or-equal"],
+  ["≠", "not-equal-to"], ["≈", "almost-equal-to"], ["=", "equals"], ["<", "less-than"], [">", "greater-than"]];
+function equations(body) {
+  const steps = [];
+  for (const raw of body) {
+    if (!raw.trim()) continue;
+    const [expr, ...expl] = raw.split("|");
+    let left = "", sign = "equals", right = expr.trim();
+    for (const [sym, name] of SIGNS) {
+      const idx = expr.indexOf(sym);
+      if (idx >= 0) { left = expr.slice(0, idx).trim(); sign = name; right = expr.slice(idx + sym.length).trim(); break; }
+    }
+    steps.push({ left, sign, right, transform: "", explanation: text(expl.length ? [{ type: "p", children: inline(expl.join("|").trim()) }] : []) });
+  }
+  return P("equations", { steps, firstExplanation: text([]), transformationTarget: "equation" });
 }
 
 function splitQuestion(body, answerRe) {
@@ -326,7 +347,13 @@ function serloToMarkdown(doc) {
         if (r.length) r.splice(1, 0, "|" + " --- |".repeat(s.rows[0].columns.length));
         return r.join("\n");
       }
-      case "equations": return (s.steps || []).map((st) => `$${st.left} ${st.sign} ${st.right}$`).join("\n");
+      case "equations": {
+        const sym = Object.fromEntries(SIGNS.map(([a, b]) => [b, a]));
+        return "```math\n" + (s.steps || []).map((st) => {
+          const e = walk(st.explanation).trim();
+          return `${st.left ? st.left + " " : ""}${sym[st.sign] || "="} ${st.right}${e ? " | " + e : ""}`;
+        }).join("\n") + "\n```";
+      }
       case "exercise": {
         const q = walk(s.content);
         const it = s.interactive || {};

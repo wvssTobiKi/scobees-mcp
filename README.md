@@ -83,6 +83,10 @@ Strom wird in [[Ampere|A]] gemessen.
 ```quiz-text
 Freitextaufgabe
 ```
+```math               (ausgerichtete Gleichungskette, LaTeX; „| Erklärung“ optional)
+I = rac{U}{R} | umgestellt
+= 3\,\mathrm{A}
+```
 ```
 
 Alles, was Markdown nicht abbildet (Bild-Zuordnung, Gleichungen, interaktives Video …), kann als fertiges Serlo-JSON über `serlo_json` übergeben werden – Vorlage: [`docs/serlo-beispiel.json`](docs/serlo-beispiel.json). `scobees_markdown_vorschau` zeigt das Ergebnis, ohne zu speichern.

@@ -138,3 +138,15 @@ test("Spoiler- und Box-Titel mit Umlauten bleiben erhalten", () => {
   assert.match(md, /:::spoiler Lösungsweg/);
   assert.match(md, /:::box warning Äußerste Vorsicht/);
 });
+
+test("```math wird zum equations-Baustein und zurück", () => {
+  const md = ["```math", "I = \\frac{U}{R} | Ohmsches Gesetz umstellen", "= \\frac{12\\,\\text{V}}{4\\,\\Omega}", "= 3\\,\\text{A}", "```"].join("\n");
+  const doc = markdownToSerlo(md);
+  const eq = doc.state[0];
+  assert.equal(eq.plugin, "equations");
+  assert.equal(eq.state.steps.length, 3);
+  assert.equal(eq.state.steps[0].left, "I");
+  assert.equal(eq.state.steps[0].sign, "equals");
+  assert.equal(eq.state.steps[1].left, "");
+  assert.equal(serloToMarkdown(doc), md);
+});
