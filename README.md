@@ -1,5 +1,7 @@
 # scobees-mcp
 
+[![Tests](https://github.com/wvssTobiKi/scobees-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/wvssTobiKi/scobees-mcp/actions/workflows/test.yml)
+
 MCP-Server, der Claude mit der scobees-Lehrkräfte-App (teach.scobees.com) verbindet. Damit lassen sich aus Offline-Unterlagen, Arbeitsblättern und Ideen **Lernpfade in scobees anlegen und bestehende erweitern** – inklusive interaktiver Arbeitsblätter (Serlo-Editor) mit Quizfragen.
 
 Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle-MCP](https://github.com/jtuttas/MoodleMcp) von Dr. Jörg Tuttas (MMBbS).

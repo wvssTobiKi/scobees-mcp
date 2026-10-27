@@ -10,6 +10,8 @@
     "email": "tobias.kirchner@wvss.de"
   },
   "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/wvssTobiKi/scobees-mcp" },
+  "homepage": "https://github.com/wvssTobiKi/scobees-mcp",
   "keywords": ["scobees", "lms", "schule", "lernpfad", "serlo"],
   "server": {
     "type": "node",

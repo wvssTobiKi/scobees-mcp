@@ -14,5 +14,7 @@
     "pack": "npx --yes @anthropic-ai/mcpb pack . scobees-mcp.mcpb"
   },
   "keywords": ["mcp", "scobees", "schule", "lernpfad", "serlo"],
-  "repository": { "type": "git", "url": "" }
+  "repository": { "type": "git", "url": "https://github.com/wvssTobiKi/scobees-mcp.git" },
+  "homepage": "https://github.com/wvssTobiKi/scobees-mcp#readme",
+  "bugs": "https://github.com/wvssTobiKi/scobees-mcp/issues"
 }
