@@ -17,7 +17,8 @@
  *   :::spoiler Titel … :::        aufklappbarer Bereich
  *   :::box typ Titel … :::        Box (typ: blank|example|quote|warning|attention|note|definition|theorem|proof)
  *   ```quiz-sc / ```quiz-mc       Single/Multiple Choice:  Frage, dann „- [x] richtig :: Feedback“ / „- [ ] falsch“
- *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“ – oder „= 42 V“ (Einheit wird abgetrennt)
+ *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“ – oder „= 42 V“ (Einheit wird abgetrennt);
+ *                                 „≠ 41 :: Rückmeldung“ = typischer Fehler mit Hinweis (zählt als falsch)
  *   ```quiz-blanks / -dnd         Lückentext: Lücken als [[Antwort|Variante]], Distraktoren „+ falsch“
  *   ```quiz-text                  Freitextaufgabe
  *   ```math                       Gleichungskette (LaTeX): je Zeile „U = R \cdot I | nach I umstellen“.
@@ -101,6 +102,7 @@ function parseBlocks(lines) {
     const t = line.trim();
 
     if (!t) { i++; continue; }
+    if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) { i++; continue; } // Trennlinie: kein Serlo-Baustein, wird ausgelassen
 
     // Code-/Quiz-Fence
     let m = t.match(/^```\s*([\w-]*)\s*$/);
@@ -213,7 +215,7 @@ function parseBlocks(lines) {
       para.push(l);
       i++;
     }
-    slate.push({ type: "p", children: inline(para.join(" ")) });
+    for (const l of para) slate.push({ type: "p", children: inline(l) }); // jede Zeile ein Absatz
   }
   flushText();
   return items;
@@ -269,16 +271,17 @@ function choiceExercise(body, single) {
 function inputExercise(body) {
   let unit = "";
   const rest = body.filter((l) => { const m = l.trim().match(/^unit:\s*(.*)$/i); if (m) { unit = m[1]; return false; } return true; });
-  const { question, answers } = splitQuestion(rest, /^=\s*/);
+  const { question, answers } = splitQuestion(rest, /^(=|≠|!=)\s*/);
   const parsed = answers.map((l) => {
-    const m = l.match(/^=\s*(.*?)(?:\s*::\s*(.*))?$/);
-    let value = m[1].trim();
+    const m = l.match(/^(=|≠|!=)\s*(.*?)(?:\s*::\s*(.*))?$/);
+    const isCorrect = m[1] === "=";
+    let value = m[2].trim();
     // „= 5 GB“ → Wert 5, Einheit GB (die Einheit steht dann neben dem Eingabefeld, Lernende tippen sie nicht)
     const u = value.match(/^(-?[\d.,]+)\s+([^\d\s].*)$/);
     if (u) { value = u[1]; if (!unit) unit = u[2].trim(); }
-    return { value, isCorrect: true, feedback: textP(m[2] || "") };
+    return { value, isCorrect, feedback: textP(m[3] || "") };
   });
-  if (!parsed.length) throw new Error("quiz-input: keine Lösung im Format „= 42“ gefunden.");
+  if (!parsed.some((a) => a.isCorrect)) throw new Error("quiz-input: keine richtige Lösung im Format „= 42“ gefunden (falsche Antworten mit Rückmeldung: „≠ 41 :: Hinweis“).");
   const numeric = parsed.every((a) => /^-?[\d.,]+$/.test(a.value));
   return P("exercise", {
     content: question,
@@ -371,7 +374,7 @@ function serloToMarkdown(doc) {
           return "```" + (is.isSingleChoice ? "quiz-sc" : "quiz-mc") + "\n" + q + "\n" +
             (is.answers || []).map((a) => `- [${a.isCorrect ? "x" : " "}] ${walk(a.content)}${walk(a.feedback) ? " :: " + walk(a.feedback) : ""}`).join("\n") + "\n```";
         if (it.plugin === "inputExercise")
-          return "```quiz-input\n" + q + (is.unit ? `\nunit: ${is.unit}` : "") + "\n" + (is.answers || []).map((a) => `= ${a.value}`).join("\n") + "\n```";
+          return "```quiz-input\n" + q + (is.unit ? `\nunit: ${is.unit}` : "") + "\n" + (is.answers || []).map((a) => `${a.isCorrect === false ? "≠" : "="} ${a.value}${walk(a.feedback) ? " :: " + walk(a.feedback) : ""}`).join("\n") + "\n```";
         if (it.plugin === "blanksExercise")
           return "```quiz-blanks" + (is.mode === "drag-and-drop" ? "-dnd" : "") + "\n" + [q, walk(is.text)].filter(Boolean).join("\n") +
             (is.extraDraggableAnswers || []).map((e) => `\n+ ${e.answer}`).join("") + "\n```";

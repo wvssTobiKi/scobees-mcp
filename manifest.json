@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "scobees-mcp",
   "display_name": "scobees Kursaufbau (WvSS)",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Lernpfade, Gliederungen, Aufgaben und interaktive Arbeitsblätter in scobees per Claude anlegen und bearbeiten – ohne Zugriff auf Schülerdaten.",
   "long_description": "Verbindet Claude Desktop mit der scobees-Lehrkräfte-App (teach.scobees.com). Lernbereiche und Fächer werden nur gelesen; die Lehrkraft wählt das Fach, in dem ein Lernpfad entsteht. Arbeitsblätter werden aus Markdown in das Serlo-Editor-Format übersetzt (inkl. Quizfragen). Schüler-, Klassen- und Bewertungsdaten sind durch eine feste Sperrliste ausgeschlossen. Anmeldung mit dem eigenen scobees-Konto (Benutzername/Passwort); Zugangsdaten werden verschlüsselt von Claude Desktop gespeichert.",
   "author": {

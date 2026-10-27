@@ -56,7 +56,8 @@ Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit 
 | `selbstkontrolle` (Standard) | bearbeiten das Serlo-Arbeitsblatt, das Quiz prüft sich selbst | kind `task`, keine Abgabe |
 | `abgabe_optional` | geben ein Ergebnis ab (`abgabeformen`: file, pen, link) | `task+upload-optional`, requiredSubmissions |
 | `abgabe_pflicht` | müssen abgeben, sonst gilt die Aufgabe nicht als erledigt | `task+upload-required` |
-| `abgabe_selbstkorrektur` | geben ab und vergleichen danach mit der Musterlösung | `task+upload-optional+sc`, Musterlösung per `scobees_upload_material als_musterloesung` |
+| `abgabe_selbstkorrektur` | geben ab (optional) und vergleichen danach mit der Musterlösung | `task+upload-optional+sc`, Musterlösung per `scobees_upload_material als_musterloesung` |
+| `abgabe_pflicht_selbstkorrektur` | müssen abgeben und vergleichen dann mit der Musterlösung | `task+upload-required+sc` |
 
 „Selbstkorrektur“ ist in scobees ein eigener Schritt *nach* der Abgabe (Reiter „Selbstkorrektur“ in der Schüler-App) und hat nichts mit den sich selbst prüfenden Serlo-Quizzen zu tun. Steht in `requiredSubmissions` etwas, verlangt scobees die Abgabe zwingend („Zum Abgeben musst du eine Datei hochladen“).
 
@@ -95,6 +96,7 @@ Frage?
 Wie viel ist 6 · 7?
 unit: Stück
 = 42          (oder „= 42 V“ – Einheit wird abgetrennt)
+≠ 41 :: Typischer Fehler mit Hinweis
 ```
 ```quiz-blanks        (quiz-blanks-dnd für Drag & Drop, Distraktoren mit „+ …“)
 Strom wird in [[Ampere|A]] gemessen.

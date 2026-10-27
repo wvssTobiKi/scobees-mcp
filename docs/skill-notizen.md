@@ -24,6 +24,18 @@ Gesammelt aus den ersten Praxisläufen (27.10.2026, Lernpfad „Datensicherheit 
 | D `abgabe_selbstkorrektur`: nach Abgabe Reiter „Selbstkorrektur“, dort „Du bekommst die Musterlösung von deiner Lehrkraft“ | Skill | Musterlösung gehört dazu: `scobees_upload_material … als_musterloesung: true`; ohne sie ist der Schritt leer |
 | Reiter „Reflexion“ immer vorhanden (gesperrt bis zur Abgabe) | – | scobees-Funktion des Lernplaners, nicht vom Server beeinflussbar |
 
+## Aus Praxislauf 2 (Subnetting-Werkstatt)
+
+| Beobachtung | Ort | Stand |
+|---|---|---|
+| `abgabeform: pen` wurde „angenommen“, aber nicht gespeichert | Server | behoben: Parameter werden jetzt gegen das Schema geprüft (unbekannte Namen, ungültige Werte → Fehlermeldung); `abgabeform` ist Alias für `abgabeformen` |
+| `art: abgabe_pflicht_sc` ohne Fehler, aber ohne Wirkung | Server | behoben: Validierung; neue Art `abgabe_pflicht_selbstkorrektur` |
+| „selbstkontrolle ohne Selbstkontroll-Kennzeichen“ | Skill | gewollt: das Kennzeichen ist scobees-Selbstkorrektur (Musterlösung nach Abgabe); Serlo-Quiz braucht es nicht. Im Bericht nicht als Mangel aufführen |
+| Rundreise `quiz-input`: falsche Antworten wurden beim erneuten Speichern richtig | Server | behoben: `≠ Wert :: Hinweis` |
+| `---` als Text, Zeilen in Spoiler zusammengezogen | Server | behoben: Trennlinie entfällt, jede Zeile ein Absatz |
+| Extraaufgabe lag direkt im Lernpfad statt in einer Gliederung | Skill | Extra-/Trainingsaufgaben in eine Gliederung „Vertiefung“ legen oder gezielt `parent_id` einer Phase wählen |
+| PDF-Vorlage für `pen` und Musterlösung wurden korrekt erzeugt und angehängt | – | funktioniert; Vorlage: Claude erzeugt das PDF lokal und übergibt den Pfad |
+
 ## Didaktische Leitplanken (Entwurf)
 
 - **Situationsbeschreibung** als eigene erste Gliederung mit einer `info`-Aufgabe (Auftrag, Rolle, Kunde) und ggf. Material (Ticket, Mail) als Anhang.

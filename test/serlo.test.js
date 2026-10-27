@@ -162,3 +162,17 @@ test("quiz-input trennt eine Einheit hinter der Zahl ab", () => {
   assert.equal(j.unit, "V");
   assert.deepEqual(j.answers.map((a) => a.value), ["12", "12,0"]);
 });
+
+test("quiz-input: falsche Antworten mit ≠ überleben die Rundreise", () => {
+  const md = "```quiz-input\nWie viele Hosts?\n= 254 :: Richtig\n≠ 256 :: Netz- und Broadcast-Adresse abziehen\n```";
+  const doc = markdownToSerlo(md);
+  const ans = doc.state[0].state.interactive.state.answers;
+  assert.deepEqual(ans.map((a) => [a.value, a.isCorrect]), [["254", true], ["256", false]]);
+  assert.equal(serloToMarkdown(doc), md);
+});
+
+test("Trennlinie wird ausgelassen, jede Zeile ein Absatz", () => {
+  const doc = markdownToSerlo("Zeile eins\nZeile zwei\n\n---\n\nZeile drei");
+  const paras = doc.state.flatMap((p) => p.state).filter((n) => n.type === "p").map((n) => n.children.map((c) => c.text || "").join(""));
+  assert.deepEqual(paras, ["Zeile eins", "Zeile zwei", "Zeile drei"]);
+});

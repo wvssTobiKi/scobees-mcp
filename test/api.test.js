@@ -60,3 +60,22 @@ test("Abgabeformen: selbstkontrolle ohne Abgabe, abgabe_* mit requiredSubmission
   assert.equal(KIND.abgabe_selbstkorrektur.isSelfCorrectionNecessary, true);
   assert.equal("abgabe_optional_sc" in KIND, false);
 });
+
+test("Server weist unbekannte Parameter und ungültige enum-Werte ab", () => {
+  const { spawnSync } = require("node:child_process");
+  const run = (args) => {
+    const msgs = [
+      { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "t", version: "0" } } },
+      { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "scobees_create_aufgabe", arguments: args } },
+    ].map((m) => JSON.stringify(m)).join("\n") + "\n";
+    const r = spawnSync(process.execPath, ["src/server.js"], { input: msgs, encoding: "utf8", env: { ...process.env, SCOBEES_TOKEN_FILE: "/nonexistent" } });
+    const line = r.stdout.split("\n").find((l) => l.includes('"id":2'));
+    return JSON.parse(line).result;
+  };
+  let res = run({ parent_id: "LI-1", name: "x", art: "abgabe_pflicht_sc" });
+  assert.equal(res.isError, true); assert.match(res.content[0].text, /abgabe_pflicht_sc.*ungültig/);
+  res = run({ parent_id: "LI-1", name: "x", abgabeformen: ["stift"] });
+  assert.match(res.content[0].text, /stift.*ungültig/);
+  res = run({ name: "x", irgendwas: 1 });
+  assert.match(res.content[0].text, /unbekannter Parameter „irgendwas“/); assert.match(res.content[0].text, /Pflichtparameter „parent_id“/);
+});

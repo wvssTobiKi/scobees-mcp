@@ -29,7 +29,17 @@ const KIND = {
   abgabe_optional:      { kind: "task+upload-optional",    isUploadRequired: true,  solutionMustBeUploaded: false, isSelfCorrectionNecessary: false, selfCorrectionUploadRequired: false },
   abgabe_pflicht:       { kind: "task+upload-required",    isUploadRequired: true,  solutionMustBeUploaded: true,  isSelfCorrectionNecessary: false, selfCorrectionUploadRequired: false },
   abgabe_selbstkorrektur:{ kind: "task+upload-optional+sc", isUploadRequired: true,  solutionMustBeUploaded: false, isSelfCorrectionNecessary: true,  selfCorrectionUploadRequired: false },
+  abgabe_pflicht_selbstkorrektur: { kind: "task+upload-required+sc", isUploadRequired: true, solutionMustBeUploaded: true, isSelfCorrectionNecessary: true, selfCorrectionUploadRequired: false },
 };
+// Abgabeform aus gespeicherten Flags zurückrechnen (für get_aufgabe)
+function artOf(t) {
+  const sc = !!t.isSelfCorrectionNecessary, up = !!t.isUploadRequired, must = !!t.solutionMustBeUploaded;
+  if (up && must && sc) return "abgabe_pflicht_selbstkorrektur";
+  if (up && sc) return "abgabe_selbstkorrektur";
+  if (up && must) return "abgabe_pflicht";
+  if (up) return "abgabe_optional";
+  return t.taskType === "Info" ? "info" : "selbstkontrolle";
+}
 const ABGABEFORM = ["file", "pen", "link"];
 // Abgabeformen für abgabe_*: Standard Datei; mehrere → „mindestens eine reicht“ (any)
 function submissionFields(art, abgabeformen) {
@@ -232,6 +242,7 @@ const TOOLS = [
       const t = await api.lerninput(id);
       const out = {
         id: t.id, name: t.name, parentId: t.parentId, kind: t.kind, taskType: t.taskType, state: t.state,
+        art: artOf(t), abgabeformen: t.requiredSubmissions || [], abgabe_regel: t.submissionRule || "all",
         beschreibung_html: t.description, interne_notiz: t.internalTeacherNote, estimatedTime: t.estimatedTime,
         differenzierungen: (t.tags?.differentiations || []).map((d) => d.name),
         links: t.links || [],
@@ -429,7 +440,7 @@ const TOOLS = [
         parent_id: { type: "string" },
         name: { type: "string" },
         description_html: { type: "string", description: "Kurzbeschreibung (HTML), erscheint über dem Arbeitsblatt" },
-        art: { type: "string", enum: Object.keys(KIND), default: "selbstkontrolle", description: "Abgabeform. info = Infobaustein ohne Abgabe; selbstkontrolle = Arbeitsblatt mit Serlo-Quiz, prüft sich selbst, keine Abgabe (Standard für Theorie + Quiz); abgabe_optional = Lernende geben ein Ergebnis ab (Datei/Stift-PDF/Link); abgabe_pflicht = Abgabe zwingend; abgabe_selbstkorrektur = Abgabe, danach Vergleich mit der Musterlösung (scobees-„Selbstkorrektur“; Musterlösung per scobees_upload_material als_musterloesung). Wenn ein Ergebnis erwartet wird, abgabe_* wählen und in description_html sagen, WAS abzugeben ist." },
+        art: { type: "string", enum: Object.keys(KIND), default: "selbstkontrolle", description: "Abgabeform. info = Infobaustein ohne Abgabe; selbstkontrolle = Arbeitsblatt mit Serlo-Quiz, prüft sich selbst, keine Abgabe (Standard für Theorie + Quiz); abgabe_optional = Lernende geben ein Ergebnis ab (Datei/Stift-PDF/Link); abgabe_pflicht = Abgabe zwingend; abgabe_selbstkorrektur = Abgabe (optional), danach Vergleich mit der Musterlösung; abgabe_pflicht_selbstkorrektur = Abgabe zwingend + Musterlösungs-Vergleich (scobees-„Selbstkorrektur“; Musterlösung per scobees_upload_material als_musterloesung). Hinweis: selbstkontrolle trägt in scobees bewusst KEIN Selbstkorrektur-Kennzeichen – das Quiz prüft sich im Arbeitsblatt. Wenn ein Ergebnis erwartet wird, abgabe_* wählen und in description_html sagen, WAS abzugeben ist." },
         abgabeformen: { type: "array", items: { type: "string", enum: ABGABEFORM }, description: "Nur für abgabe_*: file (Datei hochladen), pen (PDF mit Stift bearbeiten), link (Videolink). Standard [\"file\"]; mehrere = eine reicht." },
         arbeitsblatt_markdown: { type: "string", description: "Inhalt des interaktiven Arbeitsblatts als Markdown" },
         serlo_json: { type: "string", description: "Alternativ: fertiges Serlo-Dokument (JSON-String, Wurzel plugin rows)" },
@@ -442,6 +453,7 @@ const TOOLS = [
       required: ["parent_id", "name"],
     },
     run: async (a) => {
+      if (a.abgabeform && !a.abgabeformen) a.abgabeformen = [].concat(a.abgabeform);
       const k = KIND[a.art || "selbstkontrolle"];
       const diffs = await resolveDiffTags(a.differenzierungen);
       // Schritt 1: leere Aufgabe anlegen (so macht es die Oberfläche) …
@@ -491,6 +503,7 @@ const TOOLS = [
       required: ["id"],
     },
     run: async (a) => {
+      if (a.abgabeform && !a.abgabeformen) a.abgabeformen = [].concat(a.abgabeform);
       const cur = await api.lerninput(a.id);
       if (!cur.isLeaf) throw new Error("Das ist keine Aufgabe (Gliederung/Wahlpflicht → scobees_update_gliederung).");
       const form = taskToForm(cur);

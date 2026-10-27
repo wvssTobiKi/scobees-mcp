@@ -6,7 +6,16 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
-| 0.1.0 – 0.1.3 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+| 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.4 – 2026-10-27
+
+Nachschärfung nach Praxislauf 2 („Subnetting-Werkstatt“).
+
+- Server prüft Eingaben gegen das Schema: unbekannte Parameter (z. B. `abgabeform` statt `abgabeformen` – jetzt als Alias erlaubt) und ungültige enum-Werte (z. B. `art: abgabe_pflicht_sc`) werden mit klarer Meldung abgewiesen statt still ignoriert.
+- Neue Abgabeform `abgabe_pflicht_selbstkorrektur` (Pflicht-Upload + Musterlösungs-Vergleich).
+- `scobees_get_aufgabe` liefert `art`, `abgabeformen`, `abgabe_regel` zurück.
+- Markdown: `≠ 256 :: Hinweis` für falsche Antworten mit Rückmeldung in `quiz-input` (Rundreise verlustfrei – vorher wurden falsche Antworten beim erneuten Speichern zu richtigen); `---` wird ausgelassen; jede Zeile ein Absatz (auch in Spoilern/Boxen).
 
 ## 0.1.3 – 2026-10-27
 

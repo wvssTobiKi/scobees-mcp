@@ -56,6 +56,7 @@ async function handle(req) {
     const tool = byName[name];
     try {
       if (!tool) throw new Error(`Unbekanntes Werkzeug: ${name}`);
+      validateArgs(tool, args);
       const result = await tool.run(args);
       return send({ jsonrpc: "2.0", id, result: { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] } });
     } catch (err) {
@@ -66,6 +67,23 @@ async function handle(req) {
   if (method === "ping") return send({ jsonrpc: "2.0", id, result: {} });
   if (method && method.startsWith("notifications/")) return;
   if (id !== undefined) send({ jsonrpc: "2.0", id, error: { code: -32601, message: `Methode nicht gefunden: ${method}` } });
+}
+
+// Eingaben gegen das Schema prüfen: unbekannte Parameter und ungültige enum-Werte werden abgewiesen statt
+// still ignoriert (sonst geht z. B. „abgabeform: pen“ verloren, ohne dass es jemand merkt).
+const ALIASES = { abgabeform: "abgabeformen" };
+function validateArgs(tool, args) {
+  const props = tool.inputSchema?.properties || {};
+  const problems = [];
+  for (const [k, v] of Object.entries(args)) {
+    const key = ALIASES[k] || k;
+    const def = props[key];
+    if (!def) { problems.push(`unbekannter Parameter „${k}“ – gültig: ${Object.keys(props).join(", ")}`); continue; }
+    const en = def.enum || def.items?.enum;
+    if (en) for (const x of [].concat(v)) if (!en.includes(x)) problems.push(`„${k}“: „${x}“ ist ungültig – gültig: ${en.join(", ")}`);
+  }
+  for (const r of tool.inputSchema?.required || []) if (args[r] === undefined) problems.push(`Pflichtparameter „${r}“ fehlt`);
+  if (problems.length) throw new Error(problems.join("; "));
 }
 
 let buffer = "";
