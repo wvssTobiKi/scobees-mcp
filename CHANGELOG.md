@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.1.2 – unveröffentlicht
+## 0.1.2 – 2026-10-27
+
+Sichtprüfung als Schüler (Testpfad, Aufgaben A–D): selbstkontrolle ohne Upload abschließbar; Datei/Link-Abgabe; Pflicht-Upload; Selbstkorrektur-Reiter nach Abgabe – alles wie vorgesehen.
 
 - Fix: Jede Aufgabe erzwang eine Datei-Abgabe (`requiredSubmissions: ["file"]` war ein erfundener Standard) und `selbstkontrolle` war auf scobees-„Selbstkorrektur“ (Musterlösungs-Vergleich nach Abgabe) gemappt. Neu: `info`/`selbstkontrolle` ohne Abgabe; `abgabe_optional`/`abgabe_pflicht` mit `abgabeformen` (file/pen/link); `abgabe_selbstkorrektur` ersetzt `abgabe_optional_sc`.
 - `scobees_update_lernpfad subject_id`: Lernpfad in ein anderes Fach verschieben (nötig, wenn Lernende nur im anderen Fach ein Niveau haben).

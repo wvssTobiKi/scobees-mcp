@@ -15,6 +15,15 @@ Gesammelt aus den ersten Praxisläufen (27.10.2026, Lernpfad „Datensicherheit 
 | Zuweisung scheitert: „Für dieses Fach existiert keine passende Fach-Differenzierung für den Lernenden“ | Skill | Lernende haben ihr Niveau **pro Fach**. Vor dem ersten Zuweisen prüfen, ob die Lerngruppe im Fach des Pfads ein Niveau hat – oder den Pfad in das Fach legen, in dem sie bereits arbeiten (`scobees_update_lernpfad subject_id`). Der Jahrgang spielt dafür keine Rolle |
 | Lernpfad „noch inaktiv, alles Entwurf“ | Skill | Normalzustand: neue Pfade sind in der Bib (INACTIVE), Aufgaben DRAFT; sichtbar für Lernende erst nach Zuweisung in der Weboberfläche. Im Abschlussbericht so erklären, nicht als Mangel |
 
+## Aus der Sichtprüfung als Schüler (Aufgaben A–D)
+
+| Beobachtung | Ort | Stand |
+|---|---|---|
+| A `selbstkontrolle`: „Lernergebnis abgeben – Bist du fertig?“ ohne Upload | – | wie vorgesehen; Quiz prüft sich im Arbeitsblatt |
+| B `abgabe_optional` mit file+link: Datei **oder** Link, aber „im Feld skizzieren“ geht nicht | Skill | Skizzieren = Abgabeform `pen` („PDF mit Stift“): Lernende annotieren ein PDF, das als Material an der Aufgabe hängt. Also `abgabeformen: ["pen"]` **und** eine PDF-Vorlage per `scobees_upload_material` |
+| D `abgabe_selbstkorrektur`: nach Abgabe Reiter „Selbstkorrektur“, dort „Du bekommst die Musterlösung von deiner Lehrkraft“ | Skill | Musterlösung gehört dazu: `scobees_upload_material … als_musterloesung: true`; ohne sie ist der Schritt leer |
+| Reiter „Reflexion“ immer vorhanden (gesperrt bis zur Abgabe) | – | scobees-Funktion des Lernplaners, nicht vom Server beeinflussbar |
+
 ## Didaktische Leitplanken (Entwurf)
 
 - **Situationsbeschreibung** als eigene erste Gliederung mit einer `info`-Aufgabe (Auftrag, Rolle, Kunde) und ggf. Material (Ticket, Mail) als Anhang.
