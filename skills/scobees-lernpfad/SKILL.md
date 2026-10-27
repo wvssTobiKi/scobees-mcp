@@ -68,7 +68,7 @@ Regeln für die Gestaltung:
 - **Videos** nur mit Zeitangabe („Minute 2:10 bis 4:30“) und einer Beobachtungsfrage; keine Videos als Ersatz für den Theorietext.
 - **Kontrollform zum Inhalt**: Zahl → Eingabe mit Einheit; Begriff → Drag-and-drop; Entscheidung → Einfachauswahl; Eigenschaften → Mehrfachauswahl; Begründung → Freitext oder Abgabe. Eine Frage, die man ohne den Abschnitt beantworten kann, ist überflüssig; eine, die Wortlaut abfragt statt Verständnis, wirkt konstruiert.
 - **BES und BFS**: mehr Bilder und Drag-and-drop, weniger Text; **Technikerschule, BG, FOS**: Simulationen mit Parametern, Diagramme, Datenblätter als Material.
-- Reiche Medien kosten Zeit: im Grobplan ausweisen (Spalte „Inhalt“), damit die Lehrkraft streichen kann.
+- Reiche Medien kosten Zeit: im Grobplan in der Aufgabenzeile nennen („+ Simulation“), damit die Lehrkraft streichen kann.
 
 ### 3. Gliederung bemessen
 
@@ -83,22 +83,39 @@ Gliederungen sind Orientierung, keine Dekoration. Zu viele Ebenen zerstückeln d
 
 ### 4. Grobplan zeigen und freigeben lassen (immer)
 
-Vor dem ersten Schreibaufruf eine Tabelle im Chat, die die Lehrkraft in einer Minute prüfen kann. Erst nach Freigabe anlegen; Änderungen einarbeiten, nicht diskutieren.
+Vor dem ersten Schreibaufruf ein Plan im Chat, den die Lehrkraft in einer Minute überfliegen kann. Er ist für Menschen geschrieben: Klartext statt Parameterwerten (die Werte `art`, `aufgabentyp`, `abgabeformen` setzt du erst beim Anlegen), eine Zeile je Aufgabe, keine breite Tabelle. Erst nach Freigabe anlegen; Änderungswünsche einarbeiten, nicht diskutieren.
 
 ```
-Lernpfad: <Name> · Fach: <Fach> · Jahrgang: <…> · Umfang: <h> · Aufgabenwahl: <frei | nach Reihenfolge>
+**Schutzmaßnahmen prüfen** · PB Elektrotechnik Grundlagen · Jg 1 · 8 UStd (360 min) · Bearbeitung nach Reihenfolge
+Szenario: Erstprüfung einer neuen Werkstattinstallation vor der Inbetriebnahme; du bist im 1. Lehrjahr bei Elektro Brandt.
+Handlungsergebnis: ausgefülltes und bewertetes Prüfprotokoll mit Freigabeentscheidung.
 
-| Nr. | Gliederung / Aufgabe | Art | Typ | Abgabe | Min. | Inhalt in einem Satz |
-|-----|----------------------|-----|-----|--------|------|----------------------|
-| 1   | Einstieg             |     |     |        |      |                      |
-| 1.1 | Der Auftrag          | info | info | – | 10 | Szenario, Auftrag, Ergebnis |
-| 2   | Grundlagen           |     |     |        |      |                      |
-| 2.1 | …                    | selbstkontrolle | pflicht | – | 25 | Theorie + DnD-Lückentext |
-| 3.1 | …                    | abgabe_pflicht_selbstkorrektur | pflicht | file | 45 | Rechnung, Musterlösung |
-| Summe |                    |     |     |        | 180 |                      |
+**1 · Einstieg** (15 min)
+- 1.1 Der Auftrag — Info · 15 min — Nachricht des Meisters, Installationsplan, warum vor dem Einschalten geprüft wird
+
+**2 · Grundlagen: Prüfen nach DIN VDE 0100-600** (55 min)
+- 2.1 Besichtigen, Erproben, Messen — Theorie + Zuordnung per Drag-and-drop · 25 min
+- 2.2 Sicher messen — Theorie + Auswahlfragen · 30 min — Installationstester, Messkategorie, fünf Sicherheitsregeln
+
+**3 · Schutzleiterwiderstand** (60 min)
+- 3.1 Der Fehlerstromkreis — Theorie + Simulation (Schutzleiter intakt/unterbrochen) + Auswahlfrage · 25 min
+- 3.2 Messen und berechnen — Theorie + Zahleneingaben in Ω · 35 min
+
+**5 · Prüfen und dokumentieren** (150 min)
+- 5.1 Praxis an der Übungswand — Training, freiwillig · Abgabe: Stift auf PDF-Protokoll · 90 min
+- 5.2 Prüfprotokoll für die Werkstatt — Pflichtabgabe (Stift oder Datei) + Musterlösung · 60 min — Messwerte bewerten, Freigabe begründen
+
+**6 · Abschluss** (15 min, dazu 30 min Extra)
+- 6.1 Rückblick: Was wäre, wenn …? — Freitext + Mehrfachauswahl · 15 min
+- 6.2 Isolationsfehler eingrenzen — Extra, freiwillig · Theorie + Zahleneingabe · 30 min
+
+Pflicht: 260 min von 360 · freiwillig: 120 min
+Material, das entsteht: 2 Simulationen (Fehlerstromkreis, Isolationszustand), 1 PDF-Protokollvorlage, 1 Musterlösung
+Vorschlag: 5.1 als Pflicht, wenn die Übungswand für alle erreichbar ist.
+Offen: Bearbeitung frei oder nach Reihenfolge? Niveau-Varianten für 3.2 gewünscht?
 ```
 
-Darunter in zwei Sätzen: Szenario und Handlungsergebnis; Vorschlag für die praktische Einheit; was an Material entsteht (PDF-Vorlagen, Simulationen, Bilder).
+Bezeichnungen je Aufgabe: „Info“ · „Theorie + <Kontrollform>“ · „Abgabe möglich (<Form>)“ · „Pflichtabgabe (<Form>)“ · „+ Musterlösung“ bei Selbstkorrektur · „Training, freiwillig“ / „Extra, freiwillig“ bei den Typen; Formen heißen Datei, Stift auf PDF, Videolink. Die Gliederungszeile trägt die Minutensumme, damit die Lehrkraft sieht, wo die Zeit hingeht. Die Inhaltsnotiz hinter dem zweiten Gedankenstrich nur dort, wo der Titel nicht reicht. In Modus C nur die betroffenen Zeilen, mit „vorher → nachher“.
 
 ### 5. Zeiten prüfen
 
