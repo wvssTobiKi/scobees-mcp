@@ -279,11 +279,12 @@ const TOOLS = [
   },
   {
     name: "scobees_update_lernpfad",
-    description: "Ändert einen bestehenden Lernpfad (Wurzel): Name, Beschreibung, Jahrgänge, Stichwörter, Titelbild, Reihenfolge. Nicht angegebene Felder bleiben erhalten. in_bib: Schalter „In schuleigener Bib veröffentlichen“. Fach bleibt beim Administrator, Zuweisung an Lerngruppen in der Weboberfläche.",
+    description: "Ändert einen bestehenden Lernpfad (Wurzel): Fach, Name, Beschreibung, Jahrgänge, Stichwörter, Titelbild, Reihenfolge. Nicht angegebene Felder bleiben erhalten. in_bib: Schalter „In schuleigener Bib veröffentlichen“. Fach bleibt beim Administrator, Zuweisung an Lerngruppen in der Weboberfläche.",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "string", description: "LI-ID des Lernpfads" },
+        subject_id: { type: "string", description: "Lernpfad in ein anderes Fach verschieben (Fach-ID aus scobees_list_subjects). Achtung: Lernende brauchen im Fach des Pfads ein Niveau, sonst ist keine Zuweisung möglich." },
         name: { type: "string" },
         description: { type: "string" },
         jahrgaenge: { type: "array", items: { type: "string" } },
@@ -302,7 +303,7 @@ const TOOLS = [
       const editors = Array.isArray(cur.editors) && cur.editors.length ? cur.editors : [me.id];
       const r = await api.createRoot({
         name: a.name ?? cur.name,
-        subjects: (cur.subjects || []).map((s) => ({ id: s.id })),
+        subjects: a.subject_id ? [{ id: a.subject_id }] : (cur.subjects || []).map((s) => ({ id: s.id })),
         grades,
         editors,
         order: a.solve_order ?? cur.solveOrder ?? "none",
@@ -314,7 +315,7 @@ const TOOLS = [
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
         description: a.description ?? cur.description ?? "",
       }, { coverImage: a.cover_image_path });
-      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished });
+      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished, faecher: (r.subjects || []).map((s) => s.name) });
     },
   },
   {
