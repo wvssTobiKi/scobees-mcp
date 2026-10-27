@@ -104,7 +104,10 @@ Alles, was Markdown nicht abbildet (Bild-Zuordnung, Gleichungen, interaktives Vi
 npm test                    # Konverter- und Sperrlisten-Tests
 node src/server.js --tools  # Werkzeugliste
 node src/server.js --login  # Anmeldung prüfen
+npm run pack                # scobees-mcp.mcpb bauen
 ```
+
+Erweitern, reparieren, Mitschneiden: siehe [CONTRIBUTING.md](CONTRIBUTING.md). Fehler nach scobees-Änderungen bitte als Issue mit der Vorlage „scobees-Änderung“ melden.
 
 Testumgebung in scobees (WvSS): Lernbereich „testbereich“ `LB-9QX4VN79SPUN59XTXC`, Lernpfad „TEST MCP“ `LI-M1SUFLY8QBQBD65MHU`.
 

@@ -1,5 +1,10 @@
 # scobees – API-Karte (aus Frontend-Code teach.scobees.com, v93.3, 2026-10-27)
 
+
+## Methode: Mitschneiden
+
+Die Oberfläche (Angular-SPA) spricht `https://platform-api.scobees.com/api` mit einem Bearer-Token. Da die Netzwerk-Ansicht des Browser-Panes keine Cross-Origin-Anfragen zeigt, wird ein Hook auf `fetch`/`XMLHttpRequest` in die Seite gesetzt: [`mitschnitt-hook.js`](mitschnitt-hook.js). Danach die Funktion in der Oberfläche einmal durchklicken (Seite nicht neu laden) und `window.__mcp` auslesen. Der Hook schwärzt Schüler-/Personenpfade sofort und speichert keine Authorization-Header. Jede Beobachtung wird unten als „Mitschrift n“ mit Datum und scobees-Version festgehalten; abgeleitete (nicht beobachtete) Aufrufe sind als solche markiert.
+
 ## Infrastruktur
 - API-Basis: `https://platform-api.scobees.com/api`  (aus /assets/env.js)
 - Auth: Keycloak, `https://auth.scobees.com`, Realm `scobees`, Client `scobees-teachers-app`,

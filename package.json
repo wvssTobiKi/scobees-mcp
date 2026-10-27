@@ -11,7 +11,7 @@
     "start": "node src/server.js",
     "test": "node --test",
     "login": "node src/server.js --login",
-    "pack": "node scripts/pack.js"
+    "pack": "npx --yes @anthropic-ai/mcpb pack . scobees-mcp.mcpb"
   },
   "keywords": ["mcp", "scobees", "schule", "lernpfad", "serlo"],
   "repository": { "type": "git", "url": "" }
