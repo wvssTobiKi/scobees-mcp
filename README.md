@@ -84,7 +84,7 @@ Strom wird in [[Ampere|A]] gemessen.
 Freitextaufgabe
 ```
 ```math               (ausgerichtete Gleichungskette, LaTeX; „| Erklärung“ optional)
-I = rac{U}{R} | umgestellt
+I = \frac{U}{R} | umgestellt
 = 3\,\mathrm{A}
 ```
 ```
