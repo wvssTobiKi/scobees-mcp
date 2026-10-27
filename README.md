@@ -42,7 +42,7 @@ Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `
 1. `scobees_list_subjects` → Fach wählen.
 2. `scobees_create_lernpfad` (Name, Beschreibung, Jahrgang, Titelbild).
 3. Je Phase `scobees_create_gliederung`.
-4. Je Aufgabe `scobees_create_aufgabe` mit `art` (info, selbstkontrolle, abgabe_optional, abgabe_pflicht) und `arbeitsblatt_markdown`.
+4. Je Aufgabe `scobees_create_aufgabe` mit `art` (Abgabeform: info, selbstkontrolle, abgabe_optional, abgabe_pflicht), `aufgabentyp` (pflicht, extra, training, info) und `arbeitsblatt_markdown`. Hinweise für gute Lernpfade: [`docs/skill-notizen.md`](docs/skill-notizen.md).
 5. Dateien mit `scobees_upload_material` anhängen (PDF, HTML-Simulationen, interaktive Seiten, GeoGebra-Dateien). Bilder, die *im* Arbeitsblatt erscheinen sollen, vorher mit `scobees_upload_bild` hochladen und die URL per `![…](url)` einbinden.
 6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche einer Lerngruppe zuweisen.
 
@@ -82,7 +82,7 @@ Frage?
 ```quiz-input
 Wie viel ist 6 · 7?
 unit: Stück
-= 42
+= 42          (oder „= 42 V“ – Einheit wird abgetrennt)
 ```
 ```quiz-blanks        (quiz-blanks-dnd für Drag & Drop, Distraktoren mit „+ …“)
 Strom wird in [[Ampere|A]] gemessen.

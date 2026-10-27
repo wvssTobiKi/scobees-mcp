@@ -1,6 +1,6 @@
 {
   "name": "scobees-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP-Server für scobees (teach.scobees.com): Lernpfade, Gliederungen, Aufgaben und Serlo-Arbeitsblätter per Claude anlegen und bearbeiten – ohne Zugriff auf Schülerdaten.",
   "license": "MIT",
   "type": "commonjs",

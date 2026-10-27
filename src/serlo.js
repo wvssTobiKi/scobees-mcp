@@ -17,7 +17,7 @@
  *   :::spoiler Titel … :::        aufklappbarer Bereich
  *   :::box typ Titel … :::        Box (typ: blank|example|quote|warning|attention|note|definition|theorem|proof)
  *   ```quiz-sc / ```quiz-mc       Single/Multiple Choice:  Frage, dann „- [x] richtig :: Feedback“ / „- [ ] falsch“
- *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“
+ *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“ – oder „= 42 V“ (Einheit wird abgetrennt)
  *   ```quiz-blanks / -dnd         Lückentext: Lücken als [[Antwort|Variante]], Distraktoren „+ falsch“
  *   ```quiz-text                  Freitextaufgabe
  *   ```math                       Gleichungskette (LaTeX): je Zeile „U = R \cdot I | nach I umstellen“.
@@ -272,7 +272,11 @@ function inputExercise(body) {
   const { question, answers } = splitQuestion(rest, /^=\s*/);
   const parsed = answers.map((l) => {
     const m = l.match(/^=\s*(.*?)(?:\s*::\s*(.*))?$/);
-    return { value: m[1], isCorrect: true, feedback: textP(m[2] || "") };
+    let value = m[1].trim();
+    // „= 5 GB“ → Wert 5, Einheit GB (die Einheit steht dann neben dem Eingabefeld, Lernende tippen sie nicht)
+    const u = value.match(/^(-?[\d.,]+)\s+([^\d\s].*)$/);
+    if (u) { value = u[1]; if (!unit) unit = u[2].trim(); }
+    return { value, isCorrect: true, feedback: textP(m[2] || "") };
   });
   if (!parsed.length) throw new Error("quiz-input: keine Lösung im Format „= 42“ gefunden.");
   const numeric = parsed.every((a) => /^-?[\d.,]+$/.test(a.value));

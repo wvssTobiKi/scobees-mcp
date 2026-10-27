@@ -14,6 +14,11 @@ const { api } = require("./api");
 const { markdownToSerlo, serloToMarkdown, listPlugins } = require("./serlo");
 
 // ── Hilfen ───────────────────────────────────────────────────────────────────
+// taskType laut Frontend-Enum (main-Bundle v93.3): Pflichtaufgabe, Extraaufgabe, Trainingsaufgabe, Wahlpflichtaufgabe (Container),
+// Info, Diagnose, Gelingensnachweis, Unterschiedlich, "nicht spezifiziert". Ein „Wahlaufgabe“ gibt es nicht (→ HTTP 500).
+const AUFGABENTYP = { pflicht: "Pflichtaufgabe", extra: "Extraaufgabe", training: "Trainingsaufgabe", info: "Info" };
+const taskTypeOf = (a) => AUFGABENTYP[a.aufgabentyp] || (a.wahlaufgabe ? "Extraaufgabe" : "Pflichtaufgabe");
+
 const KIND = {
   info:              { kind: "task",                   isUploadRequired: false, solutionMustBeUploaded: false, isSelfCorrectionNecessary: false },
   selbstkontrolle:   { kind: "task+sc",                isUploadRequired: false, solutionMustBeUploaded: false, isSelfCorrectionNecessary: true },
@@ -407,14 +412,14 @@ const TOOLS = [
         parent_id: { type: "string" },
         name: { type: "string" },
         description_html: { type: "string", description: "Kurzbeschreibung (HTML), erscheint über dem Arbeitsblatt" },
-        art: { type: "string", enum: Object.keys(KIND), default: "info" },
+        art: { type: "string", enum: Object.keys(KIND), default: "info", description: "Abgabeform: info = nur lesen/bearbeiten, KEIN Abgabefeld; selbstkontrolle = Arbeitsblatt mit Quiz, Lernende kontrollieren selbst; abgabe_optional = Datei-/Text-Abgabe möglich; abgabe_pflicht = Abgabe erforderlich; abgabe_optional_sc = Abgabe möglich + Selbstkontrolle. Wenn die Aufgabe ein Ergebnis verlangt (Dokument, Foto, Text), eine abgabe_*-Art wählen und in description_html sagen, WAS abzugeben ist." },
         arbeitsblatt_markdown: { type: "string", description: "Inhalt des interaktiven Arbeitsblatts als Markdown" },
         serlo_json: { type: "string", description: "Alternativ: fertiges Serlo-Dokument (JSON-String, Wurzel plugin rows)" },
         estimated_time: { type: "number", default: 0, description: "Minuten" },
         differenzierungen: { type: "array", items: { type: "string" }, description: "Niveaus der Schule (scobees_list_tags), z. B. [\"Hauptschulabschluss\",\"Realschulabschluss\"]. Leer = alle Niveaus (Aufgabe für alle sichtbar). Lernende sehen nur Aufgaben ihres Niveaus." },
         links: { type: "array", items: { type: "object", properties: { url: { type: "string" }, name: { type: "string" } }, required: ["url"] } },
         interne_notiz: { type: "string", description: "Nur für Lehrkräfte sichtbar" },
-        wahlaufgabe: { type: "boolean", default: false, description: "true = Wahl- statt Pflichtaufgabe" },
+        aufgabentyp: { type: "string", enum: Object.keys(AUFGABENTYP), default: "pflicht", description: "pflicht = zählt zum Fortschritt; extra = freiwillige Zusatzaufgabe; training = freiwillige Übung; info = reiner Informationsbaustein" },
       },
       required: ["parent_id", "name"],
     },
@@ -423,7 +428,7 @@ const TOOLS = [
       const diffs = await resolveDiffTags(a.differenzierungen);
       // Schritt 1: leere Aufgabe anlegen (so macht es die Oberfläche) …
       const created = await api.saveTask({
-        taskType: a.wahlaufgabe ? "Wahlaufgabe" : "Pflichtaufgabe", name: "", socialType: "nicht spezifiziert", activityType: "nicht spezifiziert",
+        taskType: taskTypeOf(a), name: "", socialType: "nicht spezifiziert", activityType: "nicht spezifiziert",
         diffs: [], licenseType: "cc0", parentId: a.parent_id, sampleSolutions: undefined, attachments: undefined, links: [],
         taskDescription: null, taskAudioDescription: undefined, lfs: [], hintText: "", hintAttachments: undefined, isHintSave: false,
         kind: "task", isUploadRequired: false, isSelfCorrectionNecessary: false, isLinkSubmissionEnabled: false,
@@ -434,7 +439,7 @@ const TOOLS = [
         name: a.name,
         description: a.description_html || "",
         internalTeacherNote: a.interne_notiz ?? null,
-        taskType: a.wahlaufgabe ? "Wahlaufgabe" : "Pflichtaufgabe",
+        taskType: taskTypeOf(a),
         estimatedTime: a.estimated_time || 0,
         diffs,
         ...k,
@@ -455,6 +460,7 @@ const TOOLS = [
         name: { type: "string" },
         description_html: { type: "string" },
         art: { type: "string", enum: Object.keys(KIND) },
+        aufgabentyp: { type: "string", enum: Object.keys(AUFGABENTYP) },
         arbeitsblatt_markdown: { type: "string" },
         serlo_json: { type: "string" },
         estimated_time: { type: "number" },
@@ -473,6 +479,7 @@ const TOOLS = [
       if (a.interne_notiz != null) form.internalTeacherNote = a.interne_notiz;
       if (a.estimated_time != null) form.estimatedTime = a.estimated_time;
       if (a.art) Object.assign(form, KIND[a.art]);
+      if (a.aufgabentyp) form.taskType = AUFGABENTYP[a.aufgabentyp];
       if (a.differenzierungen) form.diffs = await resolveDiffTags(a.differenzierungen);
       if (a.links) form.links = a.links.map((l) => ({ url: l.url, name: l.name || l.url, type: "url" }));
       const td = buildTaskDescription(a);

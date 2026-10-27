@@ -44,3 +44,10 @@ test("Formularfelder werden JSON-kodiert wie in der Weboberfläche", () => {
   assert.equal(fd.get("attachments"), "undefined");
   assert.equal(fd.get("taskDescription"), "null");
 });
+
+test("Aufgabentypen entsprechen dem scobees-Enum (kein „Wahlaufgabe“)", () => {
+  const { TOOLS } = require("../src/tools");
+  const create = TOOLS.find((t) => t.name === "scobees_create_aufgabe");
+  assert.deepEqual(create.inputSchema.properties.aufgabentyp.enum, ["pflicht", "extra", "training", "info"]);
+  assert.equal("wahlaufgabe" in create.inputSchema.properties, false);
+});

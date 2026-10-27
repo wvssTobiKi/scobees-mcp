@@ -152,3 +152,13 @@ test("```math wird zum equations-Baustein und zurück", () => {
   assert.equal(eq.state.firstExplanation.state[0].children[0].text, "Einleitung");
   assert.equal(serloToMarkdown(doc), md);
 });
+
+test("quiz-input trennt eine Einheit hinter der Zahl ab", () => {
+  const i = markdownToSerlo("```quiz-input\nWie groß?\n= 5 GB\n```").state[0].state.interactive.state;
+  assert.equal(i.type, "input-number-exact-match-challenge");
+  assert.equal(i.unit, "GB");
+  assert.deepEqual(i.answers.map((a) => a.value), ["5"]);
+  const j = markdownToSerlo("```quiz-input\nFrage\nunit: V\n= 12 V\n= 12,0 V\n```").state[0].state.interactive.state;
+  assert.equal(j.unit, "V");
+  assert.deepEqual(j.answers.map((a) => a.value), ["12", "12,0"]);
+});
