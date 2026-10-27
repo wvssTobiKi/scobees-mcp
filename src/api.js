@@ -14,6 +14,7 @@ const path = require("path");
 const { getAccessToken } = require("./auth");
 
 const API_URL = (process.env.SCOBEES_API_URL || "https://platform-api.scobees.com/api").replace(/\/$/, "");
+const SERLO_MEDIA_URL = process.env.SERLO_MEDIA_URL || "https://editor.serlo.org/media";
 
 // ── Sperrliste (Schülerdaten, Lernstände, Personenlisten) ────────────────────
 const BLOCKED = [
@@ -157,6 +158,21 @@ const api = {
     return request("POST", "attachments", { form: fd });
   },
   attachmentUrl: (p) => `${API_URL}/attachment?path=${encodeURIComponent(p)}`,
+
+  // Bild für das Serlo-Arbeitsblatt: der eingebettete Serlo-Editor lädt Bilder nicht zu scobees,
+  // sondern in Serlos Medienspeicher (Mitschrift 27.10.2026): GET presigned-url (ohne Anmeldung) → PUT zu S3.
+  // Rückgabe: öffentliche URL für image.src.
+  uploadSerloImage: async (filePath) => {
+    const { blob, type } = fileBlob(filePath);
+    if (!type.startsWith("image/")) throw new Error(`Kein Bild: ${filePath}`);
+    const q = new URLSearchParams({ mimeType: type, editorVariant: "unknown", parentHost: "teach.scobees.com" });
+    const pre = await fetch(`${SERLO_MEDIA_URL}/presigned-url?${q}`);
+    if (!pre.ok) throw new Error(`Serlo presigned-url → HTTP ${pre.status}`);
+    const { signedUrl, fileUrl } = await pre.json();
+    const put = await fetch(signedUrl, { method: "PUT", body: blob, headers: { "Content-Type": type } });
+    if (!put.ok) throw new Error(`Bild-Upload zu Serlo → HTTP ${put.status}: ${(await put.text()).slice(0, 300)}`);
+    return fileUrl;
+  },
 };
 
 module.exports = { api, request, assertAllowed, sanitize, lerninputForm, API_URL, BLOCKED };

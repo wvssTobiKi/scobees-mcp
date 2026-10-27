@@ -196,6 +196,17 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
 - Aktivieren des Lernpfads (INACTIVE→ACTIVE) wird beim Bau am Testpfad LI-M1SUFLY8QBQBD65MHU ausprobiert.
 - Testumgebung: Lernbereich „testbereich“ LB-9QX4VN79SPUN59XTXC, Testpfad „TEST MCP“ LI-M1SUFLY8QBQBD65MHU.
 
+## Mitschrift 9 (27.10.2026): Wurzel bearbeiten, Wahlpflicht bearbeiten, Bild im Arbeitsblatt
+
+- **Lernpfad (Wurzel) ändern:** `POST lerninput` (multipart, JSON-kodierte Felder) mit `id:"LI-…"` – gleiche Felder wie beim Anlegen (name, subjects [{id}], grades [{id}], editors, order, published, isMandatoryProgressVisible, isExtraTaskCounterVisible, tags, description). Neues Titelbild: `coverImage=<Datei>` + `coverImagePath:undefined`; ohne neues Bild bleibt das alte erhalten. Antwort: vollständiges Wurzelobjekt (state bleibt unverändert, z. B. INACTIVE).
+- **Wahlpflichtaufgabe ändern:** `POST lerninput/choice` mit `id:"LI-…"`, `coverImage:null` (ohne neues Bild), `minimumAmountOfTasks` als String.
+- **Bild im Serlo-Arbeitsblatt:** nicht über scobees, sondern über den Medienspeicher des Serlo-Editors:
+  1. `GET https://editor.serlo.org/media/presigned-url?mimeType=image/png&editorVariant=unknown&parentHost=teach.scobees.com` (ohne Auth) → `{signedUrl, fileUrl}`
+  2. `PUT signedUrl` mit dem Bild als Body (S3, ionoscloud, `editor-media-assets-production/all/<id>/image.png`)
+  3. `fileUrl` (`https://editor.serlo.org/media/all/<id>/image.png`) als `image.src` im Dokument. Die Bilder sind öffentlich erreichbar.
+- **Nicht erfasst:** das Aktivieren des Lernpfads (Schalter „für die Zuweisung aktivieren“) – im Mitschnitt kam kein entsprechender Aufruf an; state blieb INACTIVE.
+- Nebenbei gesehen (gesperrt, nicht genutzt): `assignments/check-assignable-students/{id}`, `lerninput/{id}/sharings`, `school-classes`, `school-groups`, `school/{id}/teachers`, `school-competency-matrices?grades=…&subjectIds=…`, `library/categories`, `school/{id}/custom-labels`.
+
 ## Serlo-Dokument: Stolperfallen (Live-Test 27.10.2026)
 
 - Die Wurzel `{plugin:"rows",state:[…]}` darf **keine `id`** haben. Mit `id` rendert die Schüleransicht noch, aber der Editor („Interaktives Arbeitsblatt erstellen“) bricht mit `TypeError: Cannot read properties of undefined (reading 'plugin')` ab (Store-Schlüssel der Wurzel ist `root`). Alle inneren Bausteine brauchen eine UUID.

@@ -252,6 +252,45 @@ const TOOLS = [
     },
   },
   {
+    name: "scobees_update_lernpfad",
+    description: "Ändert einen bestehenden Lernpfad (Wurzel): Name, Beschreibung, Jahrgänge, Stichwörter, Titelbild, Reihenfolge. Nicht angegebene Felder bleiben erhalten. Fach und Aktivierung bleiben beim Administrator bzw. in der Weboberfläche.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "LI-ID des Lernpfads" },
+        name: { type: "string" },
+        description: { type: "string" },
+        jahrgaenge: { type: "array", items: { type: "string" } },
+        stichwoerter: { type: "array", items: { type: "string" } },
+        cover_image_path: { type: "string", description: "Neues Titelbild (lokaler Pfad), optional" },
+        solve_order: { type: "string", enum: ["none", "after_solving"] },
+      },
+      required: ["id"],
+    },
+    run: async (a) => {
+      const cur = await api.lerninput(a.id);
+      if (cur.parentId) throw new Error(`${a.id} ist kein Lernpfad (Wurzel), sondern hat parentId ${cur.parentId}.`);
+      const me = await api.me();
+      const grades = a.jahrgaenge ? await resolveGradeTags(a.jahrgaenge) : (cur.tags?.grades || []).map((g) => ({ id: g.id }));
+      const editors = Array.isArray(cur.editors) && cur.editors.length ? cur.editors : [me.id];
+      const r = await api.createRoot({
+        name: a.name ?? cur.name,
+        subjects: (cur.subjects || []).map((s) => ({ id: s.id })),
+        grades,
+        editors,
+        order: a.solve_order ?? cur.solveOrder ?? "none",
+        published: cur.isPublished ?? true,
+        isMandatoryProgressVisible: cur.isMandatoryProgressVisible ?? true,
+        isExtraTaskCounterVisible: cur.isExtraTaskCounterVisible ?? true,
+        tags: a.stichwoerter ?? (cur.tags?.other || []).map((t) => (typeof t === "string" ? t : { id: t.id })),
+        id: a.id,
+        coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
+        description: a.description ?? cur.description ?? "",
+      }, { coverImage: a.cover_image_path });
+      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state });
+    },
+  },
+  {
     name: "scobees_create_gliederung",
     description: "Legt eine Gliederungsstruktur (Ordner/Phase) in einem Lernpfad oder einer anderen Gliederung an. Beschreibung ist HTML (h2, p, strong, em, u, a, span style=color).",
     inputSchema: {
@@ -303,6 +342,46 @@ const TOOLS = [
         minimumAmountOfTasks: String(a.mindest_aufgaben ?? 1), color: a.color || "#c88503",
       }, { coverImage: a.cover_image_path });
       return ok("Wahlpflichtaufgabe angelegt.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion });
+    },
+  },
+  {
+    name: "scobees_update_wahlpflicht",
+    description: "Ändert eine Wahlpflichtaufgabe (Name, Beschreibung, Mindestanzahl, Farbe, Titelbild). Nicht angegebene Felder bleiben erhalten.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        description_html: { type: "string" },
+        mindest_aufgaben: { type: "number" },
+        color: { type: "string" },
+        cover_image_path: { type: "string" },
+      },
+      required: ["id"],
+    },
+    run: async (a) => {
+      const cur = await api.lerninput(a.id);
+      if (nodeType(cur) !== "wahlpflicht") throw new Error(`${a.id} ist keine Wahlpflichtaufgabe.`);
+      const fields = {
+        parentId: cur.parentId, id: a.id, name: a.name ?? cur.name, description: a.description_html ?? cur.description ?? "",
+        minimumAmountOfTasks: String(a.mindest_aufgaben ?? cur.tasksRequiredForCompletion ?? 1), color: a.color ?? cur.color ?? "#c88503",
+      };
+      if (!a.cover_image_path) fields.coverImage = null; // ohne neues Bild schickt die Oberfläche coverImage=null
+      const r = await api.saveChoice(fields, { coverImage: a.cover_image_path });
+      return ok("Wahlpflichtaufgabe geändert.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion });
+    },
+  },
+  {
+    name: "scobees_upload_bild",
+    description: "Lädt ein Bild (png/jpg/gif/webp/svg) für ein interaktives Arbeitsblatt hoch und liefert die URL, die im Markdown als ![Beschreibung](URL) verwendet wird. Das Bild liegt danach öffentlich im Medienspeicher des Serlo-Editors (wie beim Hochladen in der Weboberfläche) – keine Personenfotos oder vertraulichen Inhalte.",
+    inputSchema: {
+      type: "object",
+      properties: { file_path: { type: "string", description: "Lokaler Pfad zur Bilddatei" } },
+      required: ["file_path"],
+    },
+    run: async (a) => {
+      const url = await api.uploadSerloImage(a.file_path);
+      return ok("Bild hochgeladen. Im Arbeitsblatt-Markdown einbinden mit ![Beschreibung](URL).", { url, markdown: `![Bild](${url})` });
     },
   },
   {

@@ -17,12 +17,13 @@ Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle
 |---|---|---|
 | Lernbereich (Kachel in der Bib) | workspace `LB-…` | `scobees_list_workspaces` |
 | Fach / Kurs | subject `SUBJ-…` | `scobees_list_subjects` |
-| Lernpfad | Wurzel-Lerninput `LI-…` | `scobees_create_lernpfad`, `scobees_get_lernpfad` |
+| Lernpfad | Wurzel-Lerninput `LI-…` | `scobees_create_lernpfad`, `scobees_update_lernpfad`, `scobees_get_lernpfad` |
 | Gliederungsstruktur | folder | `scobees_create_gliederung` |
 | Aufgabe (Pflicht/Wahl) | task | `scobees_create_aufgabe`, `scobees_update_aufgabe` |
-| Wahlpflichtaufgabe | choice (Container) | `scobees_create_wahlpflicht` |
+| Wahlpflichtaufgabe | choice (Container) | `scobees_create_wahlpflicht`, `scobees_update_wahlpflicht` |
 | Interaktives Arbeitsblatt | Serlo-Dokument in `taskDescription` | Markdown → `src/serlo.js` |
 | Material / Musterlösung | attachment | `scobees_upload_material` |
+| Bild im Arbeitsblatt | Serlo-Medienspeicher (editor.serlo.org) | `scobees_upload_bild` → `![…](url)` |
 
 ## Installation (Claude Desktop)
 
@@ -40,7 +41,7 @@ Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `
 2. `scobees_create_lernpfad` (Name, Beschreibung, Jahrgang, Titelbild).
 3. Je Phase `scobees_create_gliederung`.
 4. Je Aufgabe `scobees_create_aufgabe` mit `art` (info, selbstkontrolle, abgabe_optional, abgabe_pflicht) und `arbeitsblatt_markdown`.
-5. Dateien mit `scobees_upload_material` anhängen (PDF, Bilder, HTML-Simulationen, interaktive Seiten, GeoGebra-Dateien).
+5. Dateien mit `scobees_upload_material` anhängen (PDF, HTML-Simulationen, interaktive Seiten, GeoGebra-Dateien). Bilder, die *im* Arbeitsblatt erscheinen sollen, vorher mit `scobees_upload_bild` hochladen und die URL per `![…](url)` einbinden.
 6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche aktivieren.
 
 Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit IDs) → `scobees_get_aufgabe` (Arbeitsblatt als Markdown) → `scobees_update_aufgabe` / `scobees_update_gliederung` / `scobees_move` / `scobees_delete`.
@@ -103,7 +104,7 @@ node src/server.js --login  # Anmeldung prüfen
 
 Testumgebung in scobees (WvSS): Lernbereich „testbereich“ `LB-9QX4VN79SPUN59XTXC`, Lernpfad „TEST MCP“ `LI-M1SUFLY8QBQBD65MHU`.
 
-Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Das Bearbeiten von Wahlpflichtaufgaben ist noch ungetestet.
+Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Noch offen: das Aktivieren eines Lernpfads (bleibt in der Weboberfläche).
 
 ## Lizenz
 
