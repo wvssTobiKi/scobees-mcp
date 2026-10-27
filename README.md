@@ -8,7 +8,7 @@ Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle
 
 - **Keine Schülerdaten.** Der Server ruft ausschließlich Inhaltsfunktionen auf. Alle Pfade mit Schüler-, Klassen-, Lernstands-, Bewertungs- oder Personendaten stehen auf einer festen Sperrliste (`src/api.js`) und werden nicht aufgerufen – auch nicht auf Wunsch. Personennamen in Antworten werden auf IDs reduziert.
 - **Verwaltung bleibt beim Admin.** Lernbereiche und Fächer werden nur gelesen; die Lehrkraft wählt das Fach, in dem ein Lernpfad entsteht.
-- **Nichts wird ohne Freigabe veröffentlicht.** Neue Lernpfade sind zunächst nicht für die Zuweisung aktiviert; die Aktivierung erfolgt in der Weboberfläche.
+- **Keine Schüler sehen etwas ohne Lehrkraft-Handlung.** Neue Lernpfade liegen in der schuleigenen Bib (Status INACTIVE = keiner Lerngruppe zugewiesen). Die Zuweisung an Lerngruppen ist Schülerverwaltung und erfolgt ausschließlich in der Weboberfläche.
 - **Inoffizielle Schnittstelle.** scobees hat keine öffentliche API. Der Server nutzt dieselben Aufrufe wie die Weboberfläche (dokumentiert in [`docs/scobees-api-map.md`](docs/scobees-api-map.md)). Bei Änderungen an scobees muss nachgezogen werden – deshalb liegt das Projekt in Git.
 
 ## Begriffe
@@ -42,7 +42,7 @@ Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `
 3. Je Phase `scobees_create_gliederung`.
 4. Je Aufgabe `scobees_create_aufgabe` mit `art` (info, selbstkontrolle, abgabe_optional, abgabe_pflicht) und `arbeitsblatt_markdown`.
 5. Dateien mit `scobees_upload_material` anhängen (PDF, HTML-Simulationen, interaktive Seiten, GeoGebra-Dateien). Bilder, die *im* Arbeitsblatt erscheinen sollen, vorher mit `scobees_upload_bild` hochladen und die URL per `![…](url)` einbinden.
-6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche aktivieren.
+6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche einer Lerngruppe zuweisen.
 
 Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit IDs) → `scobees_get_aufgabe` (Arbeitsblatt als Markdown) → `scobees_update_aufgabe` / `scobees_update_gliederung` / `scobees_move` / `scobees_delete`.
 
@@ -104,7 +104,7 @@ node src/server.js --login  # Anmeldung prüfen
 
 Testumgebung in scobees (WvSS): Lernbereich „testbereich“ `LB-9QX4VN79SPUN59XTXC`, Lernpfad „TEST MCP“ `LI-M1SUFLY8QBQBD65MHU`.
 
-Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Noch offen: das Aktivieren eines Lernpfads (bleibt in der Weboberfläche).
+Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Der Status INACTIVE/ACTIVE spiegelt nur, ob der Pfad einer Lerngruppe zugewiesen ist (Zuweisung bewusst nicht im Server).
 
 ## Lizenz
 

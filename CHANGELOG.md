@@ -14,4 +14,5 @@ Erster Aufschlag, abgeleitet aus einer Mitschrift der Weboberfläche (teach.scob
 - Neu: ```math-Block → Serlo-Gleichungskette (`equations`); Formeln `$…$` auch in Quizantworten und Tabellen nutzbar
 - Fix: Wurzel-`rows` des Serlo-Dokuments ohne `id` – mit `id` zeigte der Editor „Leider ist ein Fehler aufgetreten“ (Schüleransicht war unbetroffen)
 - Neu (Mitschnitt 27.10.2026): `scobees_update_lernpfad` (POST lerninput mit id), `scobees_update_wahlpflicht` (POST lerninput/choice mit id), `scobees_upload_bild` (Serlo-Medienspeicher: presigned-url → S3-PUT, URL für `![…](url)`) – alle live geprüft
-- Offen: Lernpfad aktivieren (im Mitschnitt nicht erfasst), SSO-Konten
+- Geklärt: state INACTIVE/ACTIVE = (nicht) einer Lerngruppe zugewiesen; der Bib-Schalter ist `published` (`scobees_update_lernpfad in_bib`). Es fehlt kein Aufruf.
+- Offen: SSO-Konten

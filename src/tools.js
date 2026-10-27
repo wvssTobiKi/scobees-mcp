@@ -217,7 +217,7 @@ const TOOLS = [
   // Schreiben
   {
     name: "scobees_create_lernpfad",
-    description: "Legt einen neuen Lernpfad in einem Fach an (Wurzel). Danach Gliederungen und Aufgaben mit den anderen Werkzeugen hinzufügen. Der Pfad ist zunächst nicht für die Zuweisung aktiviert.",
+    description: "Legt einen neuen Lernpfad in einem Fach an (Wurzel). Danach Gliederungen und Aufgaben mit den anderen Werkzeugen hinzufügen. Der Pfad erscheint in der schuleigenen Bib (published) und hat Status INACTIVE, bis eine Lehrkraft ihn in der Weboberfläche einer Lerngruppe zuweist.",
     inputSchema: {
       type: "object",
       properties: {
@@ -248,12 +248,12 @@ const TOOLS = [
         coverImagePath: undefined,
         description: a.description || "",
       }, { coverImage: a.cover_image_path });
-      return ok("Lernpfad angelegt (Status INACTIVE – Aktivierung für die Zuweisung erfolgt in der Weboberfläche).", { id: r.id, name: r.name, state: r.state });
+      return ok("Lernpfad angelegt. Status INACTIVE bedeutet: noch keiner Lerngruppe zugewiesen – die Zuweisung erfolgt in der Weboberfläche.", { id: r.id, name: r.name, state: r.state });
     },
   },
   {
     name: "scobees_update_lernpfad",
-    description: "Ändert einen bestehenden Lernpfad (Wurzel): Name, Beschreibung, Jahrgänge, Stichwörter, Titelbild, Reihenfolge. Nicht angegebene Felder bleiben erhalten. Fach und Aktivierung bleiben beim Administrator bzw. in der Weboberfläche.",
+    description: "Ändert einen bestehenden Lernpfad (Wurzel): Name, Beschreibung, Jahrgänge, Stichwörter, Titelbild, Reihenfolge. Nicht angegebene Felder bleiben erhalten. in_bib: Schalter „In schuleigener Bib veröffentlichen“. Fach bleibt beim Administrator, Zuweisung an Lerngruppen in der Weboberfläche.",
     inputSchema: {
       type: "object",
       properties: {
@@ -264,6 +264,7 @@ const TOOLS = [
         stichwoerter: { type: "array", items: { type: "string" } },
         cover_image_path: { type: "string", description: "Neues Titelbild (lokaler Pfad), optional" },
         solve_order: { type: "string", enum: ["none", "after_solving"] },
+        in_bib: { type: "boolean", description: "In schuleigener Bib veröffentlichen (true/false)" },
       },
       required: ["id"],
     },
@@ -279,7 +280,7 @@ const TOOLS = [
         grades,
         editors,
         order: a.solve_order ?? cur.solveOrder ?? "none",
-        published: cur.isPublished ?? true,
+        published: a.in_bib ?? cur.isPublished ?? true,
         isMandatoryProgressVisible: cur.isMandatoryProgressVisible ?? true,
         isExtraTaskCounterVisible: cur.isExtraTaskCounterVisible ?? true,
         tags: a.stichwoerter ?? (cur.tags?.other || []).map((t) => (typeof t === "string" ? t : { id: t.id })),
@@ -287,7 +288,7 @@ const TOOLS = [
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
         description: a.description ?? cur.description ?? "",
       }, { coverImage: a.cover_image_path });
-      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state });
+      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished });
     },
   },
   {

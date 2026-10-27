@@ -177,7 +177,7 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
     editors ["USER-<eigene id>"], order "none", published true, isMandatoryProgressVisible true, isExtraTaskCounterVisible true,
     tags [] (Stichwörter), id "", coverImage=<Datei> | coverImagePath undefined, description (Klartext/HTML)
   → 200 {id:"LI-M1SUFLY8QBQBD65MHU", state:"INACTIVE", isPublished:true, parentId:null, coverImage:{…}, subjects:[…], tags:{grades:[…]}}
-  → state INACTIVE = noch nicht für Zuweisung aktiviert (UI: „Bitte für die Zuweisung aktivieren“); Aktivieren-Aufruf noch nicht beobachtet.
+  → state INACTIVE = keiner Lerngruppe zugewiesen, ACTIVE = zugewiesen (geklärt 27.10.2026). `published`/`isPublished` = Schalter „In schuleigener Bib veröffentlichen“.
   → UI lädt vorher GET school/{schoolId}/teachers?withDeleted=false (Editor-Auswahl, enthält Lehrkräfte-E-Mails) → Server: nicht abrufen, editors = nur eigene id aus users/me.
 - Material: POST attachments mit type "lerninput_attachment" (statt samplesolution) → erscheint nach dem nächsten Speichern in attachments[].
 - Link: Feld links = [{"url":"https://…","name":"Aufgabenlink","type":"url"}]
@@ -186,14 +186,14 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
 
 ## Noch nicht beobachtet (beim Bau mit Testpfad ausprobieren)
 - Fach anlegen: vermutlich POST workspace/{LB-id}/subject {name, color, defaultTag, …}
-- Lernpfad aktivieren/deaktivieren (INACTIVE→ACTIVE) und Wurzel bearbeiten (PUT lerninput/{id}?)
+- ~~Lernpfad aktivieren~~ (erledigt: Status folgt der Zuweisung) · Wurzel bearbeiten: POST lerninput mit id (Mitschrift 9)
 - Gliederung bearbeiten (POST lerninput/folder mit id), Wahlpflicht bearbeiten (POST lerninput/choice mit id)
 - Bild im Serlo-Dokument: Upload-Weg
 
 ## Entscheidungen (2026-10-27, Tobias)
 - Fächer und Lernbereiche werden NUR GELESEN (GET workspaces, GET subjects); Lehrkraft wählt das Fach, unter dem der Lernpfad entsteht.
   Anlegen/Verwalten von Lernbereichen und Fächern bleibt beim Administrator in der Weboberfläche → keine Werkzeuge dafür.
-- Aktivieren des Lernpfads (INACTIVE→ACTIVE) wird beim Bau am Testpfad LI-M1SUFLY8QBQBD65MHU ausprobiert.
+- Zuweisung an Lerngruppen (assignments) bleibt gesperrt; dadurch wird ein Pfad ACTIVE – das ist gewollt außerhalb des Servers.
 - Testumgebung: Lernbereich „testbereich“ LB-9QX4VN79SPUN59XTXC, Testpfad „TEST MCP“ LI-M1SUFLY8QBQBD65MHU.
 
 ## Mitschrift 9 (27.10.2026): Wurzel bearbeiten, Wahlpflicht bearbeiten, Bild im Arbeitsblatt
@@ -204,7 +204,7 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
   1. `GET https://editor.serlo.org/media/presigned-url?mimeType=image/png&editorVariant=unknown&parentHost=teach.scobees.com` (ohne Auth) → `{signedUrl, fileUrl}`
   2. `PUT signedUrl` mit dem Bild als Body (S3, ionoscloud, `editor-media-assets-production/all/<id>/image.png`)
   3. `fileUrl` (`https://editor.serlo.org/media/all/<id>/image.png`) als `image.src` im Dokument. Die Bilder sind öffentlich erreichbar.
-- **Nicht erfasst:** das Aktivieren des Lernpfads (Schalter „für die Zuweisung aktivieren“) – im Mitschnitt kam kein entsprechender Aufruf an; state blieb INACTIVE.
+- **Geklärt:** Es gibt keinen Aktivieren-Schalter. Der einzige Schalter ist „In schuleigener Bib veröffentlichen“ (= `published`). `state` wechselt auf ACTIVE, sobald der Pfad einer Lerngruppe zugewiesen wird (Zuweisen-Dialog, gesperrter Bereich).
 - Nebenbei gesehen (gesperrt, nicht genutzt): `assignments/check-assignable-students/{id}`, `lerninput/{id}/sharings`, `school-classes`, `school-groups`, `school/{id}/teachers`, `school-competency-matrices?grades=…&subjectIds=…`, `library/categories`, `school/{id}/custom-labels`.
 
 ## Serlo-Dokument: Stolperfallen (Live-Test 27.10.2026)
