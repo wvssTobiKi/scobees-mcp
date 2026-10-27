@@ -44,6 +44,30 @@ Eine Lernsituation ist eine vollständige berufliche Handlung, kein Kapitel aus 
 - **Praktische Festigung nach großer Theorie**: Folgen mehr als zwei Theorie-Aufgaben aufeinander, schlage der Lehrkraft eine praktische Anwendungs- oder Festigungseinheit vor (Laboraufgabe, Konfiguration, Messung, Bau, Simulation). Passt sie nicht für alle (Lernort, Zeit, Material), lege sie als Wahlpflichtaufgabe oder `aufgabentyp: training` an. Den Vorschlag im Grobplan ausweisen, nicht stillschweigend weglassen.
 - **Du-Form** in allen Texten für Lernende.
 
+### 2a. Interaktive Inhalte und Medien: wo sie tragen
+
+Lernende sollen Inhalte nicht nur lesen, sondern erkunden können. Die Lehrkraft erwartet ansprechend aufbereitete Information; das heißt nicht „überall ein Gimmick“, sondern das passende Mittel an der Stelle, an der Text allein nicht reicht. Prüfe für jeden Theorieabschnitt: Lässt sich das Prinzip **ausprobieren**, **beobachten** oder **vergleichen**? Dann lohnt sich ein interaktives Element; eine Definition braucht keins.
+
+| Inhalt | Geeignetes Mittel | Beispiel |
+|---|---|---|
+| Zusammenhang mit Stellgrößen (Formel, Parameter, Konfiguration) | **HTML-Simulation** als Material: Regler, Eingabefelder, sofortige Anzeige | Ohm-Rechner, Subnetz-Rechner mit Bitdarstellung, RAID-Lab (Platten ausfallen lassen, Kapazität sehen) |
+| Ablauf oder Prozess (Schritte, Zustände, Datenfluss) | HTML-Seite mit Schrittfolge oder Animation; Video, wenn ein gutes existiert | Boot-Vorgang, Handshake, Fertigungsablauf |
+| Geometrie, Funktionen, Vektoren | **GeoGebra**-Applet per URL-Zeile im Arbeitsblatt | Kennlinien, Kräfte, Winkel |
+| Aufbau, Schaltung, Skizze | **Bild** im Arbeitsblatt (`scobees_upload_bild`), gern selbst als SVG erzeugt; bei Beschriftungsaufgaben als PDF-Vorlage mit Stift-Abgabe | Netzplan, Schaltplan, Explosionszeichnung |
+| Begriffe, Zuordnungen, Reihenfolgen | **Drag-and-drop-Lückentext** mit Wortspeicher und Distraktoren | Protokoll ↔ Schicht, Bauteil ↔ Funktion |
+| Entscheidung zwischen Varianten | Vergleichstabelle im Arbeitsblatt plus Einfachauswahl mit Rückmeldung je Antwort | RAID 1 oder RAID 5 für diesen Kunden? |
+| Vorwissen aktivieren, Gespräch anstoßen | Zitat-Box mit Aussage aus dem Szenario, dann Freitext oder Mehrfachauswahl | „Der Chef sagt: Backup brauchen wir dann nicht mehr.“ |
+
+Regeln für die Gestaltung:
+
+- **Ein interaktives Element pro Abschnitt** reicht; es muss direkt mit einer Aufgabe verbunden sein („Stelle im Rechner … ein und trage ab, was passiert“). Ein Element, zu dem keine Frage gehört, wird übersprungen.
+- **HTML-Simulationen** sind eine einzige Datei ohne Netzbibliotheken, laufen offline im Browser, haben eine Überschrift, eine Zeile Anleitung und sinnvolle Startwerte. Nicht mehr als drei Stellgrößen; sichtbares Ergebnis innerhalb von zwei Sekunden Bedienung. Vor dem Hochladen im Browser testen. Sie sind als Material an der Aufgabe erreichbar; das Arbeitsblatt verweist mit Namen darauf.
+- **Bilder** erklären, nicht schmücken: Beschriftung im Bild oder in der Bildunterschrift, keine Stockfotos. Keine fremden Bilder aus Lehrbüchern.
+- **Videos** nur mit Zeitangabe („Minute 2:10 bis 4:30“) und einer Beobachtungsfrage; keine Videos als Ersatz für den Theorietext.
+- **Kontrollform zum Inhalt**: Zahl → Eingabe mit Einheit; Begriff → Drag-and-drop; Entscheidung → Einfachauswahl; Eigenschaften → Mehrfachauswahl; Begründung → Freitext oder Abgabe. Eine Frage, die man ohne den Abschnitt beantworten kann, ist überflüssig; eine, die Wortlaut abfragt statt Verständnis, wirkt konstruiert.
+- **BES und BFS**: mehr Bilder und Drag-and-drop, weniger Text; **Technikerschule, BG, FOS**: Simulationen mit Parametern, Diagramme, Datenblätter als Material.
+- Reiche Medien kosten Zeit: im Grobplan ausweisen (Spalte „Inhalt“), damit die Lehrkraft streichen kann.
+
 ### 3. Gliederung bemessen
 
 Gliederungen sind Orientierung, keine Dekoration. Zu viele Ebenen zerstückeln den Pfad, zu wenige machen ihn zur Liste.
