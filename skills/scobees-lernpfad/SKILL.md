@@ -44,9 +44,11 @@ Eine Lernsituation ist eine vollständige berufliche Handlung, kein Kapitel aus 
 - **Praktische Festigung nach großer Theorie**: Folgen mehr als zwei Theorie-Aufgaben aufeinander, schlage der Lehrkraft eine praktische Anwendungs- oder Festigungseinheit vor (Laboraufgabe, Konfiguration, Messung, Bau, Simulation). Passt sie nicht für alle (Lernort, Zeit, Material), lege sie als Wahlpflichtaufgabe oder `aufgabentyp: training` an. Den Vorschlag im Grobplan ausweisen, nicht stillschweigend weglassen.
 - **Du-Form** in allen Texten für Lernende.
 
-### 2a. Interaktive Inhalte und Medien: wo sie tragen
+### 2a. Anschaulich darstellen, interaktiv wo es trägt
 
-Lernende sollen Inhalte nicht nur lesen, sondern erkunden können. Die Lehrkraft erwartet ansprechend aufbereitete Information; das heißt nicht „überall ein Gimmick“, sondern das passende Mittel an der Stelle, an der Text allein nicht reicht. Prüfe für jeden Theorieabschnitt: Lässt sich das Prinzip **ausprobieren**, **beobachten** oder **vergleichen**? Dann lohnt sich ein interaktives Element; eine Definition braucht keins.
+**Zeigen vor Erklären.** Jeder abstrakte Begriff bekommt zuerst eine konkrete Darstellung aus dem Szenario, dann die Definition: ein Zahlenbeispiel mit den Werten des Betriebs, eine Skizze, eine Vergleichstabelle, ein Diagramm, ein Vorher-Nachher. Ein Arbeitsblatt, das nur aus Absätzen besteht, ist ein Zeichen, dass die Darstellung fehlt. Aussagekräftig heißt: Die Darstellung beantwortet die Frage des Abschnitts auf einen Blick (Welches RAID verliert wie viel Kapazität? Wo liegt die Netzgrenze?), nicht „ein Bild zum Thema“.
+
+Lernende sollen Inhalte darüber hinaus nicht nur lesen, sondern erkunden können. Die Lehrkraft erwartet ansprechend aufbereitete Information; das heißt nicht „überall ein Gimmick“, sondern das passende Mittel an der Stelle, an der Text allein nicht reicht. Prüfe für jeden Theorieabschnitt: Lässt sich das Prinzip **ausprobieren**, **beobachten** oder **vergleichen**? Dann lohnt sich ein interaktives Element; eine Definition braucht keins.
 
 | Inhalt | Geeignetes Mittel | Beispiel |
 |---|---|---|
