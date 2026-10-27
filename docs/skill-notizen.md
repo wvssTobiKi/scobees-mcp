@@ -36,6 +36,16 @@ Gesammelt aus den ersten Praxisläufen (27.10.2026, Lernpfad „Datensicherheit 
 | Extraaufgabe lag direkt im Lernpfad statt in einer Gliederung | Skill | Extra-/Trainingsaufgaben in eine Gliederung „Vertiefung“ legen oder gezielt `parent_id` einer Phase wählen |
 | PDF-Vorlage für `pen` und Musterlösung wurden korrekt erzeugt und angehängt | – | funktioniert; Vorlage: Claude erzeugt das PDF lokal und übergibt den Pfad |
 
+### Sichtprüfung als Schüler (Subnetting-Werkstatt, 27.10.2026, scobees-mcp 0.1.4)
+
+| Beobachtung | Ort | Stand |
+|---|---|---|
+| 1.1 `info`: Schaltfläche „Infoinput erledigt“ statt Abgabe | – | wie vorgesehen; reine Lese-Bausteine so anlegen |
+| 2.1 `quiz-blanks-dnd`: Wortspeicher mit Distraktoren, Ziehen und Prüfen funktionieren | – | bestätigt |
+| 3.1 `abgabeformen: ["pen"]` + PDF-Vorlage: Stiftwerkzeuge über dem PDF, Ausfüllen und Abgabe möglich; Hinweis „Zum Abgeben musst du auf dem PDF schreiben“ | – | bestätigt; `pen` verlangt zwingend ein PDF als Material |
+| 4.1 `abgabe_pflicht_selbstkorrektur` + Musterlösung: Reiter „Selbstkorrektur“ zeigt Abgabe und Musterlösung nebeneinander; Lernende können zum Vergleich auch das Auftrags-PDF wählen | – | bestätigt |
+| Serlo-Arbeitsblatt heißt in der Materialkachel immer „Serlo-Inhalt“ | – | nicht änderbar: das Arbeitsblatt ist ein einzelnes Feld der Aufgabe (`taskDescription`) ohne Namen, die Beschriftung ist fester Oberflächentext. Orientierung geben daher Aufgabentitel, Beschreibung („Ergebnis: …“) und die erste Überschrift im Arbeitsblatt – Skill: Arbeitsblatt immer mit sprechender H1 beginnen |
+
 ## Didaktische Leitplanken (Entwurf)
 
 - **Situationsbeschreibung** als eigene erste Gliederung mit einer `info`-Aufgabe (Auftrag, Rolle, Kunde) und ggf. Material (Ticket, Mail) als Anhang.

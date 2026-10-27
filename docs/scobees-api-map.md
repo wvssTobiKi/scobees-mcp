@@ -231,3 +231,7 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
 - `equations`: `explanation` eines Schritts beschreibt den Übergang zum **nächsten** Schritt (Pfeil); `firstExplanation` steht vor dem ersten Schritt.
 - Frontend-Routen: Bib `/library`, Lernpfad-Editor `/library/editor/{LI-Wurzel}` (Aufgaben werden im Baum aufgeklappt und über „Aufgabe bearbeiten“ geöffnet; die Direkt-URL mit einer Aufgaben-ID zeigt sie fälschlich als Lernpfad).
 
+## Lernplaner (Schüler-App) – Beobachtungen (27.10.2026, v93.3)
+- Serlo-Arbeitsblatt = Feld `taskDescription` der Aufgabe; es hat keinen eigenen Namen. Die Materialkachel im Lernplaner zeigt immer „Serlo-Inhalt“ (fester UI-Text; die Oberflächentexte beider Apps liegen nicht im Bundle, sondern werden zur Laufzeit geladen).
+- `info`-Aufgaben: Schaltfläche „Infoinput erledigt“; `pen`-Abgabe: Stiftleiste über dem PDF-Material, ohne PDF keine Abgabe möglich; Selbstkorrektur: Abgabe und Musterlösung nebeneinander, Vergleichsdokument wählbar.
+- Lernplaner-Bundle: learn.scobees.com `main-XF77SCGY.js` (nur Fingerabdruck, nicht vom Server genutzt).
