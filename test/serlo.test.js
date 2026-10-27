@@ -71,9 +71,10 @@ test("Markdown → Serlo erzeugt alle erwarteten Bausteine", () => {
   for (const p of ["text", "serloTable", "box", "highlight", "image", "geogebra", "spoiler", "exercise", "scMcExercise", "inputExercise", "blanksExercise", "textAreaExercise"]) {
     assert.ok(plugins.includes(p), `Plugin fehlt: ${p}`);
   }
-  // Jeder Baustein hat eine id
+  // Wurzel OHNE id (sonst lädt der scobees-Editor das Dokument nicht), jeder innere Baustein MIT id
+  assert.equal("id" in doc, false);
   const walk = (x) => { if (Array.isArray(x)) x.forEach(walk); else if (x && typeof x === "object") { if (x.plugin) assert.match(x.id, /^[0-9a-f-]{36}$/); Object.values(x).forEach(walk); } };
-  walk(doc);
+  walk(doc.state);
 });
 
 test("Inline-Formatierung", () => {

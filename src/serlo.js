@@ -85,7 +85,9 @@ const isVideo = (u) => /youtube\.com|youtu\.be|vimeo\.com|\.mp4(\?|$)|\.webm(\?|
 
 function markdownToSerlo(md) {
   const lines = String(md || "").replace(/\r\n?/g, "\n").split("\n");
-  return rows(parseBlocks(lines));
+  // Wurzel ohne id – so liefert der Editor selbst das Dokument; mit id lädt der Editor es nicht (Store-Schlüssel „root“)
+  const { plugin, state } = rows(parseBlocks(lines));
+  return { plugin, state };
 }
 
 function parseBlocks(lines) {

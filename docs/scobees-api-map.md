@@ -195,3 +195,10 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
   Anlegen/Verwalten von Lernbereichen und Fächern bleibt beim Administrator in der Weboberfläche → keine Werkzeuge dafür.
 - Aktivieren des Lernpfads (INACTIVE→ACTIVE) wird beim Bau am Testpfad LI-M1SUFLY8QBQBD65MHU ausprobiert.
 - Testumgebung: Lernbereich „testbereich“ LB-9QX4VN79SPUN59XTXC, Testpfad „TEST MCP“ LI-M1SUFLY8QBQBD65MHU.
+
+## Serlo-Dokument: Stolperfallen (Live-Test 27.10.2026)
+
+- Die Wurzel `{plugin:"rows",state:[…]}` darf **keine `id`** haben. Mit `id` rendert die Schüleransicht noch, aber der Editor („Interaktives Arbeitsblatt erstellen“) bricht mit `TypeError: Cannot read properties of undefined (reading 'plugin')` ab (Store-Schlüssel der Wurzel ist `root`). Alle inneren Bausteine brauchen eine UUID.
+- `equations`: `explanation` eines Schritts beschreibt den Übergang zum **nächsten** Schritt (Pfeil); `firstExplanation` steht vor dem ersten Schritt.
+- Frontend-Routen: Bib `/library`, Lernpfad-Editor `/library/editor/{LI-Wurzel}` (Aufgaben werden im Baum aufgeklappt und über „Aufgabe bearbeiten“ geöffnet; die Direkt-URL mit einer Aufgaben-ID zeigt sie fälschlich als Lernpfad).
+
