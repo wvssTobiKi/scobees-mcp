@@ -1,0 +1,46 @@
+{
+  "manifest_version": "0.3",
+  "name": "scobees-mcp",
+  "display_name": "scobees Kursaufbau (WvSS)",
+  "version": "0.1.0",
+  "description": "Lernpfade, Gliederungen, Aufgaben und interaktive Arbeitsblätter in scobees per Claude anlegen und bearbeiten – ohne Zugriff auf Schülerdaten.",
+  "long_description": "Verbindet Claude Desktop mit der scobees-Lehrkräfte-App (teach.scobees.com). Lernbereiche und Fächer werden nur gelesen; die Lehrkraft wählt das Fach, in dem ein Lernpfad entsteht. Arbeitsblätter werden aus Markdown in das Serlo-Editor-Format übersetzt (inkl. Quizfragen). Schüler-, Klassen- und Bewertungsdaten sind durch eine feste Sperrliste ausgeschlossen. Anmeldung mit dem eigenen scobees-Konto (Benutzername/Passwort); Zugangsdaten werden verschlüsselt von Claude Desktop gespeichert.",
+  "author": {
+    "name": "Tobias Kirchner",
+    "email": "tobias.kirchner@wvss.de"
+  },
+  "license": "MIT",
+  "keywords": ["scobees", "lms", "schule", "lernpfad", "serlo"],
+  "server": {
+    "type": "node",
+    "entry_point": "src/server.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/src/server.js"],
+      "env": {
+        "SCOBEES_USERNAME": "${user_config.scobees_username}",
+        "SCOBEES_PASSWORD": "${user_config.scobees_password}"
+      }
+    }
+  },
+  "tools_generated": true,
+  "user_config": {
+    "scobees_username": {
+      "type": "string",
+      "title": "scobees-Benutzername",
+      "description": "Benutzername der Lehrkraft bei teach.scobees.com (z. B. vorname.nachname). SSO-Konten (Microsoft/Eduplaces) werden derzeit nicht unterstützt.",
+      "required": true
+    },
+    "scobees_password": {
+      "type": "string",
+      "title": "scobees-Passwort",
+      "description": "Wird nur lokal für die Anmeldung bei auth.scobees.com verwendet.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "platforms": ["win32", "darwin", "linux"],
+    "runtimes": { "node": ">=18.0.0" }
+  }
+}
