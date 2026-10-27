@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernpfad-Plan</title>
+<style>
+:root{--bg:#fff;--card:#fff;--muted-bg:#f4f3ee;--text:#1f1f1d;--sec:#5f5e5a;--mut:#888780;--line:#d9d7cd;--ok:#1d9e75;--free:#b4b2a9;--warn-bg:#faeeda;--warn:#633806;--warn-line:#ef9f27;--p-bg:#e1f5ee;--p:#085041;--a-bg:#faeeda;--a:#633806;--v-bg:#f1efe8;--v:#444441;--m-bg:#eeedfe;--m:#3c3489;--err:#a32d2d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b19;--card:#242422;--muted-bg:#2c2c2a;--text:#ecebe4;--sec:#b4b2a9;--mut:#888780;--line:#3d3d3a;--warn-bg:#412402;--warn:#fac775;--p-bg:#04342c;--p:#9fe1cb;--a-bg:#412402;--a:#fac775;--v-bg:#2c2c2a;--v:#d3d1c7;--m-bg:#26215c;--m:#cecbf6;--err:#f09595}}
+:root[data-theme="dark"]{--bg:#1b1b19;--card:#242422;--muted-bg:#2c2c2a;--text:#ecebe4;--sec:#b4b2a9;--mut:#888780;--line:#3d3d3a;--warn-bg:#412402;--warn:#fac775;--p-bg:#04342c;--p:#9fe1cb;--a-bg:#412402;--a:#fac775;--v-bg:#2c2c2a;--v:#d3d1c7;--m-bg:#26215c;--m:#cecbf6;--err:#f09595}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:860px;margin-inline:auto}
+h1{font-size:20px;font-weight:600;margin:0}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sub{color:var(--sec);font-size:13px;margin:2px 0 12px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 14px}
+.kpi div{background:var(--muted-bg);border-radius:8px;padding:8px 12px}
+.kpi .l{font-size:12px;color:var(--sec)}.kpi .v{font-size:20px;font-weight:600}.kpi .v small{font-size:13px;font-weight:400}
+.gl{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 10px}
+.gh{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.gt{font-size:15px;font-weight:600;margin:0}
+.gm{font-size:13px;color:var(--sec);white-space:nowrap}
+.bar{height:4px;background:var(--muted-bg);border-radius:2px;margin:6px 0 8px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%;background:var(--ok)}.bar i.f{background:var(--free)}
+.row{display:flex;gap:10px;align-items:flex-start;padding:5px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}
+.row .n{color:var(--sec);min-width:30px}.row .t{flex:1;min-width:200px}
+.row .d{font-size:13px;color:var(--sec)}
+.b{display:inline-block;font-size:12px;padding:1px 8px;border-radius:8px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+.b.p{background:var(--p-bg);color:var(--p)}.b.a{background:var(--a-bg);color:var(--a)}.b.v{background:var(--v-bg);color:var(--v)}.b.m{background:var(--m-bg);color:var(--m)}
+.min{min-width:56px;text-align:right;color:var(--sec);font-size:13px}
+.id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mut);user-select:all}
+.st{font-size:14px;min-width:18px}.st.ok{color:var(--ok)}.st.warn{color:var(--warn-line)}
+.q{margin:6px 0 0 30px;padding:6px 10px;background:var(--warn-bg);color:var(--warn);border-left:3px solid var(--warn-line);font-size:13px}
+.q.err{color:var(--err)}
+details{margin-top:6px}summary{font-size:12px;color:var(--mut);cursor:pointer}
+.tech{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--sec);margin:4px 0 0 30px;line-height:1.6;white-space:pre-wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:12px 0 0}
+.box{background:var(--muted-bg);border-radius:8px;padding:10px 12px;font-size:13px}
+.box.warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-line)}
+.box h3{font-size:14px;font-weight:600;margin:0 0 4px}
+.box ul{margin:0;padding-left:18px}
+table{width:100%;font-size:12px;font-family:ui-monospace,Consolas,monospace;border-collapse:collapse}
+td,th{padding:3px 6px;text-align:left;border-top:1px solid var(--line);vertical-align:top}th{font-weight:600;color:var(--sec)}
+.foot{font-size:13px;color:var(--sec);margin:12px 0 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// Daten hier einsetzen. Gleiche Struktur für Grobplan (vor dem Anlegen) und Abschlussbericht (danach, dann mit id/status/checkliste).
+const PLAN = __PLAN_JSON__;
+/* Beispiel:
+{
+ "modus": "grobplan",                       // "grobplan" | "bericht"
+ "titel": "Schutzmaßnahmen prüfen", "id": "",
+ "fach": "PB Elektrotechnik Grundlagen", "jahrgang": "Jg 1", "umfang_min": 360, "reihenfolge": "nach Reihenfolge",
+ "szenario": "…", "ergebnis": "…",
+ "material": ["fehlerstromkreis.html → 3.1", "Messprotokoll_Vorlage.pdf → 5.1"], "ablage": "…\\Schutzmaßnahmen\\scobees\\",
+ "fragen": ["Bearbeitung frei oder nach Reihenfolge?"],         // Fragen zum ganzen Pfad
+ "checkliste": ["Lerngruppe zuweisen", "…"],                      // nur Bericht
+ "vorschlaege": ["5.1 als Pflicht, wenn …"],
+ "gliederungen": [
+  {"nr": "2", "name": "Grundlagen", "id": "", "frage": "",
+   "aufgaben": [
+    {"nr": "2.1", "name": "Besichtigen, Erproben, Messen", "min": 25, "pflicht": true,
+     "marken": [["p","Theorie + Drag-and-drop"]],                 // p = Theorie/Quiz, a = Abgabe, v = freiwillig/Info, m = Musterlösung
+     "inhalt": "", "frage": "", "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-blanks-dnd",
+     "id": "", "status": "ok", "hinweis": ""}                     // status: ok | warn (Bericht)
+   ]}
+ ]
+}
+*/
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const P = PLAN, bericht = P.modus === "bericht";
+const all = P.gliederungen.flatMap(g => g.aufgaben);
+const sumP = all.filter(a => a.pflicht).reduce((s,a)=>s+(a.min||0),0);
+const sumF = all.filter(a => !a.pflicht).reduce((s,a)=>s+(a.min||0),0);
+const total = P.umfang_min || (sumP+sumF) || 1;
+let h = `<div class="head"><h1>${bericht ? "✓ " : ""}${esc(P.titel)}${bericht ? " ist angelegt" : ""}</h1>${P.id ? `<span class="id">${esc(P.id)}</span>` : ""}</div>`;
+h += `<p class="sub">${esc(P.fach)} · ${esc(P.jahrgang)} · ${P.umfang_min ? Math.round(P.umfang_min/45)+" UStd ("+P.umfang_min+" min)" : ""} · ${esc(P.reihenfolge)}${bericht ? " · in der schuleigenen Bib (Status inaktiv, normal)" : ""}</p>`;
+if (P.szenario || P.ergebnis) h += `<p class="sub">${P.szenario ? "Szenario: "+esc(P.szenario)+" " : ""}${P.ergebnis ? "· Ergebnis: "+esc(P.ergebnis) : ""}</p>`;
+h += `<div class="kpi"><div><div class="l">Pflicht</div><div class="v">${sumP} <small>von ${total} min</small></div></div><div><div class="l">Freiwillig</div><div class="v">${sumF} <small>min</small></div></div><div><div class="l">Umfang</div><div class="v">${P.gliederungen.length} <small>Gliederungen · ${all.length} Aufgaben</small></div></div></div>`;
+for (const g of P.gliederungen) {
+  const gp = g.aufgaben.filter(a=>a.pflicht).reduce((s,a)=>s+(a.min||0),0), gf = g.aufgaben.filter(a=>!a.pflicht).reduce((s,a)=>s+(a.min||0),0);
+  h += `<div class="gl"><div class="gh"><p class="gt">${esc(g.nr)} · ${esc(g.name)}</p><span class="gm">${bericht && g.id ? `<span class="id">${esc(g.id)}</span> · ` : ""}${gp} min${gf ? " + "+gf+" min freiwillig" : ""}</span></div>`;
+  h += `<div class="bar"><i style="width:${Math.round(gp/total*100)}%"></i><i class="f" style="width:${Math.round(gf/total*100)}%"></i></div>`;
+  if (g.frage) h += `<div class="q" style="margin-left:0">${esc(g.frage)}</div>`;
+  let tech = [];
+  for (const a of g.aufgaben) {
+    h += `<div class="row"><span class="n">${esc(a.nr)}</span><span class="t">${esc(a.name)}${(a.marken||[]).map(([k,t])=>`<span class="b ${k}">${esc(t)}</span>`).join("")}${a.inhalt ? `<div class="d">${esc(a.inhalt)}</div>` : ""}</span>`;
+    if (bericht && a.id) h += `<span class="id">${esc(a.id)}</span>`;
+    if (bericht) h += `<span class="st ${a.status==="warn"?"warn":"ok"}">${a.status==="warn"?"⚠":"✓"}</span>`;
+    h += `<span class="min">${a.min||0} min</span></div>`;
+    if (a.frage) h += `<div class="q">${esc(a.frage)}</div>`;
+    if (a.hinweis) h += `<div class="q err">${esc(a.hinweis)}</div>`;
+    if (a.tech) tech.push(`${a.nr} ${a.tech}`);
+  }
+  if (tech.length) h += `<details><summary>Technische Werte</summary><div class="tech">${esc(tech.join("\n"))}</div></details>`;
+  h += `</div>`;
+}
+h += `<div class="grid">`;
+if (P.material?.length) h += `<div class="box"><h3>${bericht ? "Dateien" : "Material, das entsteht"}${P.ablage ? ` <span style="font-weight:400;color:var(--mut)">· ${esc(P.ablage)}</span>` : ""}</h3><ul>${P.material.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`;
+if (P.fragen?.length) h += `<div class="box warn"><h3>Vor der Freigabe klären</h3><ul>${P.fragen.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`;
+if (P.checkliste?.length) h += `<div class="box"><h3>Noch von Hand in scobees</h3><ul style="list-style:none;padding:0">${P.checkliste.map(m=>`<li>☐ ${esc(m)}</li>`).join("")}</ul></div>`;
+h += `</div>`;
+if (P.vorschlaege?.length) h += `<p class="foot">Vorschläge: ${P.vorschlaege.map(esc).join(" · ")}</p>`;
+h += `<details style="margin-top:12px"><summary>Alle Werte als Tabelle (zum Kopieren)</summary><table><tr><th>Nr.</th>${bericht?"<th>ID</th>":""}<th>Aufgabe</th><th>min</th><th>Technik</th></tr>${all.map(a=>`<tr><td>${esc(a.nr)}</td>${bericht?`<td>${esc(a.id)}</td>`:""}<td>${esc(a.name)}</td><td>${a.min||0}</td><td>${esc(a.tech)}</td></tr>`).join("")}</table></details>`;
+document.getElementById("app").innerHTML = h;
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{
+ "modus": "grobplan",
+ "titel": "Schutzmaßnahmen prüfen",
+ "id": "",
+ "fach": "PB Elektrotechnik Grundlagen",
+ "jahrgang": "Jg 1",
+ "umfang_min": 360,
+ "reihenfolge": "nach Reihenfolge",
+ "szenario": "Erstprüfung einer neuen Werkstattinstallation bei Elektro Brandt",
+ "ergebnis": "bewertetes Prüfprotokoll mit Freigabe",
+ "material": [
+  "fehlerstromkreis.html → 3.1",
+  "Messprotokoll_Vorlage.pdf → 5.1",
+  "Pruefprotokoll_Loesung.pdf → 5.2 (Musterlösung)"
+ ],
+ "ablage": "…\\Schutzmaßnahmen\\scobees\\",
+ "fragen": [
+  "Bearbeitung frei oder nach Reihenfolge?"
+ ],
+ "vorschlaege": [
+  "5.1 als Pflicht, wenn die Übungswand für alle erreichbar ist"
+ ],
+ "gliederungen": [
+  {
+   "nr": "2",
+   "name": "Grundlagen: Prüfen nach DIN VDE 0100-600",
+   "id": "",
+   "aufgaben": [
+    {
+     "nr": "2.1",
+     "name": "Besichtigen, Erproben, Messen",
+     "min": 25,
+     "pflicht": true,
+     "marken": [
+      [
+       "p",
+       "Theorie + Drag-and-drop"
+      ]
+     ],
+     "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-blanks-dnd",
+     "id": ""
+    },
+    {
+     "nr": "2.2",
+     "name": "Sicher messen",
+     "min": 30,
+     "pflicht": true,
+     "marken": [
+      [
+       "p",
+       "Theorie + Auswahlfragen"
+      ]
+     ],
+     "inhalt": "Installationstester, Messkategorie, fünf Sicherheitsregeln",
+     "frage": "Reichen die fünf Sicherheitsregeln hier, oder gehört die Messkategorie in eine eigene Aufgabe?",
+     "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-sc, quiz-mc",
+     "id": ""
+    }
+   ]
+  },
+  {
+   "nr": "5",
+   "name": "Prüfen und dokumentieren",
+   "id": "",
+   "frage": "Ist die Übungswand für alle Lernenden erreichbar?",
+   "aufgaben": [
+    {
+     "nr": "5.1",
+     "name": "Praxis an der Übungswand",
+     "min": 90,
+     "pflicht": false,
+     "marken": [
+      [
+       "v",
+       "Training, freiwillig"
+      ],
+      [
+       "a",
+       "Abgabe: Stift auf PDF"
+      ]
+     ],
+     "tech": "art=abgabe_optional · aufgabentyp=training · abgabeformen=[pen]",
+     "id": ""
+    },
+    {
+     "nr": "5.2",
+     "name": "Prüfprotokoll für die Werkstatt",
+     "min": 60,
+     "pflicht": true,
+     "marken": [
+      [
+       "a",
+       "Pflichtabgabe: Stift oder Datei"
+      ],
+      [
+       "m",
+       "+ Musterlösung"
+      ]
+     ],
+     "tech": "art=abgabe_pflicht_selbstkorrektur · aufgabentyp=pflicht · abgabeformen=[pen,file]",
+     "id": ""
+    }
+   ]
+  },
+  {
+   "nr": "6",
+   "name": "Abschluss",
+   "id": "",
+   "aufgaben": [
+    {
+     "nr": "6.2",
+     "name": "Isolationsfehler eingrenzen",
+     "min": 30,
+     "pflicht": false,
+     "marken": [
+      [
+       "v",
+       "Extra, freiwillig"
+      ],
+      [
+       "p",
+       "Zahleneingabe"
+      ]
+     ],
+     "tech": "art=selbstkontrolle · aufgabentyp=extra · quiz-input",
+     "id": ""
+    }
+   ]
+  }
+ ]
+}

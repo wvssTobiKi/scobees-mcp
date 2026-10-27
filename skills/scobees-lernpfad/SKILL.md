@@ -83,39 +83,18 @@ Gliederungen sind Orientierung, keine Dekoration. Zu viele Ebenen zerstückeln d
 
 ### 4. Grobplan zeigen und freigeben lassen (immer)
 
-Vor dem ersten Schreibaufruf ein Plan im Chat, den die Lehrkraft in einer Minute überfliegen kann. Er ist für Menschen geschrieben: Klartext statt Parameterwerten (die Werte `art`, `aufgabentyp`, `abgabeformen` setzt du erst beim Anlegen), eine Zeile je Aufgabe, keine breite Tabelle. Erst nach Freigabe anlegen; Änderungswünsche einarbeiten, nicht diskutieren.
+Vor dem ersten Schreibaufruf bekommt die Lehrkraft den Plan als **Karten-Ansicht** (Artefakt aus `assets/grobplan.html`) und darunter im Chat zwei Sätze plus die offenen Fragen. Die Ansicht ist für Menschen gemacht: je Gliederung eine Karte mit Zeitbalken (Pflicht grün, freiwillig grau), je Aufgabe eine Zeile mit Klartext-Marken statt Parameterwerten, Kennzahlen oben, Material und Fragen unten. Die technischen Werte (`art`, `aufgabentyp`, `abgabeformen`, Quiz-Typen, Dateinamen) stehen zugeklappt unter jeder Karte und als Tabelle am Ende, damit nichts verloren geht, aber nichts im Weg steht.
 
-```
-**Schutzmaßnahmen prüfen** · PB Elektrotechnik Grundlagen · Jg 1 · 8 UStd (360 min) · Bearbeitung nach Reihenfolge
-Szenario: Erstprüfung einer neuen Werkstattinstallation vor der Inbetriebnahme; du bist im 1. Lehrjahr bei Elektro Brandt.
-Handlungsergebnis: ausgefülltes und bewertetes Prüfprotokoll mit Freigabeentscheidung.
+So entsteht sie: `assets/grobplan.html` lesen, den Platzhalter `__PLAN_JSON__` durch das Plan-JSON ersetzen (Struktur im Kommentar der Vorlage und in `assets/beispiel-grobplan.json`), als Artefakt ausgeben. Wo kein Artefakt möglich ist, dieselben Daten als gegliederte Liste im Chat (Überschrift je Gliederung mit Minutensumme, eine Zeile je Aufgabe).
 
-**1 · Einstieg** (15 min)
-- 1.1 Der Auftrag — Info · 15 min — Nachricht des Meisters, Installationsplan, warum vor dem Einschalten geprüft wird
+Regeln für den Inhalt:
 
-**2 · Grundlagen: Prüfen nach DIN VDE 0100-600** (55 min)
-- 2.1 Besichtigen, Erproben, Messen — Theorie + Zuordnung per Drag-and-drop · 25 min
-- 2.2 Sicher messen — Theorie + Auswahlfragen · 30 min — Installationstester, Messkategorie, fünf Sicherheitsregeln
+- Marken in Klartext: „Info“ · „Theorie + <Kontrollform>“ · „Abgabe: <Form>“ · „Pflichtabgabe: <Form>“ · „+ Musterlösung“ · „Training, freiwillig“ / „Extra, freiwillig“. Formen heißen Datei, Stift auf PDF, Videolink.
+- Eine Frage, die eine Aufgabe oder eine Gliederung betrifft, steht **dort** (`frage` an der Aufgabe oder Gliederung). Unten unter „Vor der Freigabe klären“ nur, was den ganzen Pfad betrifft (Reihenfolge, Umfang, Fach, Niveau-Varianten).
+- Der Vorschlag für die praktische Einheit und was an Material entsteht, stehen ausdrücklich dabei.
+- In Modus C nur die betroffenen Gliederungen, Änderungen als „vorher → nachher“ im Aufgabentext.
 
-**3 · Schutzleiterwiderstand** (60 min)
-- 3.1 Der Fehlerstromkreis — Theorie + Simulation (Schutzleiter intakt/unterbrochen) + Auswahlfrage · 25 min
-- 3.2 Messen und berechnen — Theorie + Zahleneingaben in Ω · 35 min
-
-**5 · Prüfen und dokumentieren** (150 min)
-- 5.1 Praxis an der Übungswand — Training, freiwillig · Abgabe: Stift auf PDF-Protokoll · 90 min
-- 5.2 Prüfprotokoll für die Werkstatt — Pflichtabgabe (Stift oder Datei) + Musterlösung · 60 min — Messwerte bewerten, Freigabe begründen
-
-**6 · Abschluss** (15 min, dazu 30 min Extra)
-- 6.1 Rückblick: Was wäre, wenn …? — Freitext + Mehrfachauswahl · 15 min
-- 6.2 Isolationsfehler eingrenzen — Extra, freiwillig · Theorie + Zahleneingabe · 30 min
-
-Pflicht: 260 min von 360 · freiwillig: 120 min
-Material, das entsteht: 2 Simulationen (Fehlerstromkreis, Isolationszustand), 1 PDF-Protokollvorlage, 1 Musterlösung
-Vorschlag: 5.1 als Pflicht, wenn die Übungswand für alle erreichbar ist.
-Offen: Bearbeitung frei oder nach Reihenfolge? Niveau-Varianten für 3.2 gewünscht?
-```
-
-Bezeichnungen je Aufgabe: „Info“ · „Theorie + <Kontrollform>“ · „Abgabe möglich (<Form>)“ · „Pflichtabgabe (<Form>)“ · „+ Musterlösung“ bei Selbstkorrektur · „Training, freiwillig“ / „Extra, freiwillig“ bei den Typen; Formen heißen Datei, Stift auf PDF, Videolink. Die Gliederungszeile trägt die Minutensumme, damit die Lehrkraft sieht, wo die Zeit hingeht. Die Inhaltsnotiz hinter dem zweiten Gedankenstrich nur dort, wo der Titel nicht reicht. In Modus C nur die betroffenen Zeilen, mit „vorher → nachher“.
+Erst nach Freigabe anlegen; Änderungswünsche („2.2 auf 20 min, 5.1 Pflicht“) einarbeiten, nicht diskutieren.
 
 ### 5. Zeiten prüfen
 
@@ -152,22 +131,15 @@ Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Qu
 
 ### 9. Abschlussbericht an die Lehrkraft (immer)
 
-```
-## <Lernpfad> ist angelegt
-Fach, Jahrgang, Umfang, Pfad-ID. Baum: Gliederungen und Aufgaben mit IDs, Art, Typ, Minuten.
-Material: welche Dateien liegen wo (lokaler Ordner) und hängen an welcher Aufgabe.
+Dieselbe Vorlage mit `"modus": "bericht"`: jede Gliederung und Aufgabe mit vollständiger ID (zum Kopieren für Folgeaufträge), Prüfstatus je Aufgabe aus dem Zurücklesen (`status: "ok"` oder `"warn"` mit `hinweis`, was abweicht), Dateien mit Zuordnung zur Aufgabe, Checkliste für die Weboberfläche, Vorschläge. Jede Warnung wird automatisch auch ein Punkt der Checkliste. Dazu im Chat drei Sätze: Was ist angelegt, was bleibt von Hand, was schlägst du vor.
 
-## Noch von Hand (scobees-Weboberfläche)
-- [ ] Lernpfad einer Lerngruppe zuweisen (bis dahin sehen Lernende nichts; Status „inaktiv“ ist normal)
-- [ ] Gliederungen und Aufgaben veröffentlichen (Status „Entwurf“ ist normal)
-- [ ] Prüfen, ob die Lerngruppe im Fach des Pfads ein Niveau hat (sonst scheitert die Zuweisung)
-- [ ] Bearbeitungsreihenfolge und Aufgabenwahl kontrollieren
-- [ ] Drag-and-drop-Aufgaben, Stift-Abgaben und Anhänge einmal in der Schüleransicht öffnen
-- [ ] <alles, was sich nicht setzen ließ>
+Checkliste, immer dabei:
 
-## Vorschläge
-Praktische Einheit, Differenzierung, Erweiterungen – kurz, mit Begründung.
-```
+- Lernpfad einer Lerngruppe zuweisen (bis dahin sehen Lernende nichts; Status „inaktiv“ ist normal); vorher prüfen, ob die Gruppe im Fach ein Niveau hat
+- Gliederungen und Aufgaben veröffentlichen (Status „Entwurf“ ist normal)
+- Bearbeitungsreihenfolge und Aufgabenwahl kontrollieren
+- Drag-and-drop-Aufgaben, Stift-Abgaben und Anhänge einmal in der Schüleransicht öffnen
+- alles, was sich über die Schnittstelle nicht setzen ließ
 
 ## Modus C: Bestehenden Pfad überarbeiten
 
