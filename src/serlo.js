@@ -112,7 +112,7 @@ function parseBlocks(lines) {
     }
 
     // Container :::spoiler / :::box
-    m = t.match(/^:::\s*(spoiler|box)\s*(\w+)?\s*(.*)$/i);
+    m = t.match(/^:::\s*(spoiler|box)\s*(\S+)?\s*(.*)$/i); // \S statt \w: Umlaute im Titel
     if (m) {
       const kind = m[1].toLowerCase();
       const body = [];
@@ -128,12 +128,13 @@ function parseBlocks(lines) {
       i++;
       flushText();
       const inner = rows(parseBlocks(body));
+      const rest = [m[2], m[3]].filter(Boolean).join(" ");
       if (kind === "spoiler") {
-        items.push(P("spoiler", { richTitle: textP([m[2], m[3]].filter(Boolean).join(" ") || "Mehr anzeigen"), content: inner }));
+        items.push(P("spoiler", { richTitle: textP(rest || "Mehr anzeigen"), content: inner }));
       } else {
         const BOX = ["blank", "example", "quote", "warning", "attention", "note", "definition", "theorem", "proof"];
         const type = BOX.includes((m[2] || "").toLowerCase()) ? m[2].toLowerCase() : "note";
-        const title = BOX.includes((m[2] || "").toLowerCase()) ? m[3] : [m[2], m[3]].filter(Boolean).join(" ");
+        const title = BOX.includes((m[2] || "").toLowerCase()) ? m[3] : rest;
         items.push(P("box", { type, title: textP(title || ""), anchorId: "", content: inner }));
       }
       continue;

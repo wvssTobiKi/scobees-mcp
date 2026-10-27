@@ -131,3 +131,10 @@ test("Roundtrip: Markdown → Serlo → Markdown bleibt inhaltlich stabil", () =
   assert.match(back, /- a\n- b/);
   assert.match(back, /- \[x\] ja/);
 });
+
+test("Spoiler- und Box-Titel mit Umlauten bleiben erhalten", () => {
+  const doc = markdownToSerlo(":::spoiler Lösungsweg\nText\n:::\n\n:::box warning Äußerste Vorsicht\nText\n:::");
+  const md = serloToMarkdown(doc);
+  assert.match(md, /:::spoiler Lösungsweg/);
+  assert.match(md, /:::box warning Äußerste Vorsicht/);
+});

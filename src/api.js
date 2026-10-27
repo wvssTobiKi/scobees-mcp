@@ -40,7 +40,8 @@ function sanitize(x) {
   if (Array.isArray(x)) return x.map(sanitize);
   if (x && typeof x === "object") {
     // Personenobjekte (editors, author …) auf die ID reduzieren
-    if (typeof x.id === "string" && x.id.startsWith("USER-") && ("firstname" in x || "username" in x)) {
+    // Ausnahme: das eigene Konto (users/me) – hier bleiben Rolle und Schule erhalten, nur Namen fallen weg
+    if (typeof x.id === "string" && x.id.startsWith("USER-") && ("firstname" in x || "username" in x) && !("role" in x)) {
       return x.id;
     }
     const out = {};

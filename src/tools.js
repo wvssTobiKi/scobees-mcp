@@ -270,7 +270,7 @@ const TOOLS = [
   },
   {
     name: "scobees_update_gliederung",
-    description: "Ändert Name und/oder Beschreibung einer Gliederungsstruktur. (Experimentell: gleicher Aufruf wie Anlegen, mit id.)",
+    description: "Ändert Name und/oder Beschreibung einer Gliederungsstruktur. (Gleicher Aufruf wie Anlegen, mit id – live geprüft.)",
     inputSchema: {
       type: "object",
       properties: { id: { type: "string" }, name: { type: "string" }, description_html: { type: "string" } },
