@@ -83,8 +83,10 @@ Strom wird in [[Ampere|A]] gemessen.
 ```quiz-text
 Freitextaufgabe
 ```
-```math               (ausgerichtete Gleichungskette, LaTeX; „| Erklärung“ optional)
-I = \frac{U}{R} | umgestellt
+```math               (Gleichungskette, LaTeX; Text nach „|“ erklärt den Schritt ZUR NÄCHSTEN Zeile)
+| Ohmsches Gesetz anwenden
+U = R \cdot I | nach I umstellen
+I = \frac{U}{R} | Werte einsetzen
 = 3\,\mathrm{A}
 ```
 ```

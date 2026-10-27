@@ -20,8 +20,8 @@
  *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“
  *   ```quiz-blanks / -dnd         Lückentext: Lücken als [[Antwort|Variante]], Distraktoren „+ falsch“
  *   ```quiz-text                  Freitextaufgabe
- *   ```math                       Gleichungskette (LaTeX): je Zeile „I = rac{U}{R} | Erklärung“;
- *                                 erste Zeile mit linker Seite, weitere dürfen mit „= …“ beginnen
+ *   ```math                       Gleichungskette (LaTeX): je Zeile „U = R \cdot I | nach I umstellen“.
+ *                                 Text nach „|“ erklärt den ÜBERGANG zur nächsten Zeile (Pfeil). Eine Zeile „| Text“ ganz oben = Einleitung
  */
 
 const crypto = require("crypto");
@@ -233,8 +233,10 @@ const SIGNS = [["<=", "less-than-or-equal"], [">=", "greater-than-or-equal"], ["
   ["≠", "not-equal-to"], ["≈", "almost-equal-to"], ["=", "equals"], ["<", "less-than"], [">", "greater-than"]];
 function equations(body) {
   const steps = [];
+  let first = [];
   for (const raw of body) {
     if (!raw.trim()) continue;
+    if (!steps.length && raw.trim().startsWith("|")) { first = [{ type: "p", children: inline(raw.trim().slice(1).trim()) }]; continue; }
     const [expr, ...expl] = raw.split("|");
     let left = "", sign = "equals", right = expr.trim();
     for (const [sym, name] of SIGNS) {
@@ -243,7 +245,7 @@ function equations(body) {
     }
     steps.push({ left, sign, right, transform: "", explanation: text(expl.length ? [{ type: "p", children: inline(expl.join("|").trim()) }] : []) });
   }
-  return P("equations", { steps, firstExplanation: text([]), transformationTarget: "equation" });
+  return P("equations", { steps, firstExplanation: text(first), transformationTarget: "equation" });
 }
 
 function splitQuestion(body, answerRe) {
@@ -349,7 +351,8 @@ function serloToMarkdown(doc) {
       }
       case "equations": {
         const sym = Object.fromEntries(SIGNS.map(([a, b]) => [b, a]));
-        return "```math\n" + (s.steps || []).map((st) => {
+        const first = walk(s.firstExplanation).trim();
+        return "```math\n" + (first ? "| " + first + "\n" : "") + (s.steps || []).map((st) => {
           const e = walk(st.explanation).trim();
           return `${st.left ? st.left + " " : ""}${sym[st.sign] || "="} ${st.right}${e ? " | " + e : ""}`;
         }).join("\n") + "\n```";
