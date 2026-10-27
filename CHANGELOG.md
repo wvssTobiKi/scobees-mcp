@@ -8,6 +8,11 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 |---|---|---|---|---|
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
 
+## Unveröffentlicht
+
+- Neuer Skill `skills/scobees-lernpfad` („Lernpfad mit scobees aufbauen“): Modus A neu / B aus Unterlagen / C bestehenden Pfad überarbeiten; Bildungsgänge Niedersachsen (BFS-dual, Fachschule Technik, BG Technik, FOS Technik, BES); Gliederungsregel, Grobplan zur Freigabe, Zeitplausibilität, Abschlussbericht mit Checkliste; Referenzen zu Werkzeugen und Markdown; drei Testfälle. Release hängt den Skill als ZIP an.
+- Doku: Sichtprüfung der Schüler-App (Infoinput, Stift auf PDF, Selbstkorrektur), Hinweis „Serlo-Inhalt“ nicht benennbar.
+
 ## 0.1.4 – 2026-10-27
 
 Nachschärfung nach Praxislauf 2 („Subnetting-Werkstatt“).

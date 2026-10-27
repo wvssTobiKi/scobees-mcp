@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: aus-unterlagen-techniker
+expected_outcome: |
+  Der Skill liest die Unterlagen vollständig, übernimmt deren Aufbau, markiert Ergänzungen (Szenario, Ergebniszeilen, Kontrollquizze) im Grobplan als neu, plant die Übungen als abgabe_pflicht_selbstkorrektur mit Musterlösungs-PDF aus dem Übungsblatt, verwendet Technikerschul-Vokabular (Modul), lässt Differenzierungen leer und gibt den Abschlussbericht aus.

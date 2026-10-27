@@ -39,6 +39,8 @@ jobs:
           test "$TAG" = "$PKG" -a "$TAG" = "$MAN" || { echo "Version in package.json/manifest.json passt nicht zum Tag"; exit 1; }
       - name: .mcpb bauen
         run: npx --yes @anthropic-ai/mcpb pack . "scobees-mcp-${TAG}.mcpb"
+      - name: Skill packen
+        run: (cd skills && zip -r "../scobees-lernpfad-skill-${TAG}.zip" scobees-lernpfad -x "*/evals/*")
       - name: Changelog-Abschnitt extrahieren
         run: |
           VER="${TAG#v}"
@@ -48,9 +50,11 @@ jobs:
             on { print }
           ' CHANGELOG.md > release-notes.md
           echo "" >> release-notes.md
-          echo "Installation: \`.mcpb\` herunterladen und in Claude Desktop per Doppelklick installieren (Node.js ≥ 18 erforderlich). Details im README." >> release-notes.md
+          echo "Installation: \`.mcpb\` herunterladen und in Claude Desktop per Doppelklick installieren (Node.js ≥ 18 erforderlich). Der Skill „Lernpfad mit scobees aufbauen“ liegt als ZIP bei (in Claude Desktop unter Skills hochladen). Details im README." >> release-notes.md
       - uses: softprops/action-gh-release@v2
         with:
-          files: scobees-mcp-${{ env.TAG }}.mcpb
+          files: |
+            scobees-mcp-${{ env.TAG }}.mcpb
+            scobees-lernpfad-skill-${{ env.TAG }}.zip
           tag_name: ${{ env.TAG }}
           body_path: release-notes.md

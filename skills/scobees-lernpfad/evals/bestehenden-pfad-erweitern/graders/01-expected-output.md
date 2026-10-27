@@ -1,0 +1,7 @@
+---
+type: llm
+focus: trace
+weight: 1
+---
+
+The result matches this description: Der Skill arbeitet in Modus C: findet den Pfad über scobees_list_lernpfade, liest den Baum und Aufgabe 3.1 mit scobees_get_aufgabe, zeigt einen auf die Änderung beschränkten Grobplan (vorher/nachher), ändert 3.1 nur in der Art (abgabe_pflicht, Abgabeformen erhalten), legt eine Gliederung „Vertiefung“ mit zwei Aufgaben an, löscht nichts, liest zurück und berichtet.

@@ -5,3 +5,5 @@ test/
 *.mcpb
 *.log
 .env
+skills/
+docs/

@@ -1,0 +1,7 @@
+---
+type: llm
+focus: trace
+weight: 1
+---
+
+The result matches this description: Der Skill klärt Bildungsgang und Lernfeld (recherchiert den KMK-Rahmenlehrplan Elektroniker/in für Betriebstechnik, 1. Ausbildungsjahr), zeigt vor dem Anlegen einen Grobplan mit Gliederungen (2–5 Aufgaben je Gliederung, eine Ebene), Art/Typ/Abgabe/Minuten und einer Zeitsumme von etwa 360 Minuten, schlägt eine praktische Messaufgabe nach dem Theorieteil vor, legt nach Freigabe mit den scobees_*-Werkzeugen an, liest zurück und gibt den Abschlussbericht mit Checkliste aus.
