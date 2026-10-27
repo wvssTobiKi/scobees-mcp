@@ -177,7 +177,7 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
     editors ["USER-<eigene id>"], order "none", published true, isMandatoryProgressVisible true, isExtraTaskCounterVisible true,
     tags [] (Stichwörter), id "", coverImage=<Datei> | coverImagePath undefined, description (Klartext/HTML)
   → 200 {id:"LI-M1SUFLY8QBQBD65MHU", state:"INACTIVE", isPublished:true, parentId:null, coverImage:{…}, subjects:[…], tags:{grades:[…]}}
-  → state INACTIVE = keiner Lerngruppe zugewiesen, ACTIVE = zugewiesen (geklärt 27.10.2026). `published`/`isPublished` = Schalter „In schuleigener Bib veröffentlichen“.
+  → Statusmodell (geklärt 27.10.2026): DRAFT = nicht in der Bib (`published:false`), INACTIVE = in der Bib, aber keiner Lerngruppe zugewiesen, ACTIVE = zugewiesen. `published`/`isPublished` = Schalter „In schuleigener Bib veröffentlichen“; beim Umschalten wechselt state zwischen DRAFT und INACTIVE.
   → UI lädt vorher GET school/{schoolId}/teachers?withDeleted=false (Editor-Auswahl, enthält Lehrkräfte-E-Mails) → Server: nicht abrufen, editors = nur eigene id aus users/me.
 - Material: POST attachments mit type "lerninput_attachment" (statt samplesolution) → erscheint nach dem nächsten Speichern in attachments[].
 - Link: Feld links = [{"url":"https://…","name":"Aufgabenlink","type":"url"}]

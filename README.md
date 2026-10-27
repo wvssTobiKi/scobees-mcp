@@ -104,7 +104,7 @@ node src/server.js --login  # Anmeldung prüfen
 
 Testumgebung in scobees (WvSS): Lernbereich „testbereich“ `LB-9QX4VN79SPUN59XTXC`, Lernpfad „TEST MCP“ `LI-M1SUFLY8QBQBD65MHU`.
 
-Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Der Status INACTIVE/ACTIVE spiegelt nur, ob der Pfad einer Lerngruppe zugewiesen ist (Zuweisung bewusst nicht im Server).
+Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Statusmodell: DRAFT = nicht in der Bib, INACTIVE = in der Bib (keiner Lerngruppe zugewiesen), ACTIVE = zugewiesen; die Zuweisung ist bewusst nicht im Server.
 
 ## Lizenz
 
