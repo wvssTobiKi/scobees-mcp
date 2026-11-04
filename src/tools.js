@@ -78,6 +78,25 @@ function nodeType(n) {
 const stripHtml = (s) => String(s || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 const ok = (msg, data) => ({ ok: true, hinweis: msg, ...data });
 
+// scobees lehnt sowohl POST lerninput/task mit parentId = Wahlpflicht-ID als auch ein nachträgliches
+// Verschieben dorthin ab (live geprüft, HTTP 405 mit „…from taskgroup…“ bzw. „…parent to a taskgroup…“).
+// Der echte Mechanismus (vermutlich über die lerninput-selector-API der Weboberfläche) ist noch nicht
+// nachgebildet – bis dahin eine ehrliche Meldung statt des rohen HTTP-405 weiterreichen.
+function clarifyTaskgroupError(e) {
+  if (/taskgroup/i.test(e.message)) {
+    let detail = e.message;
+    const m = e.message.match(/\{.*\}/s);
+    if (m) { try { detail = JSON.parse(m[0]).message || detail; } catch {} }
+    throw new Error(
+      "scobees lehnt das ab (Meldung von scobees: „" + detail + "“). " +
+      "Unteraufgaben einer Wahlpflichtaufgabe lassen sich über diesen Server noch nicht anlegen oder dorthin verschieben – " +
+      "das ist eine scobees-Grenze, kein Fehler dieses Servers. Aufgabe stattdessen in einer Gliederung anlegen und in der " +
+      "Weboberfläche der Wahlpflichtaufgabe zuweisen, oder ein Issue „neues Werkzeug“ im Repo anlegen."
+    );
+  }
+  throw e;
+}
+
 /** Aufgabe laden und in das Formular-Format der Weboberfläche zurückübersetzen. */
 function taskToForm(t) {
   return {
@@ -367,7 +386,7 @@ const TOOLS = [
   },
   {
     name: "scobees_create_wahlpflicht",
-    description: "Legt eine Wahlpflichtaufgabe an: ein Container, aus dem Lernende eine Mindestanzahl an Unteraufgaben lösen. Unteraufgaben danach mit scobees_create_aufgabe (parent_id = diese ID).",
+    description: "Legt eine Wahlpflichtaufgabe an: ein Container, aus dem Lernende eine Mindestanzahl an Unteraufgaben lösen. Achtung: Unteraufgaben lassen sich über diesen Server noch nicht hinzufügen (scobees lehnt sowohl das direkte Anlegen als auch das Verschieben einer Aufgabe in eine Wahlpflichtaufgabe ab, live geprüft am 04.11.2026 mit scobees v94.2) – das Zuordnen der Unteraufgaben bitte vorerst in der Weboberfläche erledigen.",
     inputSchema: {
       type: "object",
       properties: {
@@ -457,12 +476,15 @@ const TOOLS = [
       const k = KIND[a.art || "selbstkontrolle"];
       const diffs = await resolveDiffTags(a.differenzierungen);
       // Schritt 1: leere Aufgabe anlegen (so macht es die Oberfläche) …
-      const created = await api.saveTask({
-        taskType: taskTypeOf(a), name: "", socialType: "nicht spezifiziert", activityType: "nicht spezifiziert",
-        diffs: [], licenseType: "cc0", parentId: a.parent_id, sampleSolutions: undefined, attachments: undefined, links: [],
-        taskDescription: null, taskAudioDescription: undefined, lfs: [], hintText: "", hintAttachments: undefined, isHintSave: false,
-        kind: "task", isUploadRequired: false, isSelfCorrectionNecessary: false, isLinkSubmissionEnabled: false,
-      });
+      let created;
+      try {
+        created = await api.saveTask({
+          taskType: taskTypeOf(a), name: "", socialType: "nicht spezifiziert", activityType: "nicht spezifiziert",
+          diffs: [], licenseType: "cc0", parentId: a.parent_id, sampleSolutions: undefined, attachments: undefined, links: [],
+          taskDescription: null, taskAudioDescription: undefined, lfs: [], hintText: "", hintAttachments: undefined, isHintSave: false,
+          kind: "task", isUploadRequired: false, isSelfCorrectionNecessary: false, isLinkSubmissionEnabled: false,
+        });
+      } catch (e) { clarifyTaskgroupError(e); }
       // … Schritt 2: mit allen Feldern speichern
       const form = taskToForm({ ...created, parentId: a.parent_id });
       Object.assign(form, {
@@ -549,7 +571,10 @@ const TOOLS = [
       properties: { id: { type: "string" }, parent_id: { type: "string", description: "Ziel-Gliederung/-Lernpfad" }, sort_order: { type: "number" } },
       required: ["id", "parent_id", "sort_order"],
     },
-    run: async (a) => { await api.move(a.id, a.parent_id, a.sort_order); return ok("Verschoben.", { id: a.id, parentId: a.parent_id, sortOrder: a.sort_order }); },
+    run: async (a) => {
+      try { await api.move(a.id, a.parent_id, a.sort_order); } catch (e) { clarifyTaskgroupError(e); }
+      return ok("Verschoben.", { id: a.id, parentId: a.parent_id, sortOrder: a.sort_order });
+    },
   },
   {
     name: "scobees_delete",
@@ -574,4 +599,4 @@ const TOOLS = [
   },
 ];
 
-module.exports = { TOOLS, KIND, compact, taskToForm };
+module.exports = { TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError };

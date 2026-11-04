@@ -6,8 +6,16 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest: Lernpfad/Gliederung/Aufgabe (alle Markdown-Bausteine), Material-Upload, Löschen – unverändert. Neu entdeckt (keine Regression, war nie live geprüft): Wahlpflicht-Unteraufgaben lassen sich über diesen Server nicht anlegen/zuordnen |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.6 – 2026-11-04
+
+Breiter Funktionstest gegen scobees v94.2 (Anlass: Rückfrage, ob sich ein automatisierter Kompatibilitätstest lohnt).
+
+- Lernpfad, Gliederung, Aufgabe mit allen Markdown-Bausteinen auf einmal (Box, mehrzeiliger Spoiler, Gleichungskette, quiz-sc mit Feedback, quiz-input mit Einheit und `≠`, quiz-blanks-dnd), Material-Upload, Löschen – alle live bestätigt, nichts durch v94.2 verändert.
+- **Neu entdeckt** (kein Regressionsfehler, sondern eine nie verifizierte Annahme): Eine Aufgabe lässt sich über diesen Server weder direkt unter einer Wahlpflichtaufgabe anlegen noch nachträglich dorthin verschieben – scobees lehnt beides mit HTTP 405 ab. `scobees_create_aufgabe`/`scobees_move` geben jetzt eine klare deutsche Erklärung statt des rohen Fehlercodes; `scobees_create_wahlpflicht` sagt das in der Werkzeugbeschreibung direkt dazu. Details und ein Lead für die echte Lösung in `docs/scobees-api-map.md` (Mitschrift 10).
 
 ## 0.1.5 – 2026-11-04
 

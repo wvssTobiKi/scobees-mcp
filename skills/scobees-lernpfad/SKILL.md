@@ -88,7 +88,7 @@ Gliederungen sind Orientierung, keine Dekoration. Zu viele Ebenen zerstückeln d
 - Theorie und ihre Kontrolle gehören in **eine** Aufgabe (Arbeitsblatt mit Quiz), nicht in „Lesen“ plus „Quiz“.
 - Nummerierung im Aufgabentitel („2.1 IPv4 und Subnetzmaske“) hilft, weil scobees Aufgaben in der Kachelansicht ohne Kontext zeigt.
 - Extra- und Trainingsaufgaben in eine Gliederung „Vertiefung“ oder ans Ende der passenden Phase, nie lose in die Wurzel.
-- Wahlpflichtaufgaben nur, wenn echte Wahl besteht (n von m), und nie leer lassen.
+- Wahlpflichtaufgaben nur, wenn echte Wahl besteht (n von m), und nie leer lassen. **Wichtig:** `scobees_create_wahlpflicht` legt nur den Container an; Unteraufgaben lassen sich über diesen Server (Stand 0.1.6) nicht zuordnen – scobees lehnt das ab. Eine geplante Wahlpflichtaufgabe deshalb im Abschlussbericht als eigenen Punkt der Checkliste ausweisen, nicht als erledigt melden.
 
 ### 4. Grobplan zeigen und freigeben lassen (immer)
 

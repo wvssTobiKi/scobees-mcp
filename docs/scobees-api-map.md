@@ -235,3 +235,18 @@ Server-Strategie: Markdown → text/h/list/code(highlight)/table/box/spoiler/ima
 - Serlo-Arbeitsblatt = Feld `taskDescription` der Aufgabe; es hat keinen eigenen Namen. Die Materialkachel im Lernplaner zeigt immer „Serlo-Inhalt“ (fester UI-Text; die Oberflächentexte beider Apps liegen nicht im Bundle, sondern werden zur Laufzeit geladen).
 - `info`-Aufgaben: Schaltfläche „Infoinput erledigt“; `pen`-Abgabe: Stiftleiste über dem PDF-Material, ohne PDF keine Abgabe möglich; Selbstkorrektur: Abgabe und Musterlösung nebeneinander, Vergleichsdokument wählbar.
 - Lernplaner-Bundle: learn.scobees.com `main-XF77SCGY.js` (nur Fingerabdruck, nicht vom Server genutzt).
+
+## Mitschrift 10 (04.11.2026, v94.2): Wahlpflicht-Unteraufgaben – nicht möglich, wie bisher angelegt
+
+Live geprüft im Testbereich: Weder `POST lerninput/task` mit `parentId` = Wahlpflicht-ID noch `PUT lerninput/changePosition/{id}` mit demselben Ziel funktionieren.
+- `POST lerninput/task` (parentId = Wahlpflicht-ID) → HTTP 405 `{"message":"Add or edit as child (task) from taskgroup without type choice is not allowed"}`
+- `PUT lerninput/changePosition/{id}` (parentId = Wahlpflicht-ID) → HTTP 405 `{"message":"Changing the parent to a taskgroup is not allowed"}`
+- `POST lerninput/{id}/copy-into/{zielId}` (Versuch als Alternative) → HTTP 405 `{"message":"Copy target must be a root lerninput"}` – dieser Endpunkt ist für das Kopieren ganzer Lernpfade, nicht für Wahlpflicht-Kinder.
+
+Unsere bisherige Doku (Mitschrift 5) nannte den naheliegenden Weg nur als Vermutung („vermutlich wieder POST lerninput/task“) – das war nie live geprüft und ist jetzt widerlegt.
+
+**Lead für die echte Lösung:** Das Lehrer-Bundle (main-LEMTLTST.js) hat eine eigene, rein lesende `lerninput-selector`-API (`lerninput-selector/{id}/children`, `/siblings`, `/search`, `/assignable-roots`, `/copy-targets`, `/selector/{id}`) – vermutlich öffnet die Weboberfläche damit einen Auswahldialog und ordnet bestehende Aufgaben der Wahlpflichtaufgabe über einen bislang unbekannten Schreibaufruf zu (nicht über `changePosition`). Außerdem gibt es ein Enum `{ROOT:"root", FOLDER:"folder", TASKGROUP:"taskgroup", TASK:"task"}` im Bundle – der Begriff „type choice“ aus der 405-Meldung bezieht sich vermutlich auf ein Feld in genau diesem Zusammenhang. Für die richtige Lösung fehlt ein Live-Mitschnitt im Browser-Pane, während eine Lehrkraft tatsächlich eine Unteraufgabe in der Weboberfläche zu einer Wahlpflichtaufgabe hinzufügt.
+
+**Bis dahin:** `scobees_create_wahlpflicht` legt den Container korrekt an; `scobees_create_aufgabe`/`scobees_move` geben bei einem Wahlpflicht-Ziel jetzt eine klare deutsche Fehlermeldung statt des rohen HTTP-405 (`clarifyTaskgroupError` in `src/tools.js`). Zuordnen der Unteraufgaben bleibt vorerst Handarbeit in der Weboberfläche.
+
+Alles andere aus dem breiten Funktionstest (04.11.2026, v94.2) lief unverändert: Lernpfad/Gliederung/Aufgabe anlegen, Arbeitsblatt mit allen Bausteinen (Box, Spoiler mehrzeilig, Gleichungskette, quiz-sc mit Feedback, quiz-input mit Einheit und `≠`, quiz-blanks-dnd) rundreisefest, `scobees_upload_material`, `scobees_delete` – alles live bestätigt.
