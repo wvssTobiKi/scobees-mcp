@@ -6,16 +6,26 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
-| 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest: Lernpfad/Gliederung/Aufgabe (alle Markdown-Bausteine), Material-Upload, Löschen – unverändert. Neu entdeckt (keine Regression, war nie live geprüft): Wahlpflicht-Unteraufgaben lassen sich über diesen Server nicht anlegen/zuordnen |
+| 0.1.7 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest (Lernpfad/Gliederung/Aufgabe mit allen Markdown-Bausteinen, Material-Upload, Löschen – unverändert) plus Browser-Mitschnitt: Wahlpflicht-Unteraufgaben funktionieren jetzt (taskType „Wahlpflichtaufgabe“ nötig, automatisch gesetzt); Verschieben in eine Wahlpflichtaufgabe bleibt gesperrt |
+| 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
 
-## 0.1.6 – 2026-11-04
+## 0.1.7 – 2026-11-04
+
+Wahlpflicht-Unteraufgaben funktionieren jetzt. Direkte Fortsetzung von 0.1.6: Dort war die Lücke nur diagnostiziert; ein Browser-Mitschnitt (Tobias hat live in der Weboberfläche eine Unteraufgabe hinzugefügt, während mitgelesen wurde) hat die echte Ursache gezeigt.
+
+- Fund: scobees verlangt für eine Aufgabe direkt unter einer Wahlpflichtaufgabe zwingend `taskType: "Wahlpflichtaufgabe"` statt des sonst üblichen Werts – fehlte das, kam HTTP 405 „…without type choice is not allowed“.
+- `scobees_create_aufgabe` versucht jetzt beim ersten Fehlschlag automatisch mit diesem `taskType` erneut; Unteraufgaben einer Wahlpflichtaufgabe lassen sich damit wieder ganz normal mit `parent_id` = Wahlpflicht-ID anlegen, ohne dass die Lehrkraft etwas davon merkt.
+- Bestätigt bleibt gesperrt: Eine bestehende Aufgabe nachträglich mit `scobees_move` in eine Wahlpflichtaufgabe zu verschieben, geht nicht (auch nicht mit vorher gesetztem `taskType`) – scobees verlangt, dass sie von Anfang an dort entsteht. `scobees_move` erklärt das jetzt statt des rohen HTTP-405.
+- Details in `docs/scobees-api-map.md` (Mitschrift 10, aktualisiert).
+
+## 0.1.6 – 2026-11-04 (überholt durch 0.1.7)
 
 Breiter Funktionstest gegen scobees v94.2 (Anlass: Rückfrage, ob sich ein automatisierter Kompatibilitätstest lohnt).
 
 - Lernpfad, Gliederung, Aufgabe mit allen Markdown-Bausteinen auf einmal (Box, mehrzeiliger Spoiler, Gleichungskette, quiz-sc mit Feedback, quiz-input mit Einheit und `≠`, quiz-blanks-dnd), Material-Upload, Löschen – alle live bestätigt, nichts durch v94.2 verändert.
-- **Neu entdeckt** (kein Regressionsfehler, sondern eine nie verifizierte Annahme): Eine Aufgabe lässt sich über diesen Server weder direkt unter einer Wahlpflichtaufgabe anlegen noch nachträglich dorthin verschieben – scobees lehnt beides mit HTTP 405 ab. `scobees_create_aufgabe`/`scobees_move` geben jetzt eine klare deutsche Erklärung statt des rohen Fehlercodes; `scobees_create_wahlpflicht` sagt das in der Werkzeugbeschreibung direkt dazu. Details und ein Lead für die echte Lösung in `docs/scobees-api-map.md` (Mitschrift 10).
+- Neu entdeckt (kein Regressionsfehler, sondern eine nie verifizierte Annahme): Eine Aufgabe ließ sich über diesen Server weder direkt unter einer Wahlpflichtaufgabe anlegen noch nachträglich dorthin verschieben. `scobees_create_aufgabe`/`scobees_move` gaben eine klare deutsche Erklärung statt des rohen Fehlercodes. Das Anlegen ist in 0.1.7 gelöst.
 
 ## 0.1.5 – 2026-11-04
 

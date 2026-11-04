@@ -89,9 +89,9 @@ function clarifyTaskgroupError(e) {
     if (m) { try { detail = JSON.parse(m[0]).message || detail; } catch {} }
     throw new Error(
       "scobees lehnt das ab (Meldung von scobees: „" + detail + "“). " +
-      "Unteraufgaben einer Wahlpflichtaufgabe lassen sich über diesen Server noch nicht anlegen oder dorthin verschieben – " +
-      "das ist eine scobees-Grenze, kein Fehler dieses Servers. Aufgabe stattdessen in einer Gliederung anlegen und in der " +
-      "Weboberfläche der Wahlpflichtaufgabe zuweisen, oder ein Issue „neues Werkzeug“ im Repo anlegen."
+      "Eine bestehende Aufgabe lässt sich nicht nachträglich in eine Wahlpflichtaufgabe verschieben – scobees verlangt, dass sie von " +
+      "Anfang an dort angelegt wird (das macht scobees_create_aufgabe automatisch, wenn parent_id eine Wahlpflichtaufgabe ist). " +
+      "Abhilfe hier: Aufgabe unter parent_id der Wahlpflichtaufgabe neu anlegen und die alte löschen, oder in der Weboberfläche verschieben."
     );
   }
   throw e;
@@ -386,7 +386,7 @@ const TOOLS = [
   },
   {
     name: "scobees_create_wahlpflicht",
-    description: "Legt eine Wahlpflichtaufgabe an: ein Container, aus dem Lernende eine Mindestanzahl an Unteraufgaben lösen. Achtung: Unteraufgaben lassen sich über diesen Server noch nicht hinzufügen (scobees lehnt sowohl das direkte Anlegen als auch das Verschieben einer Aufgabe in eine Wahlpflichtaufgabe ab, live geprüft am 04.11.2026 mit scobees v94.2) – das Zuordnen der Unteraufgaben bitte vorerst in der Weboberfläche erledigen.",
+    description: "Legt eine Wahlpflichtaufgabe an: ein Container, aus dem Lernende eine Mindestanzahl an Unteraufgaben lösen. Unteraufgaben danach mit scobees_create_aufgabe (parent_id = diese ID) – sie müssen dort von Anfang an entstehen, scobees lehnt es ab, eine bestehende Aufgabe nachträglich per scobees_move in eine Wahlpflichtaufgabe zu verschieben (dann neu anlegen und die alte löschen, oder in der Weboberfläche verschieben).",
     inputSchema: {
       type: "object",
       properties: {
@@ -476,22 +476,32 @@ const TOOLS = [
       const k = KIND[a.art || "selbstkontrolle"];
       const diffs = await resolveDiffTags(a.differenzierungen);
       // Schritt 1: leere Aufgabe anlegen (so macht es die Oberfläche) …
+      // Liegt parent_id in einer Wahlpflichtaufgabe, verlangt scobees zwingend taskType "Wahlpflichtaufgabe"
+      // (live geprüft per Mitschnitt 04.11.2026) – der gewählte aufgabentyp wird dann wie in der Weboberfläche
+      // selbst übergangen, ein normaler taskType scheitert dort mit HTTP 405. Deshalb beim ersten Fehlschlag
+      // automatisch mit dem Wahlpflicht-taskType erneut versuchen, statt den Fehler einfach durchzureichen.
+      let taskType = taskTypeOf(a);
+      const anlegen = (tt) => api.saveTask({
+        taskType: tt, name: "", socialType: "nicht spezifiziert", activityType: "nicht spezifiziert",
+        diffs: [], licenseType: "cc0", parentId: a.parent_id, sampleSolutions: undefined, attachments: undefined, links: [],
+        taskDescription: null, taskAudioDescription: undefined, lfs: [], hintText: "", hintAttachments: undefined, isHintSave: false,
+        kind: "task", isUploadRequired: false, isSelfCorrectionNecessary: false, isLinkSubmissionEnabled: false,
+      });
       let created;
       try {
-        created = await api.saveTask({
-          taskType: taskTypeOf(a), name: "", socialType: "nicht spezifiziert", activityType: "nicht spezifiziert",
-          diffs: [], licenseType: "cc0", parentId: a.parent_id, sampleSolutions: undefined, attachments: undefined, links: [],
-          taskDescription: null, taskAudioDescription: undefined, lfs: [], hintText: "", hintAttachments: undefined, isHintSave: false,
-          kind: "task", isUploadRequired: false, isSelfCorrectionNecessary: false, isLinkSubmissionEnabled: false,
-        });
-      } catch (e) { clarifyTaskgroupError(e); }
+        created = await anlegen(taskType);
+      } catch (e) {
+        if (!/taskgroup/i.test(e.message)) throw e;
+        taskType = "Wahlpflichtaufgabe";
+        try { created = await anlegen(taskType); } catch (e2) { clarifyTaskgroupError(e2); }
+      }
       // … Schritt 2: mit allen Feldern speichern
       const form = taskToForm({ ...created, parentId: a.parent_id });
       Object.assign(form, {
         name: a.name,
         description: a.description_html || "",
         internalTeacherNote: a.interne_notiz ?? null,
-        taskType: taskTypeOf(a),
+        taskType,
         estimatedTime: a.estimated_time || 0,
         diffs,
         ...k,

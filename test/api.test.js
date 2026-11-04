@@ -120,7 +120,7 @@ test("clarifyTaskgroupError übersetzt das scobees-HTTP-405 für Wahlpflicht-Kin
   const { clarifyTaskgroupError } = require("../src/tools");
   const raw = 'scobees-API POST lerninput/task → HTTP 405: {"message":"Add or edit as child (task) from taskgroup without type choice is not allowed","error":"Method Not Allowed","statusCode":405}';
   assert.throws(() => clarifyTaskgroupError(new Error(raw)), (e) => {
-    assert.match(e.message, /Wahlpflichtaufgabe lassen sich über diesen Server noch nicht anlegen/);
+    assert.match(e.message, /nicht nachträglich in eine Wahlpflichtaufgabe verschieben/);
     assert.match(e.message, /Add or edit as child \(task\) from taskgroup/);
     return true;
   });

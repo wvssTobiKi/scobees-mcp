@@ -23,7 +23,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_update_lernpfad` | `id`*, dazu dieselben Felder; `in_bib` (Schalter „In schuleigener Bib veröffentlichen“); `subject_id` verschiebt in ein anderes Fach |
 | `scobees_create_gliederung` | `parent_id`*, `name`*, `description_html` (h2, p, strong, em, u, a) |
 | `scobees_update_gliederung` | `id`*, `name`, `description_html` |
-| `scobees_create_wahlpflicht` | `parent_id`*, `name`*, `description_html`, `mindest_aufgaben`, `color`, `cover_image_path`. **Unteraufgaben lassen sich über diesen Server nicht zuordnen** (scobees lehnt sowohl `scobees_create_aufgabe` mit dieser `parent_id` als auch `scobees_move` dorthin ab, HTTP 405, live geprüft 04.11.2026/v94.2) – das bleibt Handarbeit in der Weboberfläche |
+| `scobees_create_wahlpflicht` | `parent_id`*, `name`*, `description_html`, `mindest_aufgaben`, `color`, `cover_image_path`; Unteraufgaben danach mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID. Nur `scobees_move` in eine Wahlpflichtaufgabe bleibt gesperrt (scobees-Grenze, live geprüft 04.11.2026/v94.2) – eine bestehende Aufgabe dafür neu anlegen statt verschieben |
 | `scobees_update_wahlpflicht` | `id`*, dieselben Felder |
 | `scobees_create_aufgabe` | `parent_id`*, `name`*, `description_html`, `art`, `abgabeformen`, `aufgabentyp`, `arbeitsblatt_markdown` oder `serlo_json`, `estimated_time` (Minuten), `differenzierungen`, `links`, `interne_notiz` |
 | `scobees_update_aufgabe` | `id`*, dieselben Felder; nur Übergebenes ändert sich, `arbeitsblatt_markdown`/`serlo_json` ersetzen das Arbeitsblatt komplett |
