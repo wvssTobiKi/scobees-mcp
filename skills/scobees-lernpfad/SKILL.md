@@ -55,7 +55,7 @@ Lernende sollen Inhalte darüber hinaus nicht nur lesen, sondern erkunden könne
 | Zusammenhang mit Stellgrößen (Formel, Parameter, Konfiguration) | **HTML-Simulation** als Material: Regler, Eingabefelder, sofortige Anzeige | Ohm-Rechner, Subnetz-Rechner mit Bitdarstellung, RAID-Lab (Platten ausfallen lassen, Kapazität sehen) |
 | Ablauf oder Prozess (Schritte, Zustände, Datenfluss) | HTML-Seite mit Schrittfolge oder Animation; Video, wenn ein gutes existiert | Boot-Vorgang, Handshake, Fertigungsablauf |
 | Geometrie, Funktionen, Vektoren | **GeoGebra**-Applet per URL-Zeile im Arbeitsblatt | Kennlinien, Kräfte, Winkel |
-| Aufbau, Schaltung, Skizze | **Bild** im Arbeitsblatt (`scobees_upload_bild`), gern selbst als SVG erzeugt; bei Beschriftungsaufgaben als PDF-Vorlage mit Stift-Abgabe | Netzplan, Schaltplan, Explosionszeichnung |
+| Aufbau, Schaltung, Skizze | **Bild** im Arbeitsblatt (`scobees_upload_bild`), gern selbst als SVG erzeugt (bei Schaltplänen: europäische Symbole, siehe Regel unten); bei Beschriftungsaufgaben als PDF-Vorlage mit Stift-Abgabe | Netzplan, Schaltplan, Explosionszeichnung |
 | Begriffe, Zuordnungen, Reihenfolgen | **Drag-and-drop-Lückentext** mit Wortspeicher und Distraktoren | Protokoll ↔ Schicht, Bauteil ↔ Funktion |
 | Entscheidung zwischen Varianten | Vergleichstabelle im Arbeitsblatt plus Einfachauswahl mit Rückmeldung je Antwort | RAID 1 oder RAID 5 für diesen Kunden? |
 | Vorwissen aktivieren, Gespräch anstoßen | Zitat-Box mit Aussage aus dem Szenario, dann Freitext oder Mehrfachauswahl | „Der Chef sagt: Backup brauchen wir dann nicht mehr.“ |
@@ -65,6 +65,15 @@ Regeln für die Gestaltung:
 - **Ein interaktives Element pro Abschnitt** reicht; es muss direkt mit einer Aufgabe verbunden sein („Stelle im Rechner … ein und trage ab, was passiert“). Ein Element, zu dem keine Frage gehört, wird übersprungen.
 - **HTML-Simulationen** sind eine einzige Datei ohne Netzbibliotheken, laufen offline im Browser, haben eine Überschrift, eine Zeile Anleitung und sinnvolle Startwerte. Nicht mehr als drei Stellgrößen; sichtbares Ergebnis innerhalb von zwei Sekunden Bedienung. Vor dem Hochladen im Browser testen. Sie sind als Material an der Aufgabe erreichbar; das Arbeitsblatt verweist mit Namen darauf.
 - **Bilder** erklären, nicht schmücken: Beschriftung im Bild oder in der Bildunterschrift, keine Stockfotos. Keine fremden Bilder aus Lehrbüchern.
+- **Schaltpläne und Stromlaufpläne immer mit europäischen Symbolen** (DIN EN 60617 / IEC 60617), nie mit amerikanischen (ANSI/IEEE) – die beiden Normen unterscheiden sich sichtbar, und ein selbst gezeichnetes SVG rutscht sonst leicht in die amerikanische Form (Trainingsdaten sind überwiegend US-geprägt). Vor dem Hochladen gegenprüfen:
+  - Widerstand: Rechteck (nicht die amerikanische Zickzacklinie)
+  - Schalter: schräger Strich mit Kontaktpunkt, offen dargestellt (nicht der amerikanische Knick mit Kreisen)
+  - Sicherung: Rechteck mit Linie durch die Mitte (nicht die amerikanische Schlangenlinie im Kästchen)
+  - Erdung: drei waagerechte Striche abnehmender Länge; Schutzerde zusätzlich mit Gehäusesymbol
+  - Leuchte: Kreis mit Kreuz; Motor: Kreis mit „M“ und Phasenzahl als Index (M 3~)
+  - Spule/Relais: Rechteck (nicht die amerikanische Schleifenspirale)
+  - Steckdose, Schütz, Taster, Transformator: nach DIN EN 60617, wie im Lehrbuch der Lehrkraft abgebildet
+  Im Zweifel ein Normsymbol aus einer vorhandenen Schulvorlage als Bild-Referenz verwenden statt freihändig zu zeichnen, und die Lehrkraft vor dem Hochladen kurz gegenlesen lassen, wenn der Schaltplan die Hauptaufgabe trägt.
 - **Videos** nur mit Zeitangabe („Minute 2:10 bis 4:30“) und einer Beobachtungsfrage; keine Videos als Ersatz für den Theorietext.
 - **Kontrollform zum Inhalt**: Zahl → Eingabe mit Einheit; Begriff → Drag-and-drop; Entscheidung → Einfachauswahl; Eigenschaften → Mehrfachauswahl; Begründung → Freitext oder Abgabe. Eine Frage, die man ohne den Abschnitt beantworten kann, ist überflüssig; eine, die Wortlaut abfragt statt Verständnis, wirkt konstruiert.
 - **BES und BFS**: mehr Bilder und Drag-and-drop, weniger Text; **Technikerschule, BG, FOS**: Simulationen mit Parametern, Diagramme, Datenblätter als Material.
