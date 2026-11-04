@@ -176,3 +176,27 @@ test("Trennlinie wird ausgelassen, jede Zeile ein Absatz", () => {
   const paras = doc.state.flatMap((p) => p.state).filter((n) => n.type === "p").map((n) => n.children.map((c) => c.text || "").join(""));
   assert.deepEqual(paras, ["Zeile eins", "Zeile zwei", "Zeile drei"]);
 });
+
+test("Unterstrich in Variablennamen bleibt Text, echte _Betonung_ wirkt weiter", () => {
+  const md = "Berechne u_e und U_ref im Diagramm. Das ist _wichtig_ für dich.";
+  const paras = markdownToSerlo(md).state.flatMap((p) => p.state).filter((n) => n.type === "p");
+  const joined = paras.map((p) => p.children.map((c) => c.text ?? "").join("")).join("\n");
+  assert.match(joined, /u_e und U_ref/);
+  const em = paras.flatMap((p) => p.children).find((c) => c.em);
+  assert.equal(em.text, "wichtig");
+});
+
+test("quiz-blanks: jede Zeile bleibt ein eigener Absatz", () => {
+  const doc = markdownToSerlo("```quiz-blanks\nZeile eins mit [[Lücke]].\nZeile zwei ohne Lücke.\n```");
+  const paras = doc.state[0].state.interactive.state.text.state;
+  assert.equal(paras.length, 2);
+  assert.equal(paras[1].children.map((c) => c.text ?? "").join(""), "Zeile zwei ohne Lücke.");
+});
+
+test("quiz-blanks: $…$ in Lückenantwort und Distraktor wird für den Mathematik-Vergleich abgeschnitten", () => {
+  const doc = markdownToSerlo("```quiz-blanks-dnd\nDas Ohmsche Gesetz lautet [[$U = R \cdot I$]].\n+ $P = U \cdot I$\n```");
+  const st = doc.state[0].state.interactive.state;
+  const blank = st.text.state[0].children.find((c) => c.type === "textBlank");
+  assert.deepEqual(blank.correctAnswers, [{ answer: "U = R \cdot I" }]);
+  assert.deepEqual(st.extraDraggableAnswers, [{ answer: "P = U \cdot I" }]);
+});

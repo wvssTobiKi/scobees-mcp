@@ -20,7 +20,7 @@ const TEACH_URL = process.env.SCOBEES_TEACH_URL || "https://teach.scobees.com";
 // Mit welcher scobees-Oberfläche dieser Server zuletzt geprüft wurde (siehe CHANGELOG „Kompatibilität“).
 // scobees hat keinen Versions-Endpunkt; die Version steht als Konstante im Frontend-Bundle, dessen Dateiname
 // (main-XXXX.js) sich bei jedem Deploy ändert – ein billiger Fingerabdruck für „hat sich etwas geändert?“.
-const KNOWN_SCOBEES = { version: "93.3", bundle: "main-LKRB3D56.js", checked: "2026-10-27" };
+const KNOWN_SCOBEES = { version: "94.2", bundle: "main-LEMTLTST.js", checked: "2026-11-04" };
 
 // ── Sperrliste (Schülerdaten, Lernstände, Personenlisten) ────────────────────
 const BLOCKED = [
@@ -128,6 +128,55 @@ function fileBlob(filePath) {
   return { blob: new Blob([fs.readFileSync(filePath)], { type }), name: path.basename(filePath), type };
 }
 
+// ── Diagnose für den Serlo-Bild-Upload ───────────────────────────────────────
+// SCOBEES_DEBUG=1 zeigt bei einem Fehlschlag zusätzlich URL (mit maskierten Signaturen) und
+// Antwort-Header; der Antworttext (gekürzt, maskiert) steht immer in der Fehlermeldung – vorher
+// wurde er verworfen, sodass z. B. eine HTML-Fehlerseite des Hosters nur als nackter Statuscode
+// ankam.
+const DEBUG = /^(1|true|ja)$/i.test(process.env.SCOBEES_DEBUG || "");
+const SECRET_HEADERS = /^(authorization|cookie|set-cookie)$/i;
+const SECRET_QUERY = /^(x-amz-signature|x-amz-credential|x-amz-security-token|signature|token|sig)$/i;
+
+function maskUrl(url) {
+  try {
+    const u = new URL(url);
+    for (const k of [...u.searchParams.keys()]) if (SECRET_QUERY.test(k)) u.searchParams.set(k, "***");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+function maskedHeaders(res) {
+  const out = {};
+  for (const [k, v] of res.headers.entries()) out[k] = SECRET_HEADERS.test(k) ? "***" : v;
+  return out;
+}
+
+async function uploadErrorMessage(step, url, res) {
+  const bodyText = await res.text().catch(() => "");
+  const snippet = bodyText.replace(/\s+/g, " ").trim().slice(0, 300);
+  let msg = `${step} → HTTP ${res.status}${res.statusText ? " " + res.statusText : ""}`;
+  if (snippet) msg += `
+Antwort: ${snippet}`;
+  if (res.status === 402) {
+    msg += `
+HTTP 402 (Payment Required) kommt hier nicht von scobees oder diesem Server, sondern direkt vom Medienspeicher ` +
+      `des Serlo-Editors (editor.serlo.org) – demselben, den die scobees-Weboberfläche selbst für Bild-Uploads ` +
+      `im Arbeitsblatt benutzt. Das betrifft also alle scobees-Lehrkräfte, nicht nur dieses Konto oder diese ` +
+      `Schule, und liegt weder an Dateigröße noch an Dateiformat. Ursache ist meist ein Konto-/Kontingentproblem ` +
+      `bei Serlo (siehe Antworttext oben). Abhilfe hier nicht möglich; Fallback: scobees_upload_material hängt ` +
+      `das Bild stattdessen als gewöhnlichen Anhang an die Aufgabe.`;
+  }
+  if (DEBUG) {
+    msg += `
+[Debug] URL: ${maskUrl(url)}`;
+    msg += `
+[Debug] Antwort-Header: ${JSON.stringify(maskedHeaders(res))}`;
+  }
+  return msg;
+}
+
 // ── Fachliche Aufrufe (nur Inhalte) ──────────────────────────────────────────
 const api = {
   me: () => request("GET", "users/me"),
@@ -186,17 +235,24 @@ const api = {
     return out;
   },
 
+  // presigned-url ist derselbe unauthentifizierte Aufruf, den der eingebettete Serlo-Editor selbst macht
+  // (Mitschrift aus dem Lehrer-Bundle, chunk mit dem @serlo/editor-Paket) – kein Scobees-Token beteiligt.
+  // Ein Fehler hier betrifft also auch die Weboberfläche, nicht nur diesen Server.
   uploadSerloImage: async (filePath) => {
     const { blob, type } = fileBlob(filePath);
     if (!type.startsWith("image/")) throw new Error(`Kein Bild: ${filePath}`);
     const q = new URLSearchParams({ mimeType: type, editorVariant: "unknown", parentHost: "teach.scobees.com" });
-    const pre = await fetch(`${SERLO_MEDIA_URL}/presigned-url?${q}`);
-    if (!pre.ok) throw new Error(`Serlo presigned-url → HTTP ${pre.status}`);
+    const preUrl = `${SERLO_MEDIA_URL}/presigned-url?${q}`;
+    const pre = await fetch(preUrl);
+    if (!pre.ok) throw new Error(await uploadErrorMessage("Serlo presigned-url", preUrl, pre));
     const { signedUrl, fileUrl } = await pre.json();
     const put = await fetch(signedUrl, { method: "PUT", body: blob, headers: { "Content-Type": type } });
-    if (!put.ok) throw new Error(`Bild-Upload zu Serlo → HTTP ${put.status}: ${(await put.text()).slice(0, 300)}`);
+    if (!put.ok) throw new Error(await uploadErrorMessage("Bild-Upload zu Serlo", signedUrl, put));
     return fileUrl;
   },
 };
 
-module.exports = { api, request, assertAllowed, sanitize, lerninputForm, API_URL, BLOCKED, KNOWN_SCOBEES };
+module.exports = {
+  api, request, assertAllowed, sanitize, lerninputForm, API_URL, BLOCKED, KNOWN_SCOBEES,
+  uploadErrorMessage, maskUrl, SERLO_MEDIA_URL,
+};

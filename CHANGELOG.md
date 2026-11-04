@@ -6,7 +6,30 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.5 – 2026-11-04
+
+### Bild-Upload (`scobees_upload_bild`) schlägt mit HTTP 402 fehl – Ursache gefunden, kein Server-Fehler
+
+Diagnose auf Meldung „Fehler: Serlo presigned-url → HTTP 402“ bei jedem Bild-Upload (Dateigröße/-format als Ursache ausgeschlossen):
+
+- `editor.serlo.org` – der Medienspeicher, in den sowohl dieser Server als auch der **eingebettete Serlo-Editor der scobees-Weboberfläche selbst** Bilder hochladen – ist zurzeit vollständig nicht erreichbar: jeder Aufruf der Domain (nicht nur `/media/presigned-url`) liefert HTTP 402 mit der Antwort „This account has been disabled“ vom Hoster Uberspace. Das ist ein Ausfall auf Serlo-Seite, der **alle** scobees-Lehrkräfte betrifft, nicht nur dieses Konto oder diese Schule, und nichts mit der scobees-Version oder diesem Server zu tun hat.
+- Beleg: Der Aufruf unseres Servers ist mit dem des eingebetteten Serlo-Editors identisch (gleicher Chunk `chunk-C_E2ehNR.js`, gleiche URL, gleiche Parameter, beide ohne Anmeldung) – ein eigener Bild-Upload in der Weboberfläche würde also ebenso scheitern. `de.serlo.org` (die normale Serlo-Seite) läuft dagegen.
+- **Kein Umgehen gebaut** (kein Fremd-Hoster, keine Data-URI). Fallback bleibt `scobees_upload_material`, das Bild landet dann als gewöhnlicher Anhang an der Aufgabe statt im Arbeitsblatt.
+- Server-seitig trotzdem verbessert, weil die Fehlermeldung bisher den Antworttext verwarf und nur „HTTP 402“ ohne jede Erklärung zeigte:
+  - Antworttext des fehlgeschlagenen Aufrufs steht jetzt immer (gekürzt) in der Fehlermeldung.
+  - Bei HTTP 402 zusätzlich ein erklärender Hinweis (siehe oben) statt reiner Spekulation über Dateigröße/-format.
+  - Neuer Diagnose-Modus `SCOBEES_DEBUG=1` zeigt zusätzlich URL und Antwort-Header des fehlgeschlagenen Aufrufs; Signaturen in der URL (`X-Amz-Signature` u. Ä.) und Authorization/Cookie-Header werden dabei maskiert.
+  - Neues Skript `scripts/diagnose-serlo-upload.js` prüft die drei Schritte (presigned-url, S3-Upload, voller Server-Weg) einzeln mit einem winzigen Test-Bild und zeigt, wo genau es scheitert – auch ohne scobees-Anmeldung lauffähig.
+- **Was nur Serlo klären kann:** den Uberspace-Account für `editor.serlo.org` wieder aktivieren. Weder diese Schule noch scobees können das beheben; sobald der Dienst wieder läuft, sollte `scobees_upload_bild` ohne Codeänderung wieder funktionieren (mit `scripts/diagnose-serlo-upload.js` prüfbar).
+
+### Markdown-Umwandlung
+
+- Variablennamen mit Unterstrich außerhalb von `$…$` (`u_e`, `U_ref`) wurden als Betonung gelesen und verschluckten dabei oft unbeteiligten Text bis zum nächsten Unterstrich in der Zeile; Rundreise machte daraus `*…*`. Behoben: ein Unterstrich öffnet/schließt Betonung nur noch außerhalb eines Worts (wie in CommonMark vorgesehen); Sternchen-Betonung `*…*` ist davon nicht betroffen.
+- `quiz-blanks`/`quiz-blanks-dnd`: mehrere Zeilen eines Blocks wurden zu einem Absatz zusammengezogen, Zeilenumbrüche gingen verloren. Behoben: jede Zeile ein eigener Absatz, wie im übrigen Markdown.
+- `quiz-blanks`/`quiz-blanks-dnd`: `$…$` in einer Lückenantwort (`[[$U=R\cdot I$]]`) oder einem Distraktor (`+ $5V$`) blieb als Klartext samt Dollarzeichen stehen. Ursache: Lückenantworten sind bei Serlo reine Zeichenketten ohne Formel-Darstellung; `acceptMathEquivalents` vergleicht sie als nackten mathematischen Ausdruck, den die Dollarzeichen ungültig machten. Behoben: `$…$` wird beim Speichern abgeschnitten, der Vergleich funktioniert jetzt; sichtbar bleibt es trotzdem Klartext (Serlo-Grenze, nicht im Server behebbar).
 
 ## Unveröffentlicht
 

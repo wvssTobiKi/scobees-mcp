@@ -79,3 +79,39 @@ test("Server weist unbekannte Parameter und ungültige enum-Werte ab", () => {
   res = run({ name: "x", irgendwas: 1 });
   assert.match(res.content[0].text, /unbekannter Parameter „irgendwas“/); assert.match(res.content[0].text, /Pflichtparameter „parent_id“/);
 });
+
+test("uploadErrorMessage zeigt Statuscode, Antworttext und Hinweis bei 402 (vorher verworfen)", async () => {
+  const { uploadErrorMessage } = require("../src/api");
+  const fakeRes = {
+    status: 402, statusText: "Payment Required",
+    headers: new Map([["content-type", "text/html"], ["authorization", "Bearer geheim"], ["set-cookie", "sid=geheim"]]).entries
+      ? { entries: () => new Map([["content-type", "text/html"], ["authorization", "Bearer geheim"]]).entries() }
+      : {},
+    text: async () => "<p>This account has been disabled.</p>",
+  };
+  const msg = await uploadErrorMessage("Serlo presigned-url", "https://editor.serlo.org/media/presigned-url?mimeType=image/png", fakeRes);
+  assert.match(msg, /HTTP 402/);
+  assert.match(msg, /This account has been disabled/);
+  assert.match(msg, /betrifft also alle scobees-Lehrkräfte/);
+  assert.match(msg, /scobees_upload_material/);
+});
+
+test("uploadErrorMessage maskiert Secrets nur im Debug-Modus, URL-Signaturen immer", async () => {
+  const path = require("node:path");
+  const { spawnSync } = require("node:child_process");
+  const script = `
+    const { uploadErrorMessage, maskUrl } = require(${JSON.stringify(path.resolve(__dirname, "../src/api"))});
+    const res = { status: 403, statusText: "Forbidden", headers: { entries: () => [["authorization", "Bearer geheim"]][Symbol.iterator]() }, text: async () => "nope" };
+    (async () => {
+      const url = "https://s3.example.com/x?X-Amz-Signature=geheim&X-Amz-Credential=geheim2&foo=bar";
+      console.log(maskUrl(url));
+      console.log(await uploadErrorMessage("PUT", url, res));
+    })();
+  `;
+  const r = spawnSync(process.execPath, ["-e", script], { encoding: "utf8", env: { ...process.env, SCOBEES_DEBUG: "1" } });
+  assert.match(r.stdout, /X-Amz-Signature=\*\*\*/);
+  assert.match(r.stdout, /X-Amz-Credential=\*\*\*/);
+  assert.match(r.stdout, /foo=bar/);
+  assert.match(r.stdout, /\[Debug\] Antwort-Header/);
+  assert.doesNotMatch(r.stdout, /Bearer geheim/);
+});

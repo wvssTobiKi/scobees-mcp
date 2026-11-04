@@ -47,6 +47,10 @@ function inline(src) {
     code: /^`([^`]+)`/,
     math: /^\$([^$]+)\$/,
   };
+  // CommonMark verbietet _Betonung_ innerhalb eines Worts (Sternchen dagegen ausdrücklich erlaubt): ohne
+  // diese Prüfung liest "u_e und U_ref" (Variablennamen, kein LaTeX) die Unterstriche als Betonungspaar und
+  // macht "e und U" kursiv. Betroffen ist nur die jeweils äußere Seite des Unterstrich-Paars.
+  const isWordChar = (c) => !!c && /[\p{L}\p{N}_]/u.test(c);
   while (i < src.length) {
     const rest = src.slice(i);
     let m;
@@ -58,7 +62,7 @@ function inline(src) {
       flush();
       for (const n of inline(m[1])) out.push("text" in n ? { ...n, strong: true } : n);
       i += m[0].length;
-    } else if ((m = rest.match(re.em))) {
+    } else if ((m = rest.match(re.em)) && !(m[2] !== undefined && (isWordChar(src[i - 1]) || isWordChar(src[i + m[0].length])))) {
       flush();
       for (const n of inline(m[1] ?? m[2])) out.push("text" in n ? { ...n, em: true } : n);
       i += m[0].length;
@@ -289,28 +293,34 @@ function inputExercise(body) {
   });
 }
 
+// correctAnswers[].answer und extraDraggableAnswers[].answer sind beim Serlo-Baustein blanksExercise reine
+// Zeichenketten (kein Rich-Text, keine Formel-Darstellung) – acceptMathEquivalents vergleicht sie als
+// LaTeX-Ausdruck, nicht als gerendertes $…$. Ein mitgeschriebenes $…$ bleibt deshalb sichtbarer Klartext UND
+// verhindert den Mathematik-Vergleich (die Dollarzeichen sind kein gültiger Ausdruck); hier abgeschnitten.
+const stripMathDelims = (s) => s.trim().replace(/^\$(.+)\$$/, "$1");
+
 function blanksExercise(body, dnd) {
   const extra = [];
-  const textLines = body.filter((l) => { const m = l.trim().match(/^\+\s+(.*)$/); if (m) { extra.push({ answer: m[1] }); return false; } return true; });
-  const src = textLines.join("\n");
-  // [[Antwort|Variante]] → textBlank-Knoten
-  const slateParas = src.split(/\n\s*\n/).map((para) => {
+  const textLines = body.filter((l) => { const m = l.trim().match(/^\+\s+(.*)$/); if (m) { extra.push({ answer: stripMathDelims(m[1]) }); return false; } return true; });
+  if (!textLines.some((l) => /\[\[/.test(l))) throw new Error("quiz-blanks: keine Lücke im Format [[Antwort]] gefunden.");
+  // [[Antwort|Variante]] → textBlank-Knoten; jede Zeile ein eigener Absatz (wie im übrigen Markdown), sonst
+  // werden mehrere Sätze eines Blocks zu einem einzigen Absatz zusammengezogen und Zeilenumbrüche gehen verloren.
+  const slateParas = textLines.filter((l) => l.trim() !== "").map((line) => {
     const children = [];
     let last = 0;
     const re = /\[\[([^\]]+)\]\]/g;
     let m;
-    while ((m = re.exec(para))) {
-      children.push(...inline(para.slice(last, m.index)));
+    while ((m = re.exec(line))) {
+      children.push(...inline(line.slice(last, m.index)));
       children.push({
         type: "textBlank", blankId: uid(), children: [{ text: "" }],
-        correctAnswers: m[1].split("|").map((a) => ({ answer: a.trim() })), acceptMathEquivalents: true,
+        correctAnswers: m[1].split("|").map((a) => ({ answer: stripMathDelims(a) })), acceptMathEquivalents: true,
       });
       last = m.index + m[0].length;
     }
-    children.push(...inline(para.slice(last)));
+    children.push(...inline(line.slice(last)));
     return { type: "p", children };
   });
-  if (!/\[\[/.test(src)) throw new Error("quiz-blanks: keine Lücke im Format [[Antwort]] gefunden.");
   const state = { text: text(slateParas), mode: dnd ? "drag-and-drop" : "typing" };
   if (dnd && extra.length) state.extraDraggableAnswers = extra;
   return P("exercise", { content: rows([]), interactive: P("blanksExercise", state) });

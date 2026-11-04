@@ -91,7 +91,7 @@ Eine IPv4-Adresse hat [[32]] Bit, aufgeteilt in vier [[Oktette]].
 + Gateway
 ```
 ````
-Drag-and-drop mit Wortspeicher; `+ …` sind Distraktoren. Robuste Standardform für Begriffe.
+Drag-and-drop mit Wortspeicher; `+ …` sind Distraktoren. Robuste Standardform für Begriffe. Jede Zeile bleibt ein eigener Absatz. Eine Lückenantwort oder ein Distraktor als Formel (`[[$U=R\cdot I$]]`) wird als bloßer mathematischer Ausdruck verglichen (Serlo stellt Lückenantworten nicht als gerenderte Formel dar, nur Fließtext außerhalb der Lücke); `$…$` darf geschrieben werden, wird beim Speichern aber abgeschnitten.
 
 ````markdown
 ```quiz-text

@@ -122,6 +122,10 @@ Der Server stellt Werkzeuge bereit; **wie** daraus eine gute Lernsituation wird 
 
 Der Server bildet eine inoffizielle Schnittstelle nach. Welche scobees-Version mit welcher Server-Version geprüft wurde, steht in der Tabelle „Kompatibilität“ in [CHANGELOG.md](CHANGELOG.md). `scobees_me` zeigt die aktuell laufende scobees-Version und warnt, wenn sie von der geprüften abweicht; dann bei Problemen ein Issue „scobees-Änderung“ anlegen.
 
+## Wenn ein Werkzeug fehlschlägt
+
+Die Fehlermeldung zeigt immer den Antworttext des fehlgeschlagenen Aufrufs, nicht nur den Statuscode. `SCOBEES_DEBUG=1` zeigt zusätzlich URL und Antwort-Header (Tokens/Signaturen maskiert). Für `scobees_upload_bild` gibt es außerdem `node scripts/diagnose-serlo-upload.js`, das die drei Schritte des Bild-Uploads einzeln prüft und sagt, wo es hakt – auch ohne scobees-Anmeldung lauffähig (ein Beispiel für so gefundene Ursache: Abschnitt 0.1.5 in [CHANGELOG.md](CHANGELOG.md)). Ein HTTP-402-Fehler bei diesem Werkzeug kommt in aller Regel nicht von scobees oder diesem Server, sondern vom externen Medienspeicher des Serlo-Editors; Fallback ist `scobees_upload_material` (Bild als gewöhnlicher Anhang statt im Arbeitsblatt).
+
 ## Entwicklung
 
 ```bash
