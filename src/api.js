@@ -20,7 +20,7 @@ const TEACH_URL = process.env.SCOBEES_TEACH_URL || "https://teach.scobees.com";
 // Mit welcher scobees-Oberfläche dieser Server zuletzt geprüft wurde (siehe CHANGELOG „Kompatibilität“).
 // scobees hat keinen Versions-Endpunkt; die Version steht als Konstante im Frontend-Bundle, dessen Dateiname
 // (main-XXXX.js) sich bei jedem Deploy ändert – ein billiger Fingerabdruck für „hat sich etwas geändert?“.
-const KNOWN_SCOBEES = { version: "94.5", bundle: "main-K73FMJMP.js", checked: "2026-11-11" };
+const KNOWN_SCOBEES = { version: "94.6", bundle: "main-FWSHPEPF.js", checked: "2026-11-11" };
 
 // ── Sperrliste (Schülerdaten, Lernstände, Personenlisten) ────────────────────
 const BLOCKED = [

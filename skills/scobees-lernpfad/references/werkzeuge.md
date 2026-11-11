@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.9)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.10)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -23,7 +23,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_update_lernpfad` | `id`*, dazu dieselben Felder; `in_bib` (Schalter „In schuleigener Bib veröffentlichen“); `subject_id` verschiebt in ein anderes Fach |
 | `scobees_create_gliederung` | `parent_id`*, `name`*, `description_html` (h2, p, strong, em, u, a), `cover_image_path` (Kachelbild), `color` (Hex) |
 | `scobees_update_gliederung` | `id`*, `name`, `description_html`, `cover_image_path`, `color`; nicht Angegebenes bleibt erhalten, auch Bild und Farbe |
-| `scobees_create_wahlpflicht` | `parent_id`*, `name`*, `description_html`, `mindest_aufgaben`, `color`, `cover_image_path`; Unteraufgaben danach mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID. Nur `scobees_move` in eine Wahlpflichtaufgabe bleibt gesperrt (scobees-Grenze, live geprüft 04.11.2026/v94.2) – eine bestehende Aufgabe dafür neu anlegen statt verschieben |
+| `scobees_create_wahlpflicht` | `parent_id`*, `name`*, `description_html`, `mindest_aufgaben`, `color`, `cover_image_path`; Unteraufgaben danach mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID. Bestehende Aufgaben lassen sich ab scobees 94.6 auch mit `scobees_move` hineinschieben (live geprüft 11.11.2026) |
 | `scobees_update_wahlpflicht` | `id`*, dieselben Felder |
 | `scobees_create_aufgabe` | `parent_id`*, `name`*, `description_html`, `art`, `abgabeformen`, `aufgabentyp`, `arbeitsblatt_markdown` oder `serlo_json`, `estimated_time` (Minuten), `differenzierungen`, `links`, `interne_notiz`, `cover_image_path` (Kachelbild) |
 | `scobees_update_aufgabe` | `id`*, dieselben Felder; nur Übergebenes ändert sich, `arbeitsblatt_markdown`/`serlo_json` ersetzen das Arbeitsblatt komplett |
@@ -31,7 +31,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_upload_material` | `aufgabe_id`*, `file_path`* (absoluter lokaler Pfad), `als_musterloesung`, `ersetzt_attachment_id` (alten Anhang nach erfolgreichem Upload löschen) |
 | `scobees_delete_material` | `aufgabe_id`*, `attachment_id`* (aus `scobees_get_aufgabe` → `anhaenge[].id`/`musterloesungen[].id`), `confirm`* (muss `true` sein). Löscht genau einen Anhang oder eine Musterlösung; prüft die Zugehörigkeit und warnt, wenn es das letzte PDF einer Stift-Abgabe (`abgabeformen: pen`) ist |
 | `scobees_upload_bild` | `file_path`* → URL für `![…](URL)` im Arbeitsblatt (öffentlich bei Serlo) |
-| `scobees_move` | `id`*, `parent_id`*, `sort_order`* (0-basiert; auch in andere Gliederung desselben Pfads) |
+| `scobees_move` | `id`*, `parent_id`*, `sort_order`* (0-basiert; auch in andere Gliederung desselben Pfads). Einzelne Aufgabe in eine Wahlpflichtaufgabe: geht, sie wird Unteraufgabe und verliert ihren Aufgabentyp (`warnung` im Ergebnis). Nicht möglich: Unteraufgabe aus der Wahlpflichtaufgabe heraus, Gliederung oder Wahlpflichtaufgabe in eine Wahlpflichtaufgabe |
 | `scobees_delete` | `id`*, `confirm: true`* – löscht mit allen Unterelementen; vorher ausdrücklich bestätigen lassen |
 
 ## Aufgabenart `art` (richtet sich nach der Abgabe)

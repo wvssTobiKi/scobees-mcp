@@ -243,7 +243,7 @@ Erst live widerlegt, dann per Browser-Mitschnitt (Tobias hat in der echten Webob
 - `POST lerninput/task` mit `parentId` = Wahlpflicht-ID und einem normalen `taskType` (z. B. „Pflichtaufgabe“) → HTTP 405 `{"message":"Add or edit as child (task) from taskgroup without type choice is not allowed"}`.
 - Die über die Weboberfläche angelegte Unteraufgabe trägt zurückgelesen `"taskType": "Wahlpflichtaufgabe"` (nicht „Pflichtaufgabe“ o. Ä.) – das ist das fehlende Feld aus der Fehlermeldung („type choice“ ≈ taskType „Wahlpflichtaufgabe“).
 - Bestätigt: `POST lerninput/task` mit `taskType: "Wahlpflichtaufgabe"` und `parentId` = Wahlpflicht-ID **funktioniert** – direkt gegenprobiert.
-- `PUT lerninput/changePosition/{id}` mit demselben Ziel bleibt dagegen **immer** gesperrt (HTTP 405 „Changing the parent to a taskgroup is not allowed“), auch wenn die Aufgabe vorher per Update auf `taskType: "Wahlpflichtaufgabe"` gesetzt wird. scobees verlangt zwingend, dass die Aufgabe von Anfang an unter der Wahlpflichtaufgabe entsteht; ein bestehender Task lässt sich nicht nachträglich hinein verschieben.
+- (Stand bis v94.5, seit v94.6 überholt – siehe Mitschrift 14) `PUT lerninput/changePosition/{id}` mit demselben Ziel bleibt dagegen **immer** gesperrt (HTTP 405 „Changing the parent to a taskgroup is not allowed“), auch wenn die Aufgabe vorher per Update auf `taskType: "Wahlpflichtaufgabe"` gesetzt wird. scobees verlangt zwingend, dass die Aufgabe von Anfang an unter der Wahlpflichtaufgabe entsteht; ein bestehender Task lässt sich nicht nachträglich hinein verschieben.
 - `POST lerninput/{id}/copy-into/{zielId}` (Versuch als Alternative) → HTTP 405 `{"message":"Copy target must be a root lerninput"}` – dieser Endpunkt ist für das Kopieren ganzer Lernpfade, nicht für Wahlpflicht-Kinder.
 
 Unsere bisherige Doku (Mitschrift 5) nannte den naheliegenden Weg nur als Vermutung („vermutlich wieder POST lerninput/task“) – das stimmte im Kern, nur fehlte der `taskType`.
@@ -296,3 +296,23 @@ Browser-Mitschnitt (Tobias hat in der Weboberfläche Bilder gesetzt, die Seite w
 Live geprüft: Gliederung mit Bild anlegen, umbenennen (Bild und Farbe bleiben), Bild ersetzen; Aufgabe mit Bild anlegen, Feld ändern (Bild bleibt), Bild ersetzen (alte Bilddatei wird entfernt), `hat_titelbild` im Baum, `titelbild` in `scobees_get_aufgabe`, Ablehnung von Nicht-Bildern.
 
 Zum Mitschnitt-Verfahren selbst: `read_network_requests` des Browser-Bereichs zeigt die API-Aufrufe der Angular-Oberfläche nicht zuverlässig. Bewährt hat sich ein Haken in der Seite über `XMLHttpRequest.prototype.open/send` und `window.fetch`, der Methode, URL, Status, Antwort und bei `FormData` die Feldnamen samt Dateiangaben in ein Array schreibt.
+
+## Mitschrift 14 (11.11.2026, v94.6): Funktionstest nach scobees-Update, Verschieben in Wahlpflichtaufgaben
+
+scobees ist von v94.5 (main-K73FMJMP.js) auf v94.6 (main-FWSHPEPF.js) gegangen. Geprüft mit `scripts/funktionstest.js` (alle 22 Werkzeuge, 23 Schritte, jeder mit Zurücklesen) und einer gezielten Sondierung der einzigen Abweichung.
+
+**Unverändert:** Anmeldung, Lernbereiche, Fächer, Tags, Lernpfad anlegen/ändern/suchen (Beschreibung reiner Text, Titelbild), Gliederung mit Kachelbild und Farbe, Aufgabe mit allen Arbeitsblatt-Bausteinen samt verlustfreier Rundreise, Teil-Patch, Abgabeform/Aufgabentyp/Kachelbild ändern, Material und Musterlösung hochladen/ersetzen/löschen, Wahlpflichtaufgabe und Unteraufgabe anlegen, Baum lesen, Löschen.
+
+**Geändert – `PUT lerninput/changePosition/{id}` mit einer Wahlpflichtaufgabe als Ziel:**
+
+| Fall | bis v94.5 | v94.6 |
+|---|---|---|
+| einzelne Aufgabe (Pflicht/Extra/Training) in eine Wahlpflichtaufgabe | HTTP 405 „Changing the parent to a taskgroup is not allowed“ | **geht**; `taskType` wird serverseitig auf „Wahlpflichtaufgabe“ gesetzt, der alte Typ ist weg |
+| Gliederung in eine Wahlpflichtaufgabe | nicht geprüft | HTTP 405 „Changing the parent to a taskgroup is not allowed“ |
+| Unteraufgabe aus der Wahlpflichtaufgabe heraus | nicht geprüft | HTTP 405 „Changing the parent of a taskgroup task is not allowed“ |
+| Unteraufgabe innerhalb der Wahlpflichtaufgabe umsortieren | geht | geht |
+
+Eine hineingeschobene Aufgabe lässt sich danach normal ändern (`POST lerninput/task`), der Typ bleibt „Wahlpflichtaufgabe“. Der Weg ist also eine Einbahnstraße: hinein ja, heraus nein. `scobees_move` meldet die Typumstellung deshalb als `warnung`.
+
+**Bild-Upload ins Arbeitsblatt:** `editor.serlo.org` liefert wieder (presigned URL, Upload, Abruf-URL); der HTTP-402-Ausfall vom selben Tag ist behoben.
+

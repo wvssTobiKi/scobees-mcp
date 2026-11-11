@@ -124,21 +124,34 @@ function htmlToPlainText(s) {
 }
 const ok = (msg, data) => ({ ok: true, hinweis: msg, ...data });
 
-// scobees lehnt sowohl POST lerninput/task mit parentId = Wahlpflicht-ID als auch ein nachträgliches
-// Verschieben dorthin ab (live geprüft, HTTP 405 mit „…from taskgroup…“ bzw. „…parent to a taskgroup…“).
-// Der echte Mechanismus (vermutlich über die lerninput-selector-API der Weboberfläche) ist noch nicht
-// nachgebildet – bis dahin eine ehrliche Meldung statt des rohen HTTP-405 weiterreichen.
+// Regeln von scobees rund um Wahlpflichtaufgaben („taskgroup“), jeweils HTTP 405 (live geprüft, zuletzt v94.6):
+//   „Add or edit as child (task) from taskgroup without type choice …“  Unteraufgabe ohne taskType „Wahlpflichtaufgabe“
+//   „Changing the parent of a taskgroup task is not allowed“            Unteraufgabe aus der Wahlpflichtaufgabe heraus
+//   „Changing the parent to a taskgroup is not allowed“                 Element in eine Wahlpflichtaufgabe hinein
+// Bis v94.5 galt die dritte Regel auch für einzelne Aufgaben; seit v94.6 nimmt scobees Aufgaben an (und stellt
+// ihren Typ auf „Wahlpflichtaufgabe“ um), Gliederungen und Wahlpflichtaufgaben weiterhin nicht.
+// Statt des rohen HTTP-405 bekommt die Lehrkraft die passende Erklärung samt Abhilfe.
 function clarifyTaskgroupError(e) {
   if (/taskgroup/i.test(e.message)) {
     let detail = e.message;
     const m = e.message.match(/\{.*\}/s);
     if (m) { try { detail = JSON.parse(m[0]).message || detail; } catch {} }
-    throw new Error(
-      "scobees lehnt das ab (Meldung von scobees: „" + detail + "“). " +
-      "Eine bestehende Aufgabe lässt sich nicht nachträglich in eine Wahlpflichtaufgabe verschieben – scobees verlangt, dass sie von " +
-      "Anfang an dort angelegt wird (das macht scobees_create_aufgabe automatisch, wenn parent_id eine Wahlpflichtaufgabe ist). " +
-      "Abhilfe hier: Aufgabe unter parent_id der Wahlpflichtaufgabe neu anlegen und die alte löschen, oder in der Weboberfläche verschieben."
-    );
+    let erklaerung;
+    if (/parent of a taskgroup task/i.test(detail)) {
+      erklaerung =
+        "Eine Unteraufgabe lässt sich nicht aus ihrer Wahlpflichtaufgabe heraus verschieben. " +
+        "Abhilfe: Aufgabe am Ziel neu anlegen (Inhalt vorher mit scobees_get_aufgabe lesen) und die Unteraufgabe löschen, oder in der Weboberfläche verschieben.";
+    } else if (/parent to a taskgroup/i.test(detail)) {
+      erklaerung =
+        "Dieses Element lässt sich nicht in eine Wahlpflichtaufgabe verschieben. Einzelne Aufgaben nimmt scobees dort seit Version 94.6 an, " +
+        "Gliederungen und Wahlpflichtaufgaben nicht (ältere scobees-Versionen auch keine Aufgaben). " +
+        "Abhilfe: Aufgabe mit scobees_create_aufgabe direkt unter der Wahlpflichtaufgabe neu anlegen und die alte löschen, oder in der Weboberfläche verschieben.";
+    } else {
+      erklaerung =
+        "Eine Unteraufgabe einer Wahlpflichtaufgabe braucht den Aufgabentyp „Wahlpflichtaufgabe“; scobees_create_aufgabe setzt ihn selbst, " +
+        "wenn parent_id eine Wahlpflichtaufgabe ist. Der Aufgabentyp einer Unteraufgabe lässt sich nicht ändern.";
+    }
+    throw new Error("scobees lehnt das ab (Meldung von scobees: „" + detail + "“). " + erklaerung);
   }
   throw e;
 }
@@ -486,7 +499,7 @@ const TOOLS = [
   },
   {
     name: "scobees_create_wahlpflicht",
-    description: "Legt eine Wahlpflichtaufgabe an: ein Container, aus dem Lernende eine Mindestanzahl an Unteraufgaben lösen. Unteraufgaben danach mit scobees_create_aufgabe (parent_id = diese ID) – sie müssen dort von Anfang an entstehen, scobees lehnt es ab, eine bestehende Aufgabe nachträglich per scobees_move in eine Wahlpflichtaufgabe zu verschieben (dann neu anlegen und die alte löschen, oder in der Weboberfläche verschieben).",
+    description: "Legt eine Wahlpflichtaufgabe an: ein Container, aus dem Lernende eine Mindestanzahl an Unteraufgaben lösen. Unteraufgaben danach mit scobees_create_aufgabe (parent_id = diese ID) anlegen. Eine bestehende Aufgabe lässt sich ab scobees 94.6 auch mit scobees_move hineinschieben (sie verliert dabei ihren Aufgabentyp); heraus kommt eine Unteraufgabe nicht mehr.",
     inputSchema: {
       type: "object",
       properties: {
@@ -754,15 +767,29 @@ const TOOLS = [
   },
   {
     name: "scobees_move",
-    description: "Verschiebt eine Aufgabe/Gliederung/Wahlpflicht an eine Position (sort_order, 0-basiert) – auch in eine andere Gliederung desselben Lernpfads.",
+    description:
+      "Verschiebt eine Aufgabe/Gliederung/Wahlpflicht an eine Position (sort_order, 0-basiert) – auch in eine andere Gliederung desselben Lernpfads. " +
+      "Eine einzelne Aufgabe lässt sich auch in eine Wahlpflichtaufgabe verschieben (ab scobees 94.6): Sie wird dabei zur Unteraufgabe, verliert ihren " +
+      "bisherigen Aufgabentyp (Pflicht/Extra/Training/Projekt) und kommt nicht wieder heraus – das Ergebnis nennt die Umstellung unter warnung. " +
+      "Unteraufgaben lassen sich nur innerhalb ihrer Wahlpflichtaufgabe umsortieren.",
     inputSchema: {
       type: "object",
-      properties: { id: { type: "string" }, parent_id: { type: "string", description: "Ziel-Gliederung/-Lernpfad" }, sort_order: { type: "number" } },
+      properties: { id: { type: "string" }, parent_id: { type: "string", description: "Ziel: Gliederung, Lernpfad oder (nur für einzelne Aufgaben) Wahlpflichtaufgabe" }, sort_order: { type: "number" } },
       required: ["id", "parent_id", "sort_order"],
     },
     run: async (a) => {
+      const vorher = await api.lerninput(a.id);
       try { await api.move(a.id, a.parent_id, a.sort_order); } catch (e) { clarifyTaskgroupError(e); }
-      return ok("Verschoben.", { id: a.id, parentId: a.parent_id, sortOrder: a.sort_order });
+      const out = ok("Verschoben.", { id: a.id, parentId: a.parent_id, sortOrder: a.sort_order });
+      if (vorher.isLeaf && vorher.parentId !== a.parent_id) {
+        const nachher = await api.lerninput(a.id);
+        if (nachher.taskType !== vorher.taskType) {
+          out.aufgabentyp = nachher.taskType;
+          out.warnung = `Die Aufgabe ist jetzt Unteraufgabe einer Wahlpflichtaufgabe; ihr Aufgabentyp wurde von „${vorher.taskType}“ auf „${nachher.taskType}“ umgestellt. ` +
+            "Zurück in eine Gliederung lässt sie sich nicht mehr verschieben (nur neu anlegen und hier löschen).";
+        }
+      }
+      return out;
     },
   },
   {

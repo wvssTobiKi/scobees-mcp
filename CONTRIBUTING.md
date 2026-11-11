@@ -41,7 +41,9 @@ Die Methode, mit der das Projekt entstanden ist, funktioniert auch für jede Erw
 
 ## Wenn scobees sich geändert hat
 
-Symptome: HTTP 400/404/422 aus `api.js`, leere Antworten, Editor-Fehler bei Arbeitsblättern. Vorgehen:
+Symptome: `scobees_me` meldet eine neue Version, HTTP 400/404/422 aus `api.js`, leere Antworten, Editor-Fehler bei Arbeitsblättern. Vorgehen:
+
+0. `npm run test:live -- <Fach-ID>` laufen lassen (`scripts/funktionstest.js`). Das Skript ruft jedes Werkzeug gegen das echte scobees auf, prüft durch Zurücklesen und räumt seinen Test-Lernpfad wieder ab. Läuft alles durch, genügt es, `KNOWN_SCOBEES` und die Kompatibilitätstabelle nachzuziehen. Wer ein Werkzeug ergänzt, ergänzt dort auch einen Schritt.
 
 1. Ein Issue mit der Vorlage „scobees-Änderung“ anlegen (Werkzeug, Fehlermeldung, scobees-Version – steht unten rechts in der Oberfläche, z. B. v93.3).
 2. Die betroffene Funktion in der Oberfläche neu mitschneiden (Schritt 1 oben) und mit der Mitschrift in der API-Karte vergleichen.

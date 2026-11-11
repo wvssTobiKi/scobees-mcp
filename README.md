@@ -121,7 +121,7 @@ Der Server stellt Werkzeuge bereit; **wie** daraus eine gute Lernsituation wird 
 
 ## Kompatibilität
 
-Der Server bildet eine inoffizielle Schnittstelle nach. Welche scobees-Version mit welcher Server-Version geprüft wurde, steht in der Tabelle „Kompatibilität“ in [CHANGELOG.md](CHANGELOG.md). `scobees_me` zeigt die aktuell laufende scobees-Version und warnt, wenn sie von der geprüften abweicht; dann bei Problemen ein Issue „scobees-Änderung“ anlegen.
+Der Server bildet eine inoffizielle Schnittstelle nach. Welche scobees-Version mit welcher Server-Version geprüft wurde, steht in der Tabelle „Kompatibilität“ in [CHANGELOG.md](CHANGELOG.md). `scobees_me` zeigt die aktuell laufende scobees-Version und warnt, wenn sie von der geprüften abweicht. Dann prüft `npm run test:live -- <Fach-ID>` in wenigen Minuten alle Werkzeuge gegen die neue Version (nur Inhalte in einem Test-Lernpfad, keine Schüler- oder Personendaten); bei Problemen ein Issue „scobees-Änderung“ anlegen.
 
 ## Wenn ein Werkzeug fehlschlägt
 
@@ -130,7 +130,8 @@ Die Fehlermeldung zeigt immer den Antworttext des fehlgeschlagenen Aufrufs, nich
 ## Entwicklung
 
 ```bash
-npm test                    # Konverter- und Sperrlisten-Tests
+npm test                    # Konverter- und Sperrlisten-Tests (ohne Netz)
+npm run test:live -- SUBJ-… # Funktionstest aller Werkzeuge gegen das echte scobees (legt einen Test-Lernpfad an und löscht ihn wieder)
 node src/server.js --tools  # Werkzeugliste
 node src/server.js --login  # Anmeldung prüfen
 npm run pack                # scobees-mcp.mcpb bauen

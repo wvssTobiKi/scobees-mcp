@@ -5,7 +5,7 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.9** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.10** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist.
 
@@ -89,7 +89,7 @@ Gliederungen sind Orientierung, keine Dekoration. Zu viele Ebenen zerstückeln d
 - Theorie und ihre Kontrolle gehören in **eine** Aufgabe (Arbeitsblatt mit Quiz), nicht in „Lesen“ plus „Quiz“.
 - Nummerierung im Aufgabentitel („2.1 IPv4 und Subnetzmaske“) hilft, weil scobees Aufgaben in der Kachelansicht ohne Kontext zeigt.
 - Extra- und Trainingsaufgaben in eine Gliederung „Vertiefung“ oder ans Ende der passenden Phase, nie lose in die Wurzel.
-- Wahlpflichtaufgaben nur, wenn echte Wahl besteht (n von m), und nie leer lassen. Unteraufgaben mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID anlegen, das funktioniert direkt. Eine Aufgabe lässt sich aber nicht nachträglich per `scobees_move` in eine Wahlpflichtaufgabe verschieben – sie muss von Anfang an dort entstehen.
+- Wahlpflichtaufgaben nur, wenn echte Wahl besteht (n von m), und nie leer lassen. Unteraufgaben mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID anlegen, das funktioniert direkt. Eine bestehende Aufgabe lässt sich auch per `scobees_move` in eine Wahlpflichtaufgabe verschieben (ab scobees 94.6); sie verliert dabei ihren Aufgabentyp und kommt nicht wieder heraus. Deshalb vor dem Verschieben mit der Lehrkraft klären, ob die Aufgabe wirklich zur Wahl stehen soll.
 
 ### 4. Grobplan zeigen und freigeben lassen (immer)
 

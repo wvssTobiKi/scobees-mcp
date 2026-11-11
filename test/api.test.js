@@ -120,10 +120,14 @@ test("clarifyTaskgroupError übersetzt das scobees-HTTP-405 für Wahlpflicht-Kin
   const { clarifyTaskgroupError } = require("../src/tools");
   const raw = 'scobees-API POST lerninput/task → HTTP 405: {"message":"Add or edit as child (task) from taskgroup without type choice is not allowed","error":"Method Not Allowed","statusCode":405}';
   assert.throws(() => clarifyTaskgroupError(new Error(raw)), (e) => {
-    assert.match(e.message, /nicht nachträglich in eine Wahlpflichtaufgabe verschieben/);
+    assert.match(e.message, /braucht den Aufgabentyp „Wahlpflichtaufgabe“/);
     assert.match(e.message, /Add or edit as child \(task\) from taskgroup/);
     return true;
   });
+  // Die beiden Verschiebe-Regeln bekommen je eine eigene Erklärung (Stand scobees 94.6)
+  const move = (msg) => new Error(`scobees-API PUT lerninput/changePosition/LI-1 → HTTP 405: {"message":"${msg}","error":"Method Not Allowed","statusCode":405}`);
+  assert.throws(() => clarifyTaskgroupError(move("Changing the parent of a taskgroup task is not allowed")), /nicht aus ihrer Wahlpflichtaufgabe heraus verschieben/);
+  assert.throws(() => clarifyTaskgroupError(move("Changing the parent to a taskgroup is not allowed")), /nicht in eine Wahlpflichtaufgabe verschieben.*seit Version 94\.6/s);
   // Andere Fehler bleiben unverändert (kein falsches „Positiv“ auf irgendein Wort)
   assert.throws(() => clarifyTaskgroupError(new Error("scobees-API GET lerninput/LI-1 → HTTP 404: nicht gefunden")), /HTTP 404/);
 });

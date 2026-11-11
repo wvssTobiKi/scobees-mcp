@@ -6,12 +6,22 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.10 | v94.6 | main-FWSHPEPF.js | 2026-11-11 | alle 22 Werkzeuge mit `scripts/funktionstest.js` live geprüft (23 Schritte, jeweils mit Zurücklesen). Einzige Änderung in scobees: eine bestehende Aufgabe lässt sich jetzt in eine Wahlpflichtaufgabe verschieben. Bild-Upload ins Arbeitsblatt (Serlo-Medienspeicher) funktioniert wieder |
 | 0.1.9 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Kachelbild für Gliederung und Aufgabe per Browser-Mitschnitt ermittelt und live geprüft (anlegen, behalten, ersetzen); `scobees_patch_arbeitsblatt` live geprüft (Erfolg, Mehrfachtreffer, kein Treffer, verlustbehafteter Baustein); Bilder in Box/Spoiler und geschütztes Leerzeichen (U+00A0/U+202F) bestätigt unverändert erhalten |
 | 0.1.8 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Bundle seit v94.2 gewechselt (main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen); Lernpfad/Gliederung/Aufgabe/Wahlpflicht-Unteraufgabe anlegen dabei bestätigt unverändert. Neue Werkzeuge live geprüft: Anhang löschen (`DELETE attachments/{id}`), Lernpfad-Beschreibung als reiner Text |
 | 0.1.7 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest (Lernpfad/Gliederung/Aufgabe mit allen Markdown-Bausteinen, Material-Upload, Löschen – unverändert) plus Browser-Mitschnitt: Wahlpflicht-Unteraufgaben funktionieren jetzt (taskType „Wahlpflichtaufgabe“ nötig, automatisch gesetzt); Verschieben in eine Wahlpflichtaufgabe bleibt gesperrt |
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.10 – 2026-11-11
+
+Anpassung an scobees v94.6 (Bundle main-FWSHPEPF.js). Alle Werkzeuge der 0.1.9 arbeiten mit v94.6 unverändert; dieses Release zieht eine gelockerte scobees-Regel nach und bringt den Funktionstest als Skript mit.
+
+- **`scobees_move` in eine Wahlpflichtaufgabe:** scobees v94.6 nimmt eine bestehende Aufgabe jetzt als Unteraufgabe an (bis v94.5 HTTP 405) und stellt ihren Aufgabentyp dabei auf „Wahlpflichtaufgabe“ um. Das Werkzeug meldet die Umstellung unter `warnung` und `aufgabentyp`. Weiterhin gesperrt: eine Unteraufgabe aus ihrer Wahlpflichtaufgabe heraus verschieben, eine Gliederung oder Wahlpflichtaufgabe in eine Wahlpflichtaufgabe verschieben. Beide Fälle haben jetzt je eine eigene Erklärung mit Abhilfe; die bisherige Sammelmeldung („lässt sich nicht nachträglich verschieben“) war für v94.6 falsch.
+- **Neues Skript `scripts/funktionstest.js`** (`npm run test:live -- <Fach-ID>`): legt in einem Fach einen Test-Lernpfad an, ruft jedes Werkzeug mindestens einmal auf, prüft die Wirkung durch Zurücklesen und löscht den Test-Lernpfad wieder, auch nach einem Fehlschlag. Gedacht für den Moment, in dem `scobees_me` eine neue scobees-Version meldet. Der Bild-Upload ins Arbeitsblatt zählt darin nur als Hinweis, weil er an einem externen Dienst hängt.
+- Bild-Upload ins Arbeitsblatt (`scobees_upload_bild`): der Medienspeicher des Serlo-Editors antwortet wieder (am 11.11.2026 zeitweise HTTP 402). Am Server wurde dafür nichts geändert.
+- Werkzeugbeschreibungen von `scobees_move` und `scobees_create_wahlpflicht`, Skill (`SKILL.md`, `references/werkzeuge.md`) und API-Karte (Mitschrift 14) entsprechend angepasst; Test für die drei Wahlpflicht-Fehlermeldungen erweitert (31 Tests, alle grün).
 
 ## 0.1.9 – 2026-11-11
 

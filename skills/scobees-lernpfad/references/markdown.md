@@ -1,4 +1,4 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.9)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.10)
 
 Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
