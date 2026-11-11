@@ -20,7 +20,7 @@ const TEACH_URL = process.env.SCOBEES_TEACH_URL || "https://teach.scobees.com";
 // Mit welcher scobees-Oberfläche dieser Server zuletzt geprüft wurde (siehe CHANGELOG „Kompatibilität“).
 // scobees hat keinen Versions-Endpunkt; die Version steht als Konstante im Frontend-Bundle, dessen Dateiname
 // (main-XXXX.js) sich bei jedem Deploy ändert – ein billiger Fingerabdruck für „hat sich etwas geändert?“.
-const KNOWN_SCOBEES = { version: "94.2", bundle: "main-LEMTLTST.js", checked: "2026-11-04" };
+const KNOWN_SCOBEES = { version: "94.5", bundle: "main-K73FMJMP.js", checked: "2026-11-11" };
 
 // ── Sperrliste (Schülerdaten, Lernstände, Personenlisten) ────────────────────
 const BLOCKED = [
@@ -213,6 +213,10 @@ const api = {
     return request("POST", "attachments", { form: fd });
   },
   attachmentUrl: (p) => `${API_URL}/attachment?path=${encodeURIComponent(p)}`,
+  // Einzelnen Anhang (Material oder Musterlösung, beide type-Werte) entfernen – live geprüft 11.11.2026:
+  // derselbe Aufruf funktioniert für beide, unabhängig vom lerninput/task-Speichern (removedSampleSolutionIds
+  // und ein leeres attachments-Array auf lerninput/task bewirken dagegen nichts).
+  removeAttachment: (attachmentId) => request("DELETE", `attachments/${attachmentId}`),
 
   // Bild für das Serlo-Arbeitsblatt: der eingebettete Serlo-Editor lädt Bilder nicht zu scobees,
   // sondern in Serlos Medienspeicher (Mitschrift 27.10.2026): GET presigned-url (ohne Anmeldung) → PUT zu S3.

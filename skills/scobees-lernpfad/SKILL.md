@@ -155,6 +155,7 @@ Checkliste, immer dabei:
 - Zuerst lesen: `scobees_get_lernpfad` (Baum mit IDs), dann `scobees_get_aufgabe` für alles, was geändert wird. Das Arbeitsblatt kommt als Markdown zurück und wird beim Ändern **komplett ersetzt**; also das gelesene Markdown ändern, nicht neu schreiben.
 - Den Grobplan auf die Änderung beschränken: Tabelle nur mit betroffenen Zeilen und einer Spalte „vorher / nachher“.
 - Vor dem Löschen (`scobees_delete`, `confirm: true`) immer ausdrücklich bestätigen lassen; Löschen nimmt Unterelemente mit.
+- Eine neue Fassung einer Datei ersetzt die alte nicht automatisch: `scobees_upload_material` mit `ersetzt_attachment_id` (ATT-ID der alten Fassung aus `scobees_get_aufgabe`) hochladen, oder erst `scobees_delete_material` (`confirm: true`) und danach neu hochladen. Sonst hängen beide Fassungen nebeneinander an der Aufgabe. Bei einer Stift-Abgabe (`abgabeformen: pen`) warnt `scobees_delete_material`, wenn dabei das letzte PDF-Material wegfällt – das vor dem Löschen beachten.
 - Beim Verschieben die `sort_order` der Nachbarn mitdenken; nach dem Umbau Baum zurücklesen.
 - Wurde ein Arbeitsblatt in der Weboberfläche mit Bausteinen gebaut, die Markdown nicht kennt (Bild-Zuordnung, interaktives Video), nur über `mit_serlo_json: true` lesen und per `serlo_json` zurückschreiben; sonst gehen diese Bausteine verloren. Markdown-Rückweg vorher mit `scobees_markdown_vorschau` vergleichen.
 

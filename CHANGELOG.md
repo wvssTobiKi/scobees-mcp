@@ -6,10 +6,21 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.8 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Bundle seit v94.2 gewechselt (main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen); Lernpfad/Gliederung/Aufgabe/Wahlpflicht-Unteraufgabe anlegen dabei bestätigt unverändert. Neue Werkzeuge live geprüft: Anhang löschen (`DELETE attachments/{id}`), Lernpfad-Beschreibung als reiner Text |
 | 0.1.7 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest (Lernpfad/Gliederung/Aufgabe mit allen Markdown-Bausteinen, Material-Upload, Löschen – unverändert) plus Browser-Mitschnitt: Wahlpflicht-Unteraufgaben funktionieren jetzt (taskType „Wahlpflichtaufgabe“ nötig, automatisch gesetzt); Verschieben in eine Wahlpflichtaufgabe bleibt gesperrt |
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.8 – 2026-11-11
+
+Zwei Fehlerberichte aus einer anderen Chat-Sitzung zur Unterrichtsmaterial-Erstellung bearbeitet.
+
+- **Neues Werkzeug `scobees_delete_material`** löscht genau einen Anhang (Material oder Musterlösung) einer Aufgabe. Prüft, dass der Anhang wirklich zu der Aufgabe gehört, erfordert `confirm: true`, und warnt, wenn dabei das letzte PDF-Material einer Stift-Abgabe (`abgabeformen: pen`) verschwindet. Gefunden ohne Browser-Mitschnitt, direkt per Sondierung: Weder `removedAttachmentIds` noch `removedSampleSolutionIds` noch ein leeres `attachments`-Array am Aufgaben-Speichern entfernen etwas – der echte Weg ist `DELETE attachments/{id}`, der für Material **und** Musterlösung gleichermaßen funktioniert.
+- `scobees_upload_material` bekommt den optionalen Parameter `ersetzt_attachment_id`: lädt erst hoch, löscht bei Erfolg den alten Anhang. Schlägt nur das Löschen des alten fehl, bleibt die neue Datei trotzdem hochgeladen; eine Warnung nennt die alte ID zum manuellen Nachholen.
+- **Lernpfad-Beschreibung war nicht reiner Text**: `create_lernpfad` und `update_lernpfad` reichten die Beschreibung unverändert durch (beide identisch, kein Unterschied zwischen Anlegen und Ändern) – scobees zeigt dieses Feld aber nirgends als HTML, mitgeschicktes `<p>…</p>` erschien als sichtbarer Tag-Text. Ursache war die eigene Parameterbeschreibung „Klartext oder einfaches HTML“. Behoben: `htmlToPlainText()` wandelt die Beschreibung jetzt immer in reinen Text (Blockgrenzen → Zeilenumbruch, Entities aufgelöst); Parameterbeschreibung korrigiert.
+- `scobees_get_lernpfad` zeigte die Beschreibung der Lernpfad-Wurzel bisher durch `stripHtml` bereinigt zurück, wodurch genau dieser Fehler beim Zurücklesen unsichtbar blieb. Jetzt wird sie roh zurückgegeben (Gliederungen/Aufgaben bleiben wie bisher bereinigt, deren Beschreibung ist legitim HTML).
+- 5 neue Tests (28 gesamt, alle grün).
 
 ## 0.1.7 – 2026-11-04
 

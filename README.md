@@ -24,7 +24,7 @@ Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle
 | Aufgabe (Pflicht/Wahl) | task | `scobees_create_aufgabe`, `scobees_update_aufgabe` |
 | Wahlpflichtaufgabe | choice (Container) | `scobees_create_wahlpflicht`, `scobees_update_wahlpflicht` |
 | Interaktives Arbeitsblatt | Serlo-Dokument in `taskDescription` | Markdown → `src/serlo.js` |
-| Material / Musterlösung | attachment | `scobees_upload_material` |
+| Material / Musterlösung | attachment | `scobees_upload_material`, `scobees_delete_material` |
 | Bild im Arbeitsblatt | Serlo-Medienspeicher (editor.serlo.org) | `scobees_upload_bild` → `![…](url)` |
 
 ## Installation (Claude Desktop)

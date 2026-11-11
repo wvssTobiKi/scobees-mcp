@@ -251,3 +251,13 @@ Unsere bisherige Doku (Mitschrift 5) nannte den naheliegenden Weg nur als Vermut
 **Umgesetzt:** `scobees_create_aufgabe` versucht zuerst mit dem gewählten `aufgabentyp`; scheitert das am Wahlpflicht-405, wird automatisch mit `taskType: "Wahlpflichtaufgabe"` erneut versucht – transparent, ohne dass die Lehrkraft etwas davon merkt. `scobees_move` bleibt für dieses Ziel gesperrt (scobees-Grenze, keine Umgehung gefunden) und gibt jetzt eine klare Erklärung statt des rohen HTTP-405.
 
 Alles andere aus dem breiten Funktionstest (04.11.2026, v94.2) lief unverändert: Lernpfad/Gliederung/Aufgabe anlegen, Arbeitsblatt mit allen Bausteinen (Box, Spoiler mehrzeilig, Gleichungskette, quiz-sc mit Feedback, quiz-input mit Einheit und `≠`, quiz-blanks-dnd) rundreisefest, `scobees_upload_material`, `scobees_delete` – alles live bestätigt.
+
+## Mitschrift 11 (11.11.2026, v94.5): Anhang löschen, Lernpfad-Beschreibung reiner Text
+
+**Anhang löschen** – ohne Browser-Mitschnitt gefunden, direkt per Sondierung gegen die echte API:
+- `POST lerninput/task` mit `removedAttachmentIds`, mit `removedSampleSolutionIds` (auf einen normalen Anhang) oder mit leerem `attachments: []` – alle drei wirkungslos, der Anhang blieb bestehen. `removedSampleSolutionIds` wirkt also nur für den darüberliegenden Speicherweg der Musterlösung, nicht generisch.
+- **`DELETE attachments/{ATT-id}`** → 200, Anhang ist weg. Live geprüft für `type: lerninput_attachment` UND `type: samplesolution` – derselbe Aufruf für beide. Keine Prüfung nötig, welche Aufgabe ihn referenziert; dafür prüft der Server (`scobees_delete_material`) selbst, dass die ID wirklich unter `anhaenge[]`/`musterloesungen[]` der angegebenen Aufgabe steht.
+
+**Lernpfad-Beschreibung ist reiner Text** – `create_lernpfad` und `update_lernpfad` riefen beide unverändert denselben `POST lerninput`-Aufruf mit dem Beschreibungstext 1:1 durchgereicht auf (kein Unterschied im Server-Code). Die Oberfläche rendert dieses Feld aber nicht als HTML; mitgeschicktes `<p>…</p>` erschien als sichtbarer Tag-Text. Ursache war die eigene Parameterbeschreibung „Klartext oder einfaches HTML“, die zu HTML-Eingaben eingeladen hat. `scobees_get_lernpfad` (`compact()`) lief zusätzlich durch `stripHtml`, wodurch das beim Zurücklesen unsichtbar blieb. Behoben: `htmlToPlainText()` wandelt die Beschreibung jetzt immer in reinen Text (Blockgrenzen → Zeilenumbruch, Tags raus, Entities aufgelöst), `compact()` zeigt die Lernpfad-Wurzel roh.
+
+Nebenbei bestätigt bei v94.5 (Bundle-Wechsel seit v94.2, main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen): Lernpfad/Gliederung/Aufgabe anlegen, Wahlpflicht-Unteraufgabe anlegen (0.1.7-Fix weiterhin gültig) – alles unverändert.

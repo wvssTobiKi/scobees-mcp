@@ -15,7 +15,7 @@ test("Sperrliste blockiert Schüler- und Personendaten", () => {
 test("Sperrliste lässt Inhaltspfade durch", () => {
   const allowed = [
     "users/me", "workspaces", "subjects?withDeleted=false", "lerninput", "lerninput/LI-1", "lerninput/folder", "lerninput/task",
-    "lerninput/choice", "lerninput/changePosition/LI-1", "attachments", "attachment?path=x", "lerninput/library/tags",
+    "lerninput/choice", "lerninput/changePosition/LI-1", "attachments", "attachments/ATT-1", "attachment?path=x", "lerninput/library/tags",
     "school-diffs", "school/SCHOOL-944/features", "subject-default-tags", "library", "school-diffs/root-lerninput/LI-1",
   ];
   for (const p of allowed) assert.equal(assertAllowed(p), p);
@@ -126,4 +126,56 @@ test("clarifyTaskgroupError übersetzt das scobees-HTTP-405 für Wahlpflicht-Kin
   });
   // Andere Fehler bleiben unverändert (kein falsches „Positiv“ auf irgendein Wort)
   assert.throws(() => clarifyTaskgroupError(new Error("scobees-API GET lerninput/LI-1 → HTTP 404: nicht gefunden")), /HTTP 404/);
+});
+
+test("htmlToPlainText: Absätze werden Zeilenumbrüche, Tags fallen weg, Entities werden aufgelöst", () => {
+  const { htmlToPlainText } = require("../src/tools");
+  assert.equal(htmlToPlainText("<p>Grundlagen zum Ohmschen Gesetz</p>"), "Grundlagen zum Ohmschen Gesetz");
+  assert.equal(htmlToPlainText("<p>Erste Zeile</p><p>Zweite Zeile</p>"), "Erste Zeile\nZweite Zeile");
+  assert.equal(htmlToPlainText("Zeile eins<br>Zeile zwei"), "Zeile eins\nZeile zwei");
+  assert.equal(htmlToPlainText("Strom &amp; Spannung, Gr&ouml;&szlig;e &lt;x&gt;"), "Strom & Spannung, Größe <x>");
+  assert.equal(htmlToPlainText("Reiner Text ohne HTML"), "Reiner Text ohne HTML");
+  assert.equal(htmlToPlainText(""), "");
+  assert.equal(htmlToPlainText(undefined), "");
+});
+
+test("compact(): Lernpfad-Beschreibung kommt unverändert zurück (Bugs beim Zurücklesen sichtbar), Gliederung/Aufgabe bleiben bereinigt", () => {
+  const { compact } = require("../src/tools");
+  const root = {
+    id: "LI-1", name: "Pfad", sortOrder: 0, state: "INACTIVE", isPublished: true, parentId: null, isLeaf: false,
+    description: "<p>versehentlich stehengebliebenes HTML</p>",
+    children: [{ id: "LI-2", name: "Gliederung", sortOrder: 0, state: "DRAFT", isPublished: false, parentId: "LI-1", isLeaf: false, description: "<h2>Titel</h2><p>Text</p>", children: [] }],
+  };
+  const out = compact(root);
+  assert.equal(out.typ, "lernpfad");
+  assert.match(out.beschreibung, /^<p>versehentlich/);
+  assert.equal(out.children[0].typ, "gliederung");
+  assert.doesNotMatch(out.children[0].beschreibung, /[<>]/);
+});
+
+test("findAttachment / letztesPenPdfWarnung: Zugehörigkeit und Pen-PDF-Warnung", () => {
+  const { findAttachment, letztesPenPdfWarnung } = require("../src/tools");
+  const cur = {
+    requiredSubmissions: ["pen"],
+    attachments: [{ id: "ATT-PDF1", filename: "vorlage.pdf" }, { id: "ATT-IMG", filename: "foto.png" }],
+    sampleSolutions: [{ id: "ATT-LOES", filename: "loesung.pdf" }],
+  };
+  assert.deepEqual(findAttachment(cur, "ATT-PDF1"), { list: "attachments", item: cur.attachments[0] });
+  assert.deepEqual(findAttachment(cur, "ATT-LOES"), { list: "sampleSolutions", item: cur.sampleSolutions[0] });
+  assert.equal(findAttachment(cur, "ATT-FREMD"), null);
+
+  // Nur noch ein PDF vorhanden -> Löschen warnt
+  const nurEinPdf = { ...cur, attachments: [cur.attachments[0]] };
+  assert.match(letztesPenPdfWarnung(nurEinPdf, "ATT-PDF1", findAttachment(nurEinPdf, "ATT-PDF1")), /letzte PDF/);
+  // Zweites PDF bleibt übrig -> keine Warnung
+  const zweiPdfs = { ...cur, attachments: [cur.attachments[0], { id: "ATT-PDF2", filename: "zweite.pdf" }] };
+  assert.equal(letztesPenPdfWarnung(zweiPdfs, "ATT-PDF1", findAttachment(zweiPdfs, "ATT-PDF1")), undefined);
+  // Kein Pen -> keine Warnung, auch wenn es das letzte PDF ist
+  const keinPen = { ...nurEinPdf, requiredSubmissions: ["file"] };
+  assert.equal(letztesPenPdfWarnung(keinPen, "ATT-PDF1", findAttachment(keinPen, "ATT-PDF1")), undefined);
+  // Gelöschter Anhang ist kein PDF -> keine Warnung
+  const nichtPdfWirdGeloescht = { ...cur, attachments: [cur.attachments[1]] };
+  assert.equal(letztesPenPdfWarnung(nichtPdfWirdGeloescht, "ATT-IMG", findAttachment(nichtPdfWirdGeloescht, "ATT-IMG")), undefined);
+  // Musterlösung ist nie von der Pen-Warnung betroffen (zählt nicht als Material)
+  assert.equal(letztesPenPdfWarnung(cur, "ATT-LOES", findAttachment(cur, "ATT-LOES")), undefined);
 });

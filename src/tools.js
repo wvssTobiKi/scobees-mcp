@@ -54,7 +54,11 @@ function compact(node, depth = 0) {
     id: node.id, name: node.name, typ: nodeType(node), sortOrder: node.sortOrder,
     state: node.state, isPublished: node.isPublished,
   };
-  if (node.description) out.beschreibung = stripHtml(node.description).slice(0, 200);
+  if (node.description) {
+    // Die Lernpfad-Wurzel speichert reinen Text (siehe htmlToPlainText); hier unverändert zeigen, damit ein
+    // versehentlich doch gespeichertes „<p>…</p>“ beim Zurücklesen auffällt, statt von stripHtml verdeckt zu werden.
+    out.beschreibung = out.typ === "lernpfad" ? node.description.slice(0, 300) : stripHtml(node.description).slice(0, 200);
+  }
   if (node.isLeaf) {
     out.kind = node.kind; out.taskType = node.taskType; out.estimatedTime = node.estimatedTime;
     out.differenzierungen = (node.tags?.differentiations || []).map((d) => d.name);
@@ -76,6 +80,47 @@ function nodeType(n) {
 }
 
 const stripHtml = (s) => String(s || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+/** Anhang per ID unter anhaenge[]/musterloesungen[] einer Aufgabe suchen (prüft Zugehörigkeit vor dem Löschen). */
+function findAttachment(cur, attachmentId) {
+  const inAttachments = (cur.attachments || []).find((x) => x.id === attachmentId);
+  if (inAttachments) return { list: "attachments", item: inAttachments };
+  const inSolutions = (cur.sampleSolutions || []).find((x) => x.id === attachmentId);
+  if (inSolutions) return { list: "sampleSolutions", item: inSolutions };
+  return null;
+}
+const isPdfAttachment = (x) => /\.pdf$/i.test(x.filename || "") || x.mimetype === "application/pdf";
+
+/** Warnt, wenn der zu löschende Anhang das letzte PDF-Material einer Stift-Abgabe (abgabeform „pen“) ist. */
+function letztesPenPdfWarnung(cur, attachmentId, found) {
+  if (found.list !== "attachments" || !(cur.requiredSubmissions || []).includes("pen")) return undefined;
+  const otherPdfs = (cur.attachments || []).some((x) => x.id !== attachmentId && isPdfAttachment(x));
+  if (isPdfAttachment(found.item) && !otherPdfs) {
+    return "Das war das letzte PDF dieser Aufgabe, deren Abgabeform „pen“ (Stift auf PDF) aber ein PDF-Material voraussetzt. Ohne PDF können Lernende nicht mehr abgeben – vor dem Zuweisen ein neues PDF hochladen.";
+  }
+  return undefined;
+}
+
+// Die Lernpfad-Beschreibung zeigt scobees nirgends als HTML (anders als description_html bei Gliederung/Aufgabe) –
+// mitgeschicktes HTML landet sonst als sichtbarer Tag-Text in der Oberfläche (live beobachtet 10.11.2026: „<p>…</p>“
+// nach create_lernpfad). Deshalb hier immer in reinen Text wandeln: Blockgrenzen werden zu Zeilenumbrüchen,
+// übrige Tags fallen weg, Entities werden aufgelöst.
+const HTML_ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", uuml: "ü", Uuml: "Ü", ouml: "ö", Ouml: "Ö", auml: "ä", Auml: "Ä", szlig: "ß", euro: "€" };
+function htmlToPlainText(s) {
+  if (!s) return "";
+  const t = String(s)
+    .replace(/<\/(p|div|li|h[1-6]|tr)\s*>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, code) => {
+      if (code[0] === "#") {
+        const cp = /^#x/i.test(code) ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
+        return Number.isFinite(cp) ? String.fromCodePoint(cp) : m;
+      }
+      return HTML_ENTITIES[code] ?? HTML_ENTITIES[code.toLowerCase()] ?? m;
+    });
+  return t.split("\n").map((l) => l.trim()).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
 const ok = (msg, data) => ({ ok: true, hinweis: msg, ...data });
 
 // scobees lehnt sowohl POST lerninput/task mit parentId = Wahlpflicht-ID als auch ein nachträgliches
@@ -284,7 +329,7 @@ const TOOLS = [
       properties: {
         subject_id: { type: "string", description: "Fach-ID aus scobees_list_subjects" },
         name: { type: "string" },
-        description: { type: "string", description: "Beschreibung (Klartext oder einfaches HTML)" },
+        description: { type: "string", description: "Beschreibung als reiner Text – scobees zeigt sie hier nicht als HTML gerendert, mitgeschicktes HTML würde als sichtbarer Tag-Text erscheinen und wird deshalb automatisch entfernt." },
         jahrgaenge: { type: "array", items: { type: "string" }, description: "z. B. [\"Jg 1\"] oder Tag-IDs" },
         stichwoerter: { type: "array", items: { type: "string" }, description: "Freie Schlagworte" },
         cover_image_path: { type: "string", description: "Lokaler Pfad zu einem Titelbild (png/jpg), optional" },
@@ -307,7 +352,7 @@ const TOOLS = [
         tags: a.stichwoerter || [],
         id: "",
         coverImagePath: undefined,
-        description: a.description || "",
+        description: htmlToPlainText(a.description),
       }, { coverImage: a.cover_image_path });
       return ok("Lernpfad angelegt. Status INACTIVE bedeutet: noch keiner Lerngruppe zugewiesen – die Zuweisung erfolgt in der Weboberfläche.", { id: r.id, name: r.name, state: r.state });
     },
@@ -321,7 +366,7 @@ const TOOLS = [
         id: { type: "string", description: "LI-ID des Lernpfads" },
         subject_id: { type: "string", description: "Lernpfad in ein anderes Fach verschieben (Fach-ID aus scobees_list_subjects). Achtung: Lernende brauchen im Fach des Pfads ein Niveau, sonst ist keine Zuweisung möglich." },
         name: { type: "string" },
-        description: { type: "string" },
+        description: { type: "string", description: "Beschreibung als reiner Text – scobees zeigt sie hier nicht als HTML gerendert, mitgeschicktes HTML würde als sichtbarer Tag-Text erscheinen und wird deshalb automatisch entfernt." },
         jahrgaenge: { type: "array", items: { type: "string" } },
         stichwoerter: { type: "array", items: { type: "string" } },
         cover_image_path: { type: "string", description: "Neues Titelbild (lokaler Pfad), optional" },
@@ -348,7 +393,7 @@ const TOOLS = [
         tags: a.stichwoerter ?? (cur.tags?.other || []).map((t) => (typeof t === "string" ? t : { id: t.id })),
         id: a.id,
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
-        description: a.description ?? cur.description ?? "",
+        description: a.description != null ? htmlToPlainText(a.description) : (cur.description ?? ""),
       }, { coverImage: a.cover_image_path });
       return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished, faecher: (r.subjects || []).map((s) => s.name) });
     },
@@ -555,13 +600,14 @@ const TOOLS = [
   },
   {
     name: "scobees_upload_material",
-    description: "Hängt eine lokale Datei an eine Aufgabe an – als Material (PDF, Bild, HTML-Simulation, interaktive Seite, GeoGebra-Datei …) oder als Musterlösung.",
+    description: "Hängt eine lokale Datei an eine Aufgabe an – als Material (PDF, Bild, HTML-Simulation, interaktive Seite, GeoGebra-Datei …) oder als Musterlösung. ersetzt_attachment_id: nach erfolgreichem Hochladen wird dieser alte Anhang gelöscht (z. B. bei einer neuen Fassung derselben Datei); schlägt der Upload fehl, bleibt der alte unangetastet.",
     inputSchema: {
       type: "object",
       properties: {
         aufgabe_id: { type: "string" },
         file_path: { type: "string", description: "Absoluter lokaler Pfad" },
         als_musterloesung: { type: "boolean", default: false },
+        ersetzt_attachment_id: { type: "string", description: "ATT-ID eines bestehenden Anhangs/einer Musterlösung an derselben Aufgabe, der nach erfolgreichem Upload gelöscht wird (aus scobees_get_aufgabe)" },
       },
       required: ["aufgabe_id", "file_path"],
     },
@@ -570,7 +616,40 @@ const TOOLS = [
       // Die Oberfläche speichert die Aufgabe danach erneut; wir tun dasselbe, damit der Anhang sicher verknüpft ist.
       const cur = await api.lerninput(a.aufgabe_id);
       await api.saveTask(taskToForm(cur));
-      return ok("Datei hochgeladen und mit der Aufgabe verknüpft.", { attachment_id: att.id, filename: att.filename, url: api.attachmentUrl(att.path) });
+      const out = ok("Datei hochgeladen und mit der Aufgabe verknüpft.", { attachment_id: att.id, filename: att.filename, url: api.attachmentUrl(att.path) });
+      if (a.ersetzt_attachment_id) {
+        try {
+          await api.removeAttachment(a.ersetzt_attachment_id);
+          out.hinweis += ` Alter Anhang ${a.ersetzt_attachment_id} wurde gelöscht.`;
+        } catch (e) {
+          out.warnung = `Neue Datei ist hochgeladen, der alte Anhang ${a.ersetzt_attachment_id} konnte aber nicht gelöscht werden (${e.message}). Bitte mit scobees_delete_material nachholen.`;
+        }
+      }
+      return out;
+    },
+  },
+  {
+    name: "scobees_delete_material",
+    description: "Löscht genau einen Anhang (Material oder Musterlösung) einer Aufgabe. attachment_id aus scobees_get_aufgabe (anhaenge[].id / musterloesungen[].id). Erfordert confirm=true. Prüft, dass der Anhang wirklich zu dieser Aufgabe gehört, und warnt, wenn es das letzte PDF einer Stift-Abgabe (abgabeformen: pen) ist – ohne PDF ist dort kein Abgeben mehr möglich.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        aufgabe_id: { type: "string" },
+        attachment_id: { type: "string", description: "ATT-ID des zu löschenden Anhangs" },
+        confirm: { type: "boolean", description: "Muss true sein" },
+      },
+      required: ["aufgabe_id", "attachment_id", "confirm"],
+    },
+    run: async (a) => {
+      if (a.confirm !== true) throw new Error("Löschen abgebrochen: confirm muss true sein.");
+      const cur = await api.lerninput(a.aufgabe_id);
+      const found = findAttachment(cur, a.attachment_id);
+      if (!found) throw new Error(`Anhang ${a.attachment_id} gehört nicht zu Aufgabe ${a.aufgabe_id} (nicht unter anhaenge[] oder musterloesungen[] gefunden).`);
+      const warnung = letztesPenPdfWarnung(cur, a.attachment_id, found);
+      await api.removeAttachment(a.attachment_id);
+      const out = ok(`Anhang „${found.item.filename}“ gelöscht.`, { id: a.attachment_id, aufgabe_id: a.aufgabe_id });
+      if (warnung) out.warnung = warnung;
+      return out;
     },
   },
   {
@@ -609,4 +688,4 @@ const TOOLS = [
   },
 ];
 
-module.exports = { TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError };
+module.exports = { TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung };
