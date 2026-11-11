@@ -1,12 +1,12 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.4)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.9)
 
-Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen.
+Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
 ## Grundelemente
 
 ```markdown
 # Sprechende Überschrift (erste Zeile jedes Arbeitsblatts)
-Absatz mit **fett**, *kursiv*, `code`, [Link](https://…) und $U = R \cdot I$ (LaTeX inline).
+Absatz mit **fett**, *kursiv*, `code`, [Link](https://…) und $U = R \cdot I$ (LaTeX inline). `_kursiv_` mit Unterstrich funktioniert ebenso, außer innerhalb eines Worts (z. B. in `u_e`, `U_ref` bleibt der Unterstrich Text statt Betonung zu werden) – kommt beim Zurücklesen aber immer als `*kursiv*` zurück, gleiche Bedeutung, andere Schreibweise; `scobees_markdown_vorschau` weist darauf hin.
 
 - Aufzählung
 1. nummeriert
@@ -22,7 +22,7 @@ Absatz mit **fett**, *kursiv*, `code`, [Link](https://…) und $U = R \cdot I$ (
 https://www.geogebra.org/m/…      (Zeile nur mit URL → GeoGebra-Applet; YouTube/mp4 → Video)
 ```
 
-Jede Zeile wird ein eigener Absatz; Leerzeilen sind nicht nötig. `---` wird ausgelassen (Serlo hat keine Trennlinie): Abschnitte mit Überschriften trennen.
+Jede Zeile wird ein eigener Absatz; Leerzeilen sind nicht nötig. `---` wird ausgelassen (Serlo hat keine Trennlinie): Abschnitte mit Überschriften trennen. Geschütztes Leerzeichen (U+00A0) und schmales geschütztes Leerzeichen (U+202F), z. B. zwischen Zahl und Einheit (`10 kΩ`), bleiben über die Rundreise erhalten – live geprüft, auch in Tabellenzellen.
 
 ## Kästen und Aufklappen
 
@@ -31,7 +31,7 @@ Jede Zeile wird ein eigener Absatz; Leerzeilen sind nicht nötig. `---` wird aus
 Text
 :::
 ```
-Typen: `note` (Hinweis), `attention` (Achtung), `warning`, `example` (Beispiel), `quote` (Zitat), `definition`, `theorem`, `proof`, `blank`. Gut für „So gehst du vor“, „Beachte“, das Szenario-Zitat der Teamleitung.
+Typen: `note` (Hinweis), `attention` (Achtung), `warning`, `example` (Beispiel), `quote` (Zitat), `definition`, `theorem`, `proof`, `blank`. Gut für „So gehst du vor“, „Beachte“, das Szenario-Zitat der Teamleitung. Bilder funktionieren auch innerhalb einer Box oder eines Spoilers (`![…](URL)`), live geprüft.
 
 ```markdown
 :::spoiler Lösungshinweis
@@ -91,7 +91,7 @@ Eine IPv4-Adresse hat [[32]] Bit, aufgeteilt in vier [[Oktette]].
 + Gateway
 ```
 ````
-Drag-and-drop mit Wortspeicher; `+ …` sind Distraktoren. Robuste Standardform für Begriffe. Jede Zeile bleibt ein eigener Absatz. Eine Lückenantwort oder ein Distraktor als Formel (`[[$U=R\cdot I$]]`) wird als bloßer mathematischer Ausdruck verglichen (Serlo stellt Lückenantworten nicht als gerenderte Formel dar, nur Fließtext außerhalb der Lücke); `$…$` darf geschrieben werden, wird beim Speichern aber abgeschnitten.
+Drag-and-drop mit Wortspeicher; `+ …` sind Distraktoren. Robuste Standardform für Begriffe. Jede Zeile bleibt ein eigener Absatz. Eine Lückenantwort oder ein Distraktor als Formel (`[[$U=R\cdot I$]]`) wird als bloßer mathematischer Ausdruck verglichen (Serlo stellt Lückenantworten nicht als gerenderte Formel dar, nur Fließtext außerhalb der Lücke); `$…$` darf geschrieben werden, wird beim Speichern aber abgeschnitten; `scobees_markdown_vorschau` und `scobees_create_aufgabe`/`scobees_update_aufgabe` melden das in `warnungen[]`.
 
 ````markdown
 ```quiz-text

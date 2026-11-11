@@ -179,3 +179,32 @@ test("findAttachment / letztesPenPdfWarnung: Zugehörigkeit und Pen-PDF-Warnung"
   // Musterlösung ist nie von der Pen-Warnung betroffen (zählt nicht als Material)
   assert.equal(letztesPenPdfWarnung(cur, "ATT-LOES", findAttachment(cur, "ATT-LOES")), undefined);
 });
+
+test("applyPatches: alles oder nichts, lehnt verlustbehaftete Bausteine ab", () => {
+  const { applyPatches } = require("../src/tools");
+  assert.equal(applyPatches("Erster Satz. Zweiter Satz.", [{ alt: "Erster", neu: "ERSTER" }]), "ERSTER Satz. Zweiter Satz.");
+  assert.equal(
+    applyPatches("A B A", [{ alt: "A", neu: "X" }, { alt: "B", neu: "Y" }].slice(1)), // nur B ersetzen, A bleibt zweimal stehen
+    "A Y A"
+  );
+  assert.throws(() => applyPatches("A A B", [{ alt: "A", neu: "X" }]), /kommt 2× vor/);
+  assert.throws(() => applyPatches("A B", [{ alt: "C", neu: "X" }]), /kommt 0× vor/);
+  // alles oder nichts: eine gültige und eine ungültige Ersetzung -> keine von beiden wird angewendet
+  assert.throws(() => applyPatches("A B", [{ alt: "A", neu: "X" }, { alt: "C", neu: "Y" }]), /kommt 0× vor/);
+  assert.throws(() => applyPatches("Text (Baustein h5p)", [{ alt: "Text", neu: "Anders" }]), /ohne Markdown-Entsprechung/);
+});
+
+test("markdownToSerlo.warnungen: Unterstrich-Rundreise und $…$ in Lückenantwort", () => {
+  const { markdownToSerlo } = require("../src/serlo");
+  markdownToSerlo("Normaler Text ohne Besonderheiten.");
+  assert.equal(markdownToSerlo.warnungen.length, 0);
+
+  markdownToSerlo("Hier steht echte _Betonung_ im Text.");
+  assert.match(markdownToSerlo.warnungen[0], /Sternchen/);
+
+  markdownToSerlo("Variable u_e bleibt Text, keine Betonung.");
+  assert.equal(markdownToSerlo.warnungen.length, 0, "intraword-Unterstrich löst keine Warnung aus");
+
+  markdownToSerlo("```quiz-blanks-dnd\nFormel [[$U=R\cdot I$]].\n```");
+  assert.match(markdownToSerlo.warnungen[0], /nie als Formel dargestellt/);
+});

@@ -218,6 +218,27 @@ function buildTaskDescription(args) {
   return undefined;
 }
 
+/** Für scobees_patch_arbeitsblatt: jede Ersetzung muss im Markdown genau einmal passen, alles oder nichts.
+ * Wirft bei Bausteinen ohne Markdown-Entsprechung oder bei einer Ersetzung, die nicht genau einmal vorkommt. */
+function applyPatches(md, ersetzungen) {
+  if (/\(Baustein |\(interaktiver Baustein: /.test(md)) {
+    throw new Error("Dieses Arbeitsblatt enthält Bausteine ohne Markdown-Entsprechung (z. B. Bild-Zuordnung) – nicht verlustfrei patchbar. Stattdessen scobees_get_aufgabe(mit_serlo_json: true) lesen und gezielt im Serlo-JSON ändern, dann scobees_update_aufgabe(serlo_json) schreiben.");
+  }
+  const fehler = [];
+  for (const { alt } of ersetzungen) {
+    const count = md.split(alt).length - 1;
+    if (count !== 1) fehler.push(`„${alt.length > 60 ? alt.slice(0, 60) + "…" : alt}“ kommt ${count}× vor (erwartet: genau 1×)`);
+  }
+  if (fehler.length) throw new Error("Keine Änderung vorgenommen – jede Ersetzung muss genau einmal passen:\n- " + fehler.join("\n- "));
+  let neu = md;
+  for (const { alt, neu: ersatz } of ersetzungen) neu = neu.replace(alt, ersatz);
+  return neu;
+}
+
+/** Warnungen aus der letzten markdownToSerlo-Umwandlung, aber nur wenn args tatsächlich über arbeitsblatt_markdown
+ * gelaufen ist (bei serlo_json wurde markdownToSerlo nicht aufgerufen, dessen .warnungen wäre dann veraltet). */
+const arbeitsblattWarnungen = (args) => (!args.serlo_json && args.arbeitsblatt_markdown && markdownToSerlo.warnungen?.length) ? markdownToSerlo.warnungen : undefined;
+
 // ── Werkzeugdefinitionen ─────────────────────────────────────────────────────
 const TOOLS = [
   // Lesen
@@ -509,7 +530,7 @@ const TOOLS = [
         arbeitsblatt_markdown: { type: "string", description: "Inhalt des interaktiven Arbeitsblatts als Markdown" },
         serlo_json: { type: "string", description: "Alternativ: fertiges Serlo-Dokument (JSON-String, Wurzel plugin rows)" },
         estimated_time: { type: "number", default: 0, description: "Minuten" },
-        differenzierungen: { type: "array", items: { type: "string" }, description: "Niveaus der Schule (scobees_list_tags), z. B. [\"Hauptschulabschluss\",\"Realschulabschluss\"]. Leer = alle Niveaus (Aufgabe für alle sichtbar). Lernende sehen nur Aufgaben ihres Niveaus." },
+        differenzierungen: { type: "array", items: { type: "string" }, description: "Niveaus der Schule (scobees_list_tags), z. B. [\"Hauptschulabschluss\",\"Realschulabschluss\"]. Leer = alle aktuellen Niveaus der Schule werden explizit eingetragen (scobees kennt kein eigenes „für alle“ – beim Zurücklesen stehen deshalb alle einzeln da, das ist kein Fehler). Kommt später ein neues Niveau hinzu, erscheint es nicht automatisch bei alten Aufgaben; dann erneut mit leerem differenzierungen aktualisieren. Lernende sehen nur Aufgaben ihres Niveaus." },
         links: { type: "array", items: { type: "object", properties: { url: { type: "string" }, name: { type: "string" } }, required: ["url"] } },
         interne_notiz: { type: "string", description: "Nur für Lehrkräfte sichtbar" },
         aufgabentyp: { type: "string", enum: Object.keys(AUFGABENTYP), default: "pflicht", description: "pflicht = zählt zum Fortschritt; extra = freiwillige Zusatzaufgabe; training = freiwillige Übung; info = reiner Informationsbaustein" },
@@ -555,7 +576,10 @@ const TOOLS = [
         taskDescription: buildTaskDescription(a) ?? null,
       });
       const r = await api.saveTask(form);
-      return ok("Aufgabe angelegt.", { id: r.id, name: r.name, kind: r.kind, parentId: r.parentId, bausteine: r.taskDescription ? listPlugins(r.taskDescription) : [] });
+      const out1 = ok("Aufgabe angelegt.", { id: r.id, name: r.name, kind: r.kind, parentId: r.parentId, bausteine: r.taskDescription ? listPlugins(r.taskDescription) : [] });
+      const w1 = arbeitsblattWarnungen(a);
+      if (w1) out1.warnungen = w1;
+      return out1;
     },
   },
   {
@@ -573,7 +597,7 @@ const TOOLS = [
         arbeitsblatt_markdown: { type: "string" },
         serlo_json: { type: "string" },
         estimated_time: { type: "number" },
-        differenzierungen: { type: "array", items: { type: "string" } },
+        differenzierungen: { type: "array", items: { type: "string" }, description: "Siehe scobees_create_aufgabe: leer trägt alle aktuellen Niveaus explizit ein, das ist kein Fehler." },
         links: { type: "array", items: { type: "object", properties: { url: { type: "string" }, name: { type: "string" } }, required: ["url"] } },
         interne_notiz: { type: "string" },
       },
@@ -595,7 +619,41 @@ const TOOLS = [
       const td = buildTaskDescription(a);
       if (td !== undefined) form.taskDescription = td;
       const r = await api.saveTask(form);
-      return ok("Aufgabe geändert.", { id: r.id, name: r.name, kind: r.kind });
+      const out2 = ok("Aufgabe geändert.", { id: r.id, name: r.name, kind: r.kind });
+      const w2 = arbeitsblattWarnungen(a);
+      if (w2) out2.warnungen = w2;
+      return out2;
+    },
+  },
+  {
+    name: "scobees_patch_arbeitsblatt",
+    description: "Ändert das Arbeitsblatt einer Aufgabe gezielt, statt es komplett neu zu senden: ersetzt im aktuellen Markdown jede angegebene Zeichenkette durch eine neue. Alles-oder-nichts – jede „alt“-Zeichenkette muss genau einmal vorkommen, sonst wird nichts geändert und die Meldung nennt jede fehlgeschlagene Ersetzung (nicht gefunden/mehrfach gefunden). Nur möglich, wenn das Arbeitsblatt verlustfrei als Markdown darstellbar ist (keine Bausteine wie Bild-Zuordnung ohne Markdown-Entsprechung); sonst Fehlermeldung mit Verweis auf scobees_get_aufgabe(mit_serlo_json) + scobees_update_aufgabe(serlo_json).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "Aufgaben-ID (LI-…)" },
+        ersetzungen: {
+          type: "array",
+          items: { type: "object", properties: { alt: { type: "string" }, neu: { type: "string" } }, required: ["alt", "neu"] },
+          description: "Je ein Paar alt/neu; „alt“ muss im aktuellen Arbeitsblatt-Markdown genau einmal vorkommen.",
+        },
+      },
+      required: ["id", "ersetzungen"],
+    },
+    run: async (a) => {
+      if (!a.ersetzungen || !a.ersetzungen.length) throw new Error("ersetzungen darf nicht leer sein.");
+      if (a.ersetzungen.some((e) => !e.alt)) throw new Error("„alt“ darf nicht leer sein.");
+      const cur = await api.lerninput(a.id);
+      if (!cur.isLeaf) throw new Error("Das ist keine Aufgabe (Gliederung/Wahlpflicht haben kein Arbeitsblatt).");
+      if (!cur.taskDescription) throw new Error("Diese Aufgabe hat noch kein Arbeitsblatt (arbeitsblatt_markdown fehlt bisher).");
+      const md = serloToMarkdown(cur.taskDescription);
+      const neuesMd = applyPatches(md, a.ersetzungen); // wirft bei verlustbehaftetem Baustein oder nicht genau einem Treffer
+      const form = taskToForm(cur);
+      form.taskDescription = markdownToSerlo(neuesMd);
+      const r = await api.saveTask(form);
+      const out3 = ok(`${a.ersetzungen.length} Ersetzung(en) angewendet.`, { id: r.id, bausteine: listPlugins(r.taskDescription) });
+      if (markdownToSerlo.warnungen?.length) out3.warnungen = markdownToSerlo.warnungen;
+      return out3;
     },
   },
   {
@@ -684,8 +742,13 @@ const TOOLS = [
     name: "scobees_markdown_vorschau",
     description: "Wandelt Markdown testweise in das Serlo-Format um (ohne etwas zu speichern) und zeigt die erzeugten Bausteine.",
     inputSchema: { type: "object", properties: { markdown: { type: "string" } }, required: ["markdown"] },
-    run: async ({ markdown }) => { const doc = markdownToSerlo(markdown); return { bausteine: listPlugins(doc), rueckuebersetzung: serloToMarkdown(doc), serlo_json: doc }; },
+    run: async ({ markdown }) => {
+      const doc = markdownToSerlo(markdown);
+      const out = { bausteine: listPlugins(doc), rueckuebersetzung: serloToMarkdown(doc), serlo_json: doc };
+      if (markdownToSerlo.warnungen?.length) out.warnungen = markdownToSerlo.warnungen;
+      return out;
+    },
   },
 ];
 
-module.exports = { TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung };
+module.exports = { TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches };

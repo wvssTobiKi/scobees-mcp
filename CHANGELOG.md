@@ -6,11 +6,22 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.9 | v94.5 | main-K73FMJMP.js | 2026-11-11 | `scobees_patch_arbeitsblatt` live geprüft (Erfolg, Mehrfachtreffer, kein Treffer, verlustbehafteter Baustein); Bilder in Box/Spoiler und geschütztes Leerzeichen (U+00A0/U+202F) bestätigt unverändert erhalten |
 | 0.1.8 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Bundle seit v94.2 gewechselt (main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen); Lernpfad/Gliederung/Aufgabe/Wahlpflicht-Unteraufgabe anlegen dabei bestätigt unverändert. Neue Werkzeuge live geprüft: Anhang löschen (`DELETE attachments/{id}`), Lernpfad-Beschreibung als reiner Text |
 | 0.1.7 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest (Lernpfad/Gliederung/Aufgabe mit allen Markdown-Bausteinen, Material-Upload, Löschen – unverändert) plus Browser-Mitschnitt: Wahlpflicht-Unteraufgaben funktionieren jetzt (taskType „Wahlpflichtaufgabe“ nötig, automatisch gesetzt); Verschieben in eine Wahlpflichtaufgabe bleibt gesperrt |
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.9 – 2026-11-11
+
+Zweite Anmerkungsrunde aus derselben Chat-Sitzung zur Unterrichtsmaterial-Erstellung (sechs Punkte); Status je Punkt in `docs/scobees-api-map.md` (Mitschrift 12).
+
+- **Neues Werkzeug `scobees_patch_arbeitsblatt`**: ersetzt im Arbeitsblatt-Markdown gezielt Textstellen, statt das ganze Arbeitsblatt neu zu senden. Alles-oder-nichts – jede Ersetzung muss genau einmal vorkommen, sonst keine Änderung und eine Meldung, welche fehlschlug. Lehnt Arbeitsblätter mit Bausteinen ohne Markdown-Entsprechung (z. B. Bild-Zuordnung) ab und verweist auf `serlo_json`.
+- **Neue Warnungen** (`warnungen[]` in `scobees_markdown_vorschau`, `scobees_create_aufgabe`, `scobees_update_aufgabe`, `scobees_patch_arbeitsblatt`): Unterstrich-Betonung (`_…_`) wird beim Zurücklesen immer als `*…*` angezeigt; `$…$` in einer Lückenantwort/einem Distraktor wird für den Vergleich abgeschnitten und nie als Formel dargestellt.
+- Geklärt und dokumentiert statt Code geändert: `differenzierungen` leer trägt alle aktuellen Niveaus explizit ein (scobees kennt kein eigenes „für alle“) – Parameterbeschreibung entsprechend präzisiert. Bilder in `:::box`/`:::spoiler` und geschütztes Leerzeichen (U+00A0/U+202F) funktionieren bereits, nur in `references/markdown.md` ergänzt.
+- Kachelbild für Gliederung/Aufgabe (Punkt 1, höchste Priorität im Bericht): **noch offen**, braucht einen Browser-Mitschnitt – der Feldname für das Datei-Upload auf `lerninput/task`/`lerninput/folder` ließ sich nicht aus dem aktuellen Bundle oder durch Sondierung ermitteln (mehrere Kandidaten ausprobiert, alle wirkungslos).
+- 7 neue Tests (30 gesamt, alle grün).
 
 ## 0.1.8 – 2026-11-11
 

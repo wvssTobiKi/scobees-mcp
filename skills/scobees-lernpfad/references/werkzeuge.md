@@ -13,7 +13,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_list_lernpfade` | Bestehende Pfade finden | `subject_id`, `title`, `page`, `page_size` |
 | `scobees_get_lernpfad` | Baum Gliederungen → Aufgaben mit IDs | `id` |
 | `scobees_get_aufgabe` | Eine Aufgabe mit Arbeitsblatt als Markdown, Links, Anhängen; liefert `art`, `abgabeformen`, `abgabe_regel`, `taskType`, `interne_notiz` | `id`, `mit_serlo_json` |
-| `scobees_markdown_vorschau` | Markdown → Serlo-Bausteine ohne Speichern | `markdown` |
+| `scobees_markdown_vorschau` | Markdown → Serlo-Bausteine ohne Speichern; `warnungen[]` bei Unterstrich-Betonung (wird zu `*…*`) oder `$…$` in einer Lückenantwort (wird abgeschnitten, Serlo zeigt dort nie Formeln) | `markdown` |
 
 ## Anlegen und ändern
 
@@ -27,6 +27,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_update_wahlpflicht` | `id`*, dieselben Felder |
 | `scobees_create_aufgabe` | `parent_id`*, `name`*, `description_html`, `art`, `abgabeformen`, `aufgabentyp`, `arbeitsblatt_markdown` oder `serlo_json`, `estimated_time` (Minuten), `differenzierungen`, `links`, `interne_notiz` |
 | `scobees_update_aufgabe` | `id`*, dieselben Felder; nur Übergebenes ändert sich, `arbeitsblatt_markdown`/`serlo_json` ersetzen das Arbeitsblatt komplett |
+| `scobees_patch_arbeitsblatt` | `id`*, `ersetzungen`* (Liste `{alt, neu}`). Ersetzt im aktuellen Arbeitsblatt-Markdown gezielt Zeichenketten statt alles neu zu senden – jede `alt` muss genau einmal vorkommen (alles oder nichts, sonst keine Änderung und Meldung, welche scheiterte). Nur bei verlustfrei als Markdown darstellbarem Arbeitsblatt (sonst Fehler mit Verweis auf `serlo_json`); Werkzeugergebnis kann ebenfalls `warnungen[]` enthalten |
 | `scobees_upload_material` | `aufgabe_id`*, `file_path`* (absoluter lokaler Pfad), `als_musterloesung`, `ersetzt_attachment_id` (alten Anhang nach erfolgreichem Upload löschen) |
 | `scobees_delete_material` | `aufgabe_id`*, `attachment_id`* (aus `scobees_get_aufgabe` → `anhaenge[].id`/`musterloesungen[].id`), `confirm`* (muss `true` sein). Löscht genau einen Anhang oder eine Musterlösung; prüft die Zugehörigkeit und warnt, wenn es das letzte PDF einer Stift-Abgabe (`abgabeformen: pen`) ist |
 | `scobees_upload_bild` | `file_path`* → URL für `![…](URL)` im Arbeitsblatt (öffentlich bei Serlo) |

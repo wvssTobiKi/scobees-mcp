@@ -261,3 +261,22 @@ Alles andere aus dem breiten Funktionstest (04.11.2026, v94.2) lief unverändert
 **Lernpfad-Beschreibung ist reiner Text** – `create_lernpfad` und `update_lernpfad` riefen beide unverändert denselben `POST lerninput`-Aufruf mit dem Beschreibungstext 1:1 durchgereicht auf (kein Unterschied im Server-Code). Die Oberfläche rendert dieses Feld aber nicht als HTML; mitgeschicktes `<p>…</p>` erschien als sichtbarer Tag-Text. Ursache war die eigene Parameterbeschreibung „Klartext oder einfaches HTML“, die zu HTML-Eingaben eingeladen hat. `scobees_get_lernpfad` (`compact()`) lief zusätzlich durch `stripHtml`, wodurch das beim Zurücklesen unsichtbar blieb. Behoben: `htmlToPlainText()` wandelt die Beschreibung jetzt immer in reinen Text (Blockgrenzen → Zeilenumbruch, Tags raus, Entities aufgelöst), `compact()` zeigt die Lernpfad-Wurzel roh.
 
 Nebenbei bestätigt bei v94.5 (Bundle-Wechsel seit v94.2, main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen): Lernpfad/Gliederung/Aufgabe anlegen, Wahlpflicht-Unteraufgabe anlegen (0.1.7-Fix weiterhin gültig) – alles unverändert.
+
+## Mitschrift 12 (11.11.2026, v94.5): Teil-Patch, Warnungen, offene Punkte aus einer zweiten Fehlerrunde
+
+Zweite Anmerkungsrunde aus derselben Chat-Sitzung zur Unterrichtsmaterial-Erstellung (sechs Punkte). Status je Punkt:
+
+1. **Kachelbild für Gliederung/Aufgabe – braucht Mitschnitt.** `coverImage` als Datei-Feld auf `POST lerninput/task` angenommen (kein Fehler), aber wirkungslos (`coverImage` bleibt `null`); ebenso `displayImage`, `image`, `icon`, `coverImageFile` probiert. Der echte Feldname steht nicht im Hauptbundle (main-K73FMJMP.js) – das Formular der Dialoge „Aufgabe hinzufügen“/„Bild hochladen“ scheint client-seitig anders aufgebaut zu sein, als die bisher bekannten Felder vermuten lassen. `lerninput/folder` akzeptiert bislang gar keine Datei (unser `saveFolder` hat keinen `files`-Parameter). **Für die Lösung: Browser-Mitschnitt nötig**, während jemand in der Weboberfläche einer Gliederung und einer Aufgabe ein Bild zuweist.
+2. Anhänge löschen/ersetzen – bereits in 0.1.8 umgesetzt (siehe Mitschrift 11).
+3. **`scobees_patch_arbeitsblatt` umgesetzt.** Liest `serloToMarkdown`, prüft auf verlustbehaftete Bausteine (Erkennung: Serialisierung enthält `(Baustein …)`/`(interaktiver Baustein: …)` – unsere eigenen Fallback-Marker für unbekannte Plugins), prüft dass jede Ersetzung genau einmal vorkommt (alles oder nichts), schreibt über denselben Weg wie `scobees_update_aufgabe` zurück.
+4. Lernpfad-Beschreibung reiner Text – bereits in 0.1.8 umgesetzt (siehe Mitschrift 11); Ursache war die eigene Parameterbeschreibung, nicht `create_lernpfad` selbst.
+5. Markdown-Umwandlung:
+   - Unterstrich-Betonung intraword – bereits 0.1.5 umgesetzt.
+   - `$…$` in Lückenantworten bleibt Klartext – **bestätigt unveränderlich** (Serlo-Baustein `blanksExercise.correctAnswers[].answer` ist laut Lehrer-Bundle eine reine Zeichenkette, keine Formel-Darstellung vorgesehen; bereits in Mitschrift 11 am lebenden Objekt mit `.trim()`/`.length` belegt). Jetzt zusätzlich: `markdownToSerlo.warnungen` sammelt eine Meldung, sobald das vorkommt, surfaced in `scobees_markdown_vorschau`, `scobees_create_aufgabe`, `scobees_update_aufgabe`.
+   - Zeilenumbrüche in `quiz-blanks`/`-dnd` – bereits 0.1.5 umgesetzt.
+   - Bilder in `:::box`/`:::spoiler` – **funktionieren bereits** (derselbe rekursive Blockparser wie auf oberster Ebene), live mit Testdokument bestätigt, nur dokumentiert.
+   - Geschütztes Leerzeichen U+00A0/U+202F – **bleibt bereits erhalten**, in Fließtext und Tabellenzelle, mit Testdokument bestätigt (unser Code hat dafür nirgends eine Sonderbehandlung nötig, da `\s`-Regex nur an wenigen, unkritischen Stellen verwendet wird). Sollte es in der Praxis trotzdem zu Umbrüchen kommen, liegt das nicht am Server, sondern am Editor-Rendering oder an der Eingabequelle (z. B. Copy-Paste, das die Zeichen vorher schon durch normale Leerzeichen ersetzt).
+   - Unterstrich-Betonung → `*…*` beim Zurücklesen: jetzt ebenfalls über `markdownToSerlo.warnungen` gemeldet.
+6. Kleinere Punkte:
+   - `differenzierungen` leer → alle Niveaus werden **explizit** eingetragen (kein eigenes „für alle“-Feld bei scobees). Gewolltes Verhalten, nur die Parameterbeschreibung war ungenau – jetzt klargestellt, inkl. Hinweis, dass ein später neu angelegtes Niveau nicht automatisch nachgezogen wird.
+   - `scobees_upload_bild`-Fehlerbehandlung, `scobees_me`-Versionsabgleich, Server-/Skill-Version – bereits in 0.1.5/0.1.8 umgesetzt.

@@ -5,7 +5,7 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.4** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.9** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist.
 
@@ -136,7 +136,7 @@ Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; na
 
 ### 8. Zurücklesen und prüfen
 
-Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge. Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste.
+Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge. Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste. Liefert ein Werkzeug `warnungen[]` mit (z. B. bei `$…$` in einer Lückenantwort), diese im Abschlussbericht nennen, nicht stillschweigend übergehen. Für eine kleine Korrektur an einem schon bestehenden Arbeitsblatt eignet sich `scobees_patch_arbeitsblatt` (gezielte Textersetzung) besser als `scobees_update_aufgabe` mit komplett neu geschriebenem `arbeitsblatt_markdown`.
 
 ### 9. Abschlussbericht an die Lehrkraft (immer)
 
@@ -152,7 +152,7 @@ Checkliste, immer dabei:
 
 ## Modus C: Bestehenden Pfad überarbeiten
 
-- Zuerst lesen: `scobees_get_lernpfad` (Baum mit IDs), dann `scobees_get_aufgabe` für alles, was geändert wird. Das Arbeitsblatt kommt als Markdown zurück und wird beim Ändern **komplett ersetzt**; also das gelesene Markdown ändern, nicht neu schreiben.
+- Zuerst lesen: `scobees_get_lernpfad` (Baum mit IDs), dann `scobees_get_aufgabe` für alles, was geändert wird. Das Arbeitsblatt kommt als Markdown zurück und wird beim Ändern über `scobees_update_aufgabe` **komplett ersetzt**; also das gelesene Markdown ändern, nicht neu schreiben. Betrifft die Änderung nur wenige Stellen (ein ausgetauschter Satz, eine neue Bild-URL), stattdessen `scobees_patch_arbeitsblatt` mit den betroffenen Textstellen verwenden – spart das Mitschicken des ganzen, oft langen Markdowns und schlägt kontrolliert fehl, wenn eine Stelle nicht eindeutig ist.
 - Den Grobplan auf die Änderung beschränken: Tabelle nur mit betroffenen Zeilen und einer Spalte „vorher / nachher“.
 - Vor dem Löschen (`scobees_delete`, `confirm: true`) immer ausdrücklich bestätigen lassen; Löschen nimmt Unterelemente mit.
 - Eine neue Fassung einer Datei ersetzt die alte nicht automatisch: `scobees_upload_material` mit `ersetzt_attachment_id` (ATT-ID der alten Fassung aus `scobees_get_aufgabe`) hochladen, oder erst `scobees_delete_material` (`confirm: true`) und danach neu hochladen. Sonst hängen beide Fassungen nebeneinander an der Aufgabe. Bei einer Stift-Abgabe (`abgabeformen: pen`) warnt `scobees_delete_material`, wenn dabei das letzte PDF-Material wegfällt – das vor dem Löschen beachten.

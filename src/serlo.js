@@ -34,6 +34,13 @@ const text = (slate) => P("text", slate.length ? slate : [{ type: "p", children:
 const textP = (str) => text([{ type: "p", children: inline(str) }]);
 const rows = (items) => P("rows", items.length ? items : [textP("")]);
 
+// Warnungen für Stellen, an denen die Umwandlung zwar gelingt, aber nicht ganz das tut, was der Quelltext
+// nahelegt (z. B. "$…$" in einer Lückenantwort). Pro Aufruf von markdownToSerlo zurückgesetzt und am Ende
+// unter markdownToSerlo.warnungen verfügbar – praktisch als Rückkanal, ohne den Rückgabewert (das Dokument
+// selbst) für alle bisherigen Aufrufer zu ändern.
+let _warn = [];
+const warn = (msg) => { if (!_warn.includes(msg)) _warn.push(msg); };
+
 // ── Inline-Markdown → Slate-Knoten ───────────────────────────────────────────
 function inline(src) {
   const out = [];
@@ -63,6 +70,7 @@ function inline(src) {
       for (const n of inline(m[1])) out.push("text" in n ? { ...n, strong: true } : n);
       i += m[0].length;
     } else if ((m = rest.match(re.em)) && !(m[2] !== undefined && (isWordChar(src[i - 1]) || isWordChar(src[i + m[0].length])))) {
+      if (m[2] !== undefined) warn("Unterstrich-Betonung (_…_) im Quelltext wird beim Zurücklesen immer als Sternchen (*…*) angezeigt – gleiche Bedeutung, andere Schreibweise, kein Datenverlust.");
       flush();
       for (const n of inline(m[1] ?? m[2])) out.push("text" in n ? { ...n, em: true } : n);
       i += m[0].length;
@@ -89,9 +97,11 @@ const isList = (l) => /^\s*([-*+]|\d+[.)])\s+/.test(l);
 const isVideo = (u) => /youtube\.com|youtu\.be|vimeo\.com|\.mp4(\?|$)|\.webm(\?|$)/i.test(u);
 
 function markdownToSerlo(md) {
+  _warn = [];
   const lines = String(md || "").replace(/\r\n?/g, "\n").split("\n");
   // Wurzel ohne id – so liefert der Editor selbst das Dokument; mit id lädt der Editor es nicht (Store-Schlüssel „root“)
   const { plugin, state } = rows(parseBlocks(lines));
+  markdownToSerlo.warnungen = _warn;
   return { plugin, state };
 }
 
@@ -297,7 +307,11 @@ function inputExercise(body) {
 // Zeichenketten (kein Rich-Text, keine Formel-Darstellung) – acceptMathEquivalents vergleicht sie als
 // LaTeX-Ausdruck, nicht als gerendertes $…$. Ein mitgeschriebenes $…$ bleibt deshalb sichtbarer Klartext UND
 // verhindert den Mathematik-Vergleich (die Dollarzeichen sind kein gültiger Ausdruck); hier abgeschnitten.
-const stripMathDelims = (s) => s.trim().replace(/^\$(.+)\$$/, "$1");
+const stripMathDelims = (s) => {
+  const t = s.trim();
+  if (/^\$(.+)\$$/.test(t)) warn("„$…$“ in einer Lückenantwort/einem Distraktor wird nie als Formel dargestellt (Serlo zeigt Lückenantworten nur als Klartext) – die Dollarzeichen werden entfernt, damit der Mathematik-Vergleich funktioniert, sichtbar bleibt reiner Text.");
+  return t.replace(/^\$(.+)\$$/, "$1");
+};
 
 function blanksExercise(body, dnd) {
   const extra = [];
