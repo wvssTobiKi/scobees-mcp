@@ -266,7 +266,7 @@ Nebenbei bestätigt bei v94.5 (Bundle-Wechsel seit v94.2, main-LEMTLTST.js → m
 
 Zweite Anmerkungsrunde aus derselben Chat-Sitzung zur Unterrichtsmaterial-Erstellung (sechs Punkte). Status je Punkt:
 
-1. **Kachelbild für Gliederung/Aufgabe – braucht Mitschnitt.** `coverImage` als Datei-Feld auf `POST lerninput/task` angenommen (kein Fehler), aber wirkungslos (`coverImage` bleibt `null`); ebenso `displayImage`, `image`, `icon`, `coverImageFile` probiert. Der echte Feldname steht nicht im Hauptbundle (main-K73FMJMP.js) – das Formular der Dialoge „Aufgabe hinzufügen“/„Bild hochladen“ scheint client-seitig anders aufgebaut zu sein, als die bisher bekannten Felder vermuten lassen. `lerninput/folder` akzeptiert bislang gar keine Datei (unser `saveFolder` hat keinen `files`-Parameter). **Für die Lösung: Browser-Mitschnitt nötig**, während jemand in der Weboberfläche einer Gliederung und einer Aufgabe ein Bild zuweist.
+1. **Kachelbild für Gliederung/Aufgabe – per Mitschnitt gelöst (siehe Mitschrift 13).** Vorher erfolglos sondiert: `coverImage` als Datei-Feld auf `POST lerninput/task` angenommen (kein Fehler), aber wirkungslos (`coverImage` bleibt `null`); ebenso `displayImage`, `image`, `icon`, `coverImageFile` probiert. Der echte Feldname steht nicht im Hauptbundle (main-K73FMJMP.js) – das Formular der Dialoge „Aufgabe hinzufügen“/„Bild hochladen“ scheint client-seitig anders aufgebaut zu sein, als die bisher bekannten Felder vermuten lassen. `lerninput/folder` akzeptiert bislang gar keine Datei (unser `saveFolder` hat keinen `files`-Parameter). **Für die Lösung: Browser-Mitschnitt nötig**, während jemand in der Weboberfläche einer Gliederung und einer Aufgabe ein Bild zuweist.
 2. Anhänge löschen/ersetzen – bereits in 0.1.8 umgesetzt (siehe Mitschrift 11).
 3. **`scobees_patch_arbeitsblatt` umgesetzt.** Liest `serloToMarkdown`, prüft auf verlustbehaftete Bausteine (Erkennung: Serialisierung enthält `(Baustein …)`/`(interaktiver Baustein: …)` – unsere eigenen Fallback-Marker für unbekannte Plugins), prüft dass jede Ersetzung genau einmal vorkommt (alles oder nichts), schreibt über denselben Weg wie `scobees_update_aufgabe` zurück.
 4. Lernpfad-Beschreibung reiner Text – bereits in 0.1.8 umgesetzt (siehe Mitschrift 11); Ursache war die eigene Parameterbeschreibung, nicht `create_lernpfad` selbst.
@@ -280,3 +280,19 @@ Zweite Anmerkungsrunde aus derselben Chat-Sitzung zur Unterrichtsmaterial-Erstel
 6. Kleinere Punkte:
    - `differenzierungen` leer → alle Niveaus werden **explizit** eingetragen (kein eigenes „für alle“-Feld bei scobees). Gewolltes Verhalten, nur die Parameterbeschreibung war ungenau – jetzt klargestellt, inkl. Hinweis, dass ein später neu angelegtes Niveau nicht automatisch nachgezogen wird.
    - `scobees_upload_bild`-Fehlerbehandlung, `scobees_me`-Versionsabgleich, Server-/Skill-Version – bereits in 0.1.5/0.1.8 umgesetzt.
+
+## Mitschrift 13 (11.11.2026, v94.5): Kachelbild für Gliederung und Aufgabe
+
+Browser-Mitschnitt (Tobias hat in der Weboberfläche Bilder gesetzt, die Seite war mit einem XHR/fetch-Haken versehen, der FormData-Felder mitschreibt). Zwei verschiedene Wege:
+
+- **Gliederung:** `POST lerninput/folder` (multipart) mit `id`, `name`, `color` ("#00838F"), `order` ("none"), `description`, `parentId`, **`coverImage` = Datei**, `coverImagePath` "undefined". Also wie bei Lernpfad und Wahlpflicht – unser `saveFolder` hatte nur keinen Datei-Parameter.
+- **Aufgabe:** zwei Schritte. Erst `POST attachments` mit `entityId` = Aufgaben-ID, `entityType` "Lerninput", **`type` "coverimage"**, `file` → 201 `{id:"ATT-…", path, thumbnailPath, …}`. Dann `POST lerninput/task` mit **`coverImagePath` = dieser Pfad**. Ein Datei-Feld `coverImage` auf `lerninput/task` wird stillschweigend ignoriert (deshalb scheiterte die Sondierung in Mitschrift 12).
+- **Icon aus der Schul-Bibliothek:** `POST lerninput/folder` mit `coverImage` "undefined" und `coverImagePath` = Pfad des Bibliotheks-Icons (`SCHOOL-…/learninput_icon_library/…_thumbnail.png`). Nicht als Werkzeug umgesetzt; bleibt beim Ändern erhalten.
+- Gespeichert als `coverImage: {path, type: "coverimage"|"learninput_icon", filename, …}` am Element und im Baum; `displayImageUrl` ist die abgeleitete Abruf-URL.
+- Neue Felder im Aufgaben-Formular der Oberfläche seit v94.x: `isAiCorrectionEnabled` (false), `submissionRule` null bei Aufgaben ohne Abgabe. `taskToForm` reicht `isAiCorrectionEnabled` jetzt durch.
+
+**Nebenbefund (Fehler behoben):** `scobees_update_gliederung` schickte bisher nur `id`, `parentId`, `name`, `description`. Ein vorhandenes Kachelbild blieb dabei erhalten, die **Farbe** der Gliederung ging aber verloren (`color` fehlte danach im Datensatz). Jetzt werden `color`, `order` und `coverImagePath` wie in der Weboberfläche mitgeschickt.
+
+Live geprüft: Gliederung mit Bild anlegen, umbenennen (Bild und Farbe bleiben), Bild ersetzen; Aufgabe mit Bild anlegen, Feld ändern (Bild bleibt), Bild ersetzen (alte Bilddatei wird entfernt), `hat_titelbild` im Baum, `titelbild` in `scobees_get_aufgabe`, Ablehnung von Nicht-Bildern.
+
+Zum Mitschnitt-Verfahren selbst: `read_network_requests` des Browser-Bereichs zeigt die API-Aufrufe der Angular-Oberfläche nicht zuverlässig. Bewährt hat sich ein Haken in der Seite über `XMLHttpRequest.prototype.open/send` und `window.fetch`, der Methode, URL, Status, Antwort und bei `FormData` die Feldnamen samt Dateiangaben in ein Array schreibt.

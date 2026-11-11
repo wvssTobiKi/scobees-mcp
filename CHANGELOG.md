@@ -6,7 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
-| 0.1.9 | v94.5 | main-K73FMJMP.js | 2026-11-11 | `scobees_patch_arbeitsblatt` live geprüft (Erfolg, Mehrfachtreffer, kein Treffer, verlustbehafteter Baustein); Bilder in Box/Spoiler und geschütztes Leerzeichen (U+00A0/U+202F) bestätigt unverändert erhalten |
+| 0.1.9 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Kachelbild für Gliederung und Aufgabe per Browser-Mitschnitt ermittelt und live geprüft (anlegen, behalten, ersetzen); `scobees_patch_arbeitsblatt` live geprüft (Erfolg, Mehrfachtreffer, kein Treffer, verlustbehafteter Baustein); Bilder in Box/Spoiler und geschütztes Leerzeichen (U+00A0/U+202F) bestätigt unverändert erhalten |
 | 0.1.8 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Bundle seit v94.2 gewechselt (main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen); Lernpfad/Gliederung/Aufgabe/Wahlpflicht-Unteraufgabe anlegen dabei bestätigt unverändert. Neue Werkzeuge live geprüft: Anhang löschen (`DELETE attachments/{id}`), Lernpfad-Beschreibung als reiner Text |
 | 0.1.7 | v94.2 | main-LEMTLTST.js | 2026-11-04 | breiter Funktionstest (Lernpfad/Gliederung/Aufgabe mit allen Markdown-Bausteinen, Material-Upload, Löschen – unverändert) plus Browser-Mitschnitt: Wahlpflicht-Unteraufgaben funktionieren jetzt (taskType „Wahlpflichtaufgabe“ nötig, automatisch gesetzt); Verschieben in eine Wahlpflichtaufgabe bleibt gesperrt |
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
@@ -17,11 +17,14 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 Zweite Anmerkungsrunde aus derselben Chat-Sitzung zur Unterrichtsmaterial-Erstellung (sechs Punkte); Status je Punkt in `docs/scobees-api-map.md` (Mitschrift 12).
 
+- **Kachelbild für Gliederungen und Aufgaben** (`cover_image_path` bei `scobees_create_gliederung`, `scobees_update_gliederung`, `scobees_create_aufgabe`, `scobees_update_aufgabe`), per Browser-Mitschnitt ermittelt: Gliederungen nehmen die Datei direkt als `coverImage`, Aufgaben brauchen einen Anhang vom Typ `coverimage` und dessen Pfad als `coverImagePath`. `scobees_get_lernpfad` zeigt je Element `hat_titelbild`, `scobees_get_aufgabe` das `titelbild`. Beim Ersetzen an einer Aufgabe wird die alte Bilddatei entfernt.
+- **Fehler behoben:** `scobees_update_gliederung` löschte bisher stillschweigend die Farbe einer Gliederung, weil `color`/`order` nicht mitgeschickt wurden. Neuer optionaler Parameter `color` an beiden Gliederungs-Werkzeugen.
 - **Neues Werkzeug `scobees_patch_arbeitsblatt`**: ersetzt im Arbeitsblatt-Markdown gezielt Textstellen, statt das ganze Arbeitsblatt neu zu senden. Alles-oder-nichts – jede Ersetzung muss genau einmal vorkommen, sonst keine Änderung und eine Meldung, welche fehlschlug. Lehnt Arbeitsblätter mit Bausteinen ohne Markdown-Entsprechung (z. B. Bild-Zuordnung) ab und verweist auf `serlo_json`.
 - **Neue Warnungen** (`warnungen[]` in `scobees_markdown_vorschau`, `scobees_create_aufgabe`, `scobees_update_aufgabe`, `scobees_patch_arbeitsblatt`): Unterstrich-Betonung (`_…_`) wird beim Zurücklesen immer als `*…*` angezeigt; `$…$` in einer Lückenantwort/einem Distraktor wird für den Vergleich abgeschnitten und nie als Formel dargestellt.
 - Geklärt und dokumentiert statt Code geändert: `differenzierungen` leer trägt alle aktuellen Niveaus explizit ein (scobees kennt kein eigenes „für alle“) – Parameterbeschreibung entsprechend präzisiert. Bilder in `:::box`/`:::spoiler` und geschütztes Leerzeichen (U+00A0/U+202F) funktionieren bereits, nur in `references/markdown.md` ergänzt.
-- Kachelbild für Gliederung/Aufgabe (Punkt 1, höchste Priorität im Bericht): **noch offen**, braucht einen Browser-Mitschnitt – der Feldname für das Datei-Upload auf `lerninput/task`/`lerninput/folder` ließ sich nicht aus dem aktuellen Bundle oder durch Sondierung ermitteln (mehrere Kandidaten ausprobiert, alle wirkungslos).
-- 7 neue Tests (30 gesamt, alle grün).
+- Werkzeugbeschreibungen und Server-Hinweise überarbeitet (vollständige Liste der Arten und Quiz-Blöcke bei `scobees_create_aufgabe`, Verweis auf `scobees_patch_arbeitsblatt`, Ablauf für bestehende Kurse); `taskToForm` reicht das neue Oberflächen-Feld `isAiCorrectionEnabled` durch.
+- Skill: Bei einer neuen Lernsituation wird gefragt, ob und für welche Ebenen Bilder entstehen sollen (Titelbild, Gliederungs-Kacheln, Aufgaben-Kacheln, Abbildungen im Arbeitsblatt); Entscheidung steht im Grobplan.
+- 8 neue Tests (31 gesamt, alle grün).
 
 ## 0.1.8 – 2026-11-11
 

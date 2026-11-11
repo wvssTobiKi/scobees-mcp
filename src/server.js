@@ -40,9 +40,12 @@ async function handle(req) {
         capabilities: { tools: {} },
         serverInfo: { name: "scobees-mcp", version: pkg.version },
         instructions:
-          "Kursaufbau in scobees. Reihenfolge: scobees_list_subjects → Fach wählen → scobees_create_lernpfad → scobees_create_gliederung → " +
-          "scobees_create_aufgabe (Arbeitsblatt als Markdown). Bestehende Kurse: scobees_list_lernpfade → scobees_get_lernpfad → update/move/delete. " +
-          "Dieser Server greift nie auf Schüler- oder Personendaten zu.",
+          "Kursaufbau in scobees. Neu: scobees_list_subjects → Lehrkraft wählt das Fach → scobees_create_lernpfad → scobees_create_gliederung → " +
+          "scobees_create_aufgabe (Arbeitsblatt als Markdown) → scobees_upload_material. Bestehende Kurse: scobees_list_lernpfade → scobees_get_lernpfad → " +
+          "scobees_get_aufgabe, dann gezielt ändern: scobees_patch_arbeitsblatt für einzelne Textstellen, scobees_update_* für Felder, " +
+          "scobees_upload_material mit ersetzt_attachment_id bzw. scobees_delete_material für Dateien. Nach dem Schreiben zurücklesen und warnungen[] beachten. " +
+          "Kachelbilder (cover_image_path) nur erzeugen, wenn die Lehrkraft sie für die jeweilige Ebene wünscht. " +
+          "Zuweisung an Lerngruppen und Fächerverwaltung bleiben in der Weboberfläche; dieser Server greift nie auf Schüler- oder Personendaten zu.",
       },
     });
   }

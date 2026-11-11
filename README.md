@@ -20,7 +20,8 @@ Erster Aufschlag der Werner-von-Siemens-Schule Hildesheim, orientiert am [Moodle
 | Lernbereich (Kachel in der Bib) | workspace `LB-…` | `scobees_list_workspaces` |
 | Fach / Kurs | subject `SUBJ-…` | `scobees_list_subjects` |
 | Lernpfad | Wurzel-Lerninput `LI-…` | `scobees_create_lernpfad`, `scobees_update_lernpfad`, `scobees_get_lernpfad` |
-| Gliederungsstruktur | folder | `scobees_create_gliederung` |
+| Gliederungsstruktur | folder | `scobees_create_gliederung`, `scobees_update_gliederung` |
+| Kachelbild (Lernpfad, Gliederung, Wahlpflicht, Aufgabe) | `coverImage` | Parameter `cover_image_path` der jeweiligen create/update-Werkzeuge |
 | Aufgabe (Pflicht/Wahl) | task | `scobees_create_aufgabe`, `scobees_update_aufgabe` |
 | Wahlpflichtaufgabe | choice (Container) | `scobees_create_wahlpflicht`, `scobees_update_wahlpflicht` |
 | Interaktives Arbeitsblatt | Serlo-Dokument in `taskDescription` | Markdown → `src/serlo.js`; gezielte Änderung: `scobees_patch_arbeitsblatt` |

@@ -208,3 +208,25 @@ test("markdownToSerlo.warnungen: Unterstrich-Rundreise und $…$ in Lückenantwo
   markdownToSerlo("```quiz-blanks-dnd\nFormel [[$U=R\cdot I$]].\n```");
   assert.match(markdownToSerlo.warnungen[0], /nie als Formel dargestellt/);
 });
+
+test("Kachelbild: cover_image_path an allen vier Ebenen, hat_titelbild im Baum, Speichern erhält das Bild", () => {
+  const { TOOLS, compact, taskToForm } = require("../src/tools");
+  for (const n of ["scobees_create_lernpfad", "scobees_update_lernpfad", "scobees_create_gliederung", "scobees_update_gliederung",
+    "scobees_create_wahlpflicht", "scobees_update_wahlpflicht", "scobees_create_aufgabe", "scobees_update_aufgabe"]) {
+    assert.ok(TOOLS.find((t) => t.name === n).inputSchema.properties.cover_image_path, `${n} braucht cover_image_path`);
+  }
+  const tree = compact({
+    id: "LI-1", name: "Pfad", parentId: null, isLeaf: false, coverImage: { path: "a/b.png" },
+    children: [
+      { id: "LI-2", name: "Gliederung", parentId: "LI-1", isLeaf: false, coverImage: null, children: [] },
+      { id: "LI-3", name: "Aufgabe", parentId: "LI-1", isLeaf: true, coverImage: { path: "c/d.png", id: "ATT-1", type: "coverimage" } },
+    ],
+  });
+  assert.equal(tree.hat_titelbild, true);
+  assert.deepEqual(tree.children.map((c) => c.hat_titelbild), [false, true]);
+  // Beim erneuten Speichern muss der Pfad des vorhandenen Kachelbilds mitgehen, sonst wäre es Glückssache, ob es bleibt
+  const form = taskToForm({ id: "LI-3", name: "Aufgabe", parentId: "LI-1", coverImage: { path: "c/d.png" }, isAiCorrectionEnabled: true });
+  assert.equal(form.coverImagePath, "c/d.png");
+  assert.equal(form.isAiCorrectionEnabled, true);
+  assert.equal(taskToForm({ id: "LI-4", name: "ohne Bild" }).coverImagePath, undefined);
+});

@@ -196,7 +196,7 @@ const api = {
 
   // Schreibaufrufe – Felder exakt wie von der Weboberfläche beobachtet
   createRoot: (fields, files) => request("POST", "lerninput", { form: lerninputForm(fields, files) }),
-  saveFolder: (fields) => request("POST", "lerninput/folder", { form: lerninputForm(fields) }),
+  saveFolder: (fields, files) => request("POST", "lerninput/folder", { form: lerninputForm(fields, files) }),
   saveChoice: (fields, files) => request("POST", "lerninput/choice", { form: lerninputForm(fields, files) }),
   saveTask: (fields, files) => request("POST", "lerninput/task", { form: lerninputForm(fields, files) }),
   move: (id, parentId, sortOrder) =>

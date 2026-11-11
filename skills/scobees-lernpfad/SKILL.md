@@ -15,7 +15,7 @@ Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Sch�
 |---|---|---|
 | **A – Neu** | Thema, Bildungsgang, ggf. Lernfeld/Modul genannt | Curriculare Grundlage recherchieren, Lernsituation konzipieren |
 | **B – Aus Unterlagen** | Dateien hochgeladen oder Pfade genannt (PDF, docx, pptx, Markdown, Bilder, HTML) | Inhalt übernehmen, nicht neu erfinden; Lücken benennen statt füllen |
-| **C – Bestehenden Pfad überarbeiten** | „ergänze“, „überarbeite“, „baue um“, Lernpfad-ID oder -Name | Erst `scobees_get_lernpfad` und betroffene `scobees_get_aufgabe` lesen; nur Übergebenes ändern, Arbeitsblätter immer komplett zurückschreiben |
+| **C – Bestehenden Pfad überarbeiten** | „ergänze“, „überarbeite“, „baue um“, Lernpfad-ID oder -Name | Erst `scobees_get_lernpfad` und betroffene `scobees_get_aufgabe` lesen; nur Übergebenes ändern, kleine Textänderungen per `scobees_patch_arbeitsblatt` |
 
 Die Modi mischen sich oft (Unterlagen + Erweiterung eines Pfads). Der Ablauf unten gilt für alle; in Modus C entfallen die Schritte, deren Ergebnis schon im Pfad steht.
 
@@ -23,12 +23,13 @@ Die Modi mischen sich oft (Unterlagen + Erweiterung eines Pfads). Der Ablauf unt
 
 ### 1. Rahmen klären (eine kurze Nachfrage, nicht ein Fragebogen)
 
-Du brauchst vier Dinge, bevor du planst. Was die Lehrkraft schon gesagt hat, fragst du nicht noch einmal.
+Du brauchst fünf Dinge, bevor du planst. Was die Lehrkraft schon gesagt hat, fragst du nicht noch einmal.
 
 1. **Bildungsgang** (BFS-dual mit Beruf, Technikerschule mit Fachrichtung, BG Technik mit Schwerpunkt, FOS Technik, BES) und Jahr/Klasse. Daraus folgen Vokabular, Niveau, Sprache und Umfang (`references/bildungsgaenge.md`).
 2. **Curriculare Einheit**: Lernfeld, Modul, Lerngebiet oder Kompetenzbereich. Ist sie nicht genannt, recherchiere die gültige Vorgabe (Fundorte in der Referenz) und schlage die passende Einheit vor. Nenne die Quelle und lass bestätigen; Rahmenlehrpläne ändern sich, und die Lehrkraft kennt die schulinterne Umsetzung.
 3. **Umfang**: Unterrichtsstunden oder Wochen. Fehlt die Angabe, schlage einen Richtwert vor (Referenz).
 4. **Fach in scobees**: Das Fach wird nie geraten und nie aus dem Thema abgeleitet. Immer zuerst `scobees_list_subjects` (bei vielen Fächern vorher `scobees_list_workspaces` und nach dem Lernbereich fragen), dann die in Frage kommenden Fächer mit Namen und ID zeigen und die Lehrkraft wählen lassen. Hat sie ein Fach genannt, den passenden Eintrag aus der Liste nennen und bestätigen lassen; gibt es keinen eindeutigen Treffer, nachfragen statt den ähnlichsten nehmen. Grund: Lernende haben ihr Niveau pro Fach, ein Pfad im falschen Fach lässt sich nicht zuweisen, und Fächer legt nur der Administrator an.
+5. **Bilder**: Bilder zu erzeugen ist der teuerste Teil der Arbeit (viel Rechenaufwand je Bild). Deshalb bei einer neuen Lernsituation ausdrücklich fragen, **ob und für welche Ebenen** Bilder entstehen sollen: Titelbild des Lernpfads · Kachelbilder der Gliederungen · Kachelbilder der Aufgaben · Abbildungen im Arbeitsblatt. Die Ebenen einzeln anbieten, nicht „Bilder ja/nein“. Ohne Antwort gilt: keine Kachelbilder, im Arbeitsblatt nur Abbildungen, die etwas erklären (Abschnitt 2a). Bilder, die die Lehrkraft mitbringt, gehen immer vor selbst erzeugten. Die Entscheidung im Grobplan ausweisen (Anzahl Bilder je Ebene), damit sie vor dem Anlegen noch gestrichen werden kann.
 
 Zu Beginn einmal `scobees_me`: prüft Anmeldung und meldet, ob scobees sich seit der Prüfung des Servers geändert hat. Bei einer Warnung weiterarbeiten, aber am Ende darauf hinweisen.
 
@@ -100,7 +101,7 @@ Regeln für den Inhalt:
 
 - Marken in Klartext: „Info“ · „Theorie + <Kontrollform>“ · „Abgabe: <Form>“ · „Pflichtabgabe: <Form>“ · „+ Musterlösung“ · „Training, freiwillig“ / „Extra, freiwillig“. Formen heißen Datei, Stift auf PDF, Videolink.
 - Eine Frage, die eine Aufgabe oder eine Gliederung betrifft, steht **dort** (`frage` an der Aufgabe oder Gliederung). Unten unter „Vor der Freigabe klären“ nur, was den ganzen Pfad betrifft (Reihenfolge, Umfang, Fach, Niveau-Varianten).
-- Der Vorschlag für die praktische Einheit und was an Material entsteht, stehen ausdrücklich dabei.
+- Der Vorschlag für die praktische Einheit und was an Material entsteht, stehen ausdrücklich dabei – einschließlich der Bilder je Ebene aus Schritt 1 („Bilder: 1 Titelbild, 4 Gliederungs-Kacheln, keine Aufgaben-Kacheln, 3 Abbildungen“).
 - In Modus C nur die betroffenen Gliederungen, Änderungen als „vorher → nachher“ im Aufgabentext.
 
 Erst nach Freigabe anlegen; Änderungswünsche („2.2 auf 20 min, 5.1 Pflicht“) einarbeiten, nicht diskutieren.
@@ -132,7 +133,7 @@ Jede Aufgabe hat:
 - **Zeit** `estimated_time` aus dem Grobplan.
 - **Erwartungshorizont** in `interne_notiz`, wenn es etwas zu bewerten gibt.
 
-Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; nach Reihenfolge erzwingt den roten Faden), `jahrgaenge` und `stichwoerter` setzen, Titelbild nur, wenn eines vorliegt.
+Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; nach Reihenfolge erzwingt den roten Faden), `jahrgaenge` und `stichwoerter` setzen. Titel- und Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
 
 ### 8. Zurücklesen und prüfen
 
@@ -171,7 +172,7 @@ Checkliste, immer dabei:
 - Einheit fest neben dem Feld (`= 254 Hosts`), Lernende tippen nur die Zahl.
 - Dezimalzahlen mit Komma und Punkt hinterlegen (`= 8,4` und `= 8.4`).
 - Typische Fehlerwerte mit Rückmeldung (`≠ 256 :: Netz- und Broadcastadresse abziehen`).
-- Bitmuster wie `0100` werden als Zahl verglichen (führende Nullen verschwinden): anders abfragen (Text in Anführungszeichen, Drag-and-drop) oder im Fragetext darauf hinweisen.
+- Bitmuster wie `0100` werden als Zahl verglichen (führende Nullen verschwinden): per Drag-and-drop oder Einfachauswahl abfragen oder den Dezimalwert verlangen.
 - Tipp-Lückentexte vermeiden, wenn die Schreibweise scheitern kann; Drag-and-drop mit Distraktoren, Ziffern als Lösung oder Wortspeicher sind robuster.
 - Rückmeldungen je Antwort bei Auswahlfragen: `- [x] Antwort :: Rückmeldung`.
 - Bei Freitext (`quiz-text`) gibt es keine automatische Prüfung; dann Aufklapp-Block „Lösungshinweis“ darunter.

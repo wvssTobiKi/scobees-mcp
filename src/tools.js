@@ -53,6 +53,7 @@ function compact(node, depth = 0) {
   const out = {
     id: node.id, name: node.name, typ: nodeType(node), sortOrder: node.sortOrder,
     state: node.state, isPublished: node.isPublished,
+    hat_titelbild: !!node.coverImage,
   };
   if (node.description) {
     // Die Lernpfad-Wurzel speichert reinen Text (siehe htmlToPlainText); hier unverändert zeigen, damit ein
@@ -166,9 +167,10 @@ function taskToForm(t) {
     submissionRule: t.submissionRule || "all",
     isPenEnabled: !!t.isPenEnabled,
     isLinkSubmissionEnabled: !!t.isLinkSubmissionEnabled,
+    isAiCorrectionEnabled: !!t.isAiCorrectionEnabled,
     lfs: t.lfs || [],
     parentId: t.parentId,
-    coverImagePath: undefined,
+    coverImagePath: t.coverImage?.path,
     attachments: undefined,
     sampleSolutions: undefined,
     links: t.links || [],
@@ -216,6 +218,21 @@ function buildTaskDescription(args) {
   }
   if (args.arbeitsblatt_markdown) return markdownToSerlo(args.arbeitsblatt_markdown);
   return undefined;
+}
+
+const COVER_HINT = "Lokaler Pfad zu einem Kachelbild (PNG oder JPG; live geprüft mit PNG bis 1,3 MB). Quadratisch anlegen – scobees beschneidet die Kachel quadratisch – und ein Motiv wählen, das klein noch erkennbar ist.";
+const assertCoverImage = (p) => { if (!/\.(png|jpe?g)$/i.test(p)) throw new Error(`Kachelbild muss PNG oder JPG sein: ${p}`); };
+
+/** Kachelbild einer Aufgabe: die Weboberfläche lädt es als Anhang vom Typ „coverimage“ hoch und trägt dessen Pfad
+ * beim Speichern als coverImagePath ein (Mitschnitt 11.11.2026). Gliederung, Wahlpflicht und Lernpfad schicken
+ * die Datei dagegen direkt als Feld coverImage mit. Ein vorheriges Kachelbild der Aufgabe wird danach entfernt. */
+async function uploadTaskCover(taskId, filePath, previous) {
+  assertCoverImage(filePath);
+  const att = await api.uploadAttachment(taskId, filePath, "coverimage");
+  const cleanup = async () => {
+    if (previous?.id && previous.type === "coverimage") { try { await api.removeAttachment(previous.id); } catch {} }
+  };
+  return { path: att.path, cleanup };
 }
 
 /** Für scobees_patch_arbeitsblatt: jede Ersetzung muss im Markdown genau einmal passen, alles oder nichts.
@@ -311,13 +328,13 @@ const TOOLS = [
   },
   {
     name: "scobees_get_lernpfad",
-    description: "Lädt einen Lernpfad mit vollständigem Aufbau (Gliederungen → Aufgaben) als kompakten Baum. IDs daraus werden für Änderungen benötigt.",
+    description: "Lädt einen Lernpfad mit vollständigem Aufbau (Gliederungen → Aufgaben) als kompakten Baum. IDs daraus werden für Änderungen benötigt. Je Element: typ, Status, hat_titelbild (eigenes Kachelbild gesetzt?), bei Aufgaben zusätzlich Art-Kennung, Anhänge und Arbeitsblatt-Bausteine. Die Beschreibung der Lernpfad-Wurzel kommt unverändert zurück.",
     inputSchema: { type: "object", properties: { id: { type: "string", description: "Lernpfad-ID (LI-…)" } }, required: ["id"] },
     run: async ({ id }) => compact(await api.lerninput(id)),
   },
   {
     name: "scobees_get_aufgabe",
-    description: "Lädt eine einzelne Aufgabe inkl. Arbeitsblatt (Serlo) als Markdown, Links und Anhängen. Für Änderungen an bestehenden Aufgaben.",
+    description: "Lädt eine einzelne Aufgabe: Arbeitsblatt als Markdown, Abgabeform (art, abgabeformen), Links, Anhänge und Musterlösungen mit ihren ATT-IDs (für scobees_delete_material / ersetzt_attachment_id), Kachelbild. Vor jeder Änderung an einer bestehenden Aufgabe aufrufen.",
     inputSchema: {
       type: "object",
       properties: { id: { type: "string", description: "Aufgaben-ID (LI-…)" }, mit_serlo_json: { type: "boolean", default: false, description: "zusätzlich das rohe Serlo-JSON ausgeben" } },
@@ -333,6 +350,7 @@ const TOOLS = [
         links: t.links || [],
         anhaenge: (t.attachments || []).map((a) => ({ id: a.id, filename: a.filename, type: a.type, url: api.attachmentUrl(a.path) })),
         musterloesungen: (t.sampleSolutions || []).map((a) => ({ id: a.id, filename: a.filename })),
+        titelbild: t.coverImage ? { filename: t.coverImage.filename, url: api.attachmentUrl(t.coverImage.path) } : null,
         arbeitsblatt_markdown: t.taskDescription ? serloToMarkdown(t.taskDescription) : null,
         arbeitsblatt_bausteine: t.taskDescription ? listPlugins(t.taskDescription) : [],
       };
@@ -353,7 +371,7 @@ const TOOLS = [
         description: { type: "string", description: "Beschreibung als reiner Text – scobees zeigt sie hier nicht als HTML gerendert, mitgeschicktes HTML würde als sichtbarer Tag-Text erscheinen und wird deshalb automatisch entfernt." },
         jahrgaenge: { type: "array", items: { type: "string" }, description: "z. B. [\"Jg 1\"] oder Tag-IDs" },
         stichwoerter: { type: "array", items: { type: "string" }, description: "Freie Schlagworte" },
-        cover_image_path: { type: "string", description: "Lokaler Pfad zu einem Titelbild (png/jpg), optional" },
+        cover_image_path: { type: "string", description: COVER_HINT },
         solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], default: "none", description: "Aufgabenwahl: none = frei; after_solving = nach Reihenfolge; after_selfcorrection = nach Reihenfolge mit Selbstkorrektur; after_teacher_correction = nach Reihenfolge mit Feedback der Lehrkraft" },
       },
       required: ["subject_id", "name"],
@@ -421,33 +439,49 @@ const TOOLS = [
   },
   {
     name: "scobees_create_gliederung",
-    description: "Legt eine Gliederungsstruktur (Ordner/Phase) in einem Lernpfad oder einer anderen Gliederung an. Beschreibung ist HTML (h2, p, strong, em, u, a, span style=color).",
+    description: "Legt eine Gliederungsstruktur (Ordner/Phase) in einem Lernpfad oder einer anderen Gliederung an. Beschreibung ist HTML (h2, p, strong, em, u, a, span style=color). Optional mit eigenem Kachelbild (cover_image_path) und Farbe; ohne Bild zeigt scobees das Standardbild.",
     inputSchema: {
       type: "object",
       properties: {
         parent_id: { type: "string", description: "Lernpfad- oder Gliederungs-ID" },
         name: { type: "string" },
         description_html: { type: "string", default: "" },
+        cover_image_path: { type: "string", description: COVER_HINT },
+        color: { type: "string", default: "#00838F", description: "Hex-Farbe der Gliederung" },
       },
       required: ["parent_id", "name"],
     },
     run: async (a) => {
-      const r = await api.saveFolder({ parentId: a.parent_id, name: a.name, description: a.description_html || "" });
-      return ok("Gliederung angelegt.", { id: r.id, name: r.name, sortOrder: r.sortOrder, parentId: r.parentId });
+      if (a.cover_image_path) assertCoverImage(a.cover_image_path);
+      const r = await api.saveFolder(
+        { parentId: a.parent_id, name: a.name, description: a.description_html || "", color: a.color || "#00838F", order: "none", coverImagePath: undefined },
+        { coverImage: a.cover_image_path });
+      return ok("Gliederung angelegt.", { id: r.id, name: r.name, sortOrder: r.sortOrder, parentId: r.parentId, hat_titelbild: !!r.coverImage });
     },
   },
   {
     name: "scobees_update_gliederung",
-    description: "Ändert Name und/oder Beschreibung einer Gliederungsstruktur. (Gleicher Aufruf wie Anlegen, mit id – live geprüft.)",
+    description: "Ändert Name, Beschreibung, Kachelbild und/oder Farbe einer Gliederungsstruktur. Nicht angegebene Felder bleiben erhalten (auch ein vorhandenes Kachelbild und die Farbe).",
     inputSchema: {
       type: "object",
-      properties: { id: { type: "string" }, name: { type: "string" }, description_html: { type: "string" } },
+      properties: {
+        id: { type: "string" }, name: { type: "string" }, description_html: { type: "string" },
+        cover_image_path: { type: "string", description: COVER_HINT },
+        color: { type: "string", description: "Hex-Farbe der Gliederung" },
+      },
       required: ["id"],
     },
     run: async (a) => {
       const cur = await api.lerninput(a.id);
-      const r = await api.saveFolder({ id: a.id, parentId: cur.parentId, name: a.name ?? cur.name, description: a.description_html ?? cur.description ?? "" });
-      return ok("Gliederung geändert.", { id: r.id, name: r.name });
+      if (cur.isLeaf) throw new Error("Das ist eine Aufgabe, keine Gliederung (→ scobees_update_aufgabe).");
+      if (a.cover_image_path) assertCoverImage(a.cover_image_path);
+      // color/order/coverImagePath mitschicken wie die Weboberfläche – ohne sie verliert die Gliederung beim Speichern ihre Farbe.
+      const r = await api.saveFolder({
+        id: a.id, parentId: cur.parentId, name: a.name ?? cur.name, description: a.description_html ?? cur.description ?? "",
+        color: a.color ?? cur.color ?? "#00838F", order: cur.solveOrder ?? "none",
+        coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
+      }, { coverImage: a.cover_image_path });
+      return ok("Gliederung geändert.", { id: r.id, name: r.name, hat_titelbild: !!r.coverImage });
     },
   },
   {
@@ -516,9 +550,11 @@ const TOOLS = [
   {
     name: "scobees_create_aufgabe",
     description:
-      "Legt eine Aufgabe in einer Gliederung/Wahlpflicht/einem Lernpfad an. art = Abgabeform: info, selbstkontrolle (Standard: Serlo-Arbeitsblatt, Quiz prüft sich selbst, keine Abgabe), " +
-      "abgabe_optional, abgabe_pflicht, abgabe_selbstkorrektur (Abgabe + Vergleich mit Musterlösung). Das Arbeitsblatt kommt als Markdown (arbeitsblatt_markdown, " +
-      "inkl. ```quiz-sc/quiz-mc/quiz-input/quiz-blanks/quiz-text-Blöcken) oder als fertiges serlo_json. Dateien danach mit scobees_upload_material anhängen.",
+      "Legt eine Aufgabe in einer Gliederung, einer Wahlpflichtaufgabe oder direkt im Lernpfad an. art bestimmt die Abgabe (nicht das Quiz): info, selbstkontrolle (Standard: " +
+      "Arbeitsblatt mit sich selbst prüfendem Quiz, keine Abgabe), abgabe_optional, abgabe_pflicht, abgabe_selbstkorrektur, abgabe_pflicht_selbstkorrektur. Das Arbeitsblatt kommt als " +
+      "Markdown (arbeitsblatt_markdown; Quiz-Blöcke quiz-sc, quiz-mc, quiz-input, quiz-blanks, quiz-blanks-dnd, quiz-text, dazu math, :::box, :::spoiler) oder als fertiges serlo_json. " +
+      "Liegt parent_id in einer Wahlpflichtaufgabe, setzt der Server den dafür nötigen Aufgabentyp selbst. Das Ergebnis kann warnungen[] enthalten (z. B. $…$ in einer Lückenantwort). " +
+      "Material und Musterlösungen danach mit scobees_upload_material anhängen.",
     inputSchema: {
       type: "object",
       properties: {
@@ -534,6 +570,7 @@ const TOOLS = [
         links: { type: "array", items: { type: "object", properties: { url: { type: "string" }, name: { type: "string" } }, required: ["url"] } },
         interne_notiz: { type: "string", description: "Nur für Lehrkräfte sichtbar" },
         aufgabentyp: { type: "string", enum: Object.keys(AUFGABENTYP), default: "pflicht", description: "pflicht = zählt zum Fortschritt; extra = freiwillige Zusatzaufgabe; training = freiwillige Übung; info = reiner Informationsbaustein" },
+        cover_image_path: { type: "string", description: COVER_HINT },
       },
       required: ["parent_id", "name"],
     },
@@ -575,6 +612,7 @@ const TOOLS = [
         links: (a.links || []).map((l) => ({ url: l.url, name: l.name || l.url, type: "url" })),
         taskDescription: buildTaskDescription(a) ?? null,
       });
+      if (a.cover_image_path) form.coverImagePath = (await uploadTaskCover(created.id, a.cover_image_path)).path;
       const r = await api.saveTask(form);
       const out1 = ok("Aufgabe angelegt.", { id: r.id, name: r.name, kind: r.kind, parentId: r.parentId, bausteine: r.taskDescription ? listPlugins(r.taskDescription) : [] });
       const w1 = arbeitsblattWarnungen(a);
@@ -584,7 +622,7 @@ const TOOLS = [
   },
   {
     name: "scobees_update_aufgabe",
-    description: "Ändert eine bestehende Aufgabe. Nur übergebene Felder werden geändert; arbeitsblatt_markdown/serlo_json ersetzen das Arbeitsblatt komplett (vorher mit scobees_get_aufgabe lesen).",
+    description: "Ändert eine bestehende Aufgabe. Nur übergebene Felder werden geändert; ein vorhandenes Kachelbild bleibt erhalten. arbeitsblatt_markdown/serlo_json ersetzen das Arbeitsblatt komplett (vorher mit scobees_get_aufgabe lesen) – für einzelne Textstellen ist scobees_patch_arbeitsblatt der kürzere und sicherere Weg.",
     inputSchema: {
       type: "object",
       properties: {
@@ -600,6 +638,7 @@ const TOOLS = [
         differenzierungen: { type: "array", items: { type: "string" }, description: "Siehe scobees_create_aufgabe: leer trägt alle aktuellen Niveaus explizit ein, das ist kein Fehler." },
         links: { type: "array", items: { type: "object", properties: { url: { type: "string" }, name: { type: "string" } }, required: ["url"] } },
         interne_notiz: { type: "string" },
+        cover_image_path: { type: "string", description: COVER_HINT },
       },
       required: ["id"],
     },
@@ -618,7 +657,10 @@ const TOOLS = [
       if (a.links) form.links = a.links.map((l) => ({ url: l.url, name: l.name || l.url, type: "url" }));
       const td = buildTaskDescription(a);
       if (td !== undefined) form.taskDescription = td;
+      const cover = a.cover_image_path ? await uploadTaskCover(a.id, a.cover_image_path, cur.coverImage) : null;
+      if (cover) form.coverImagePath = cover.path;
       const r = await api.saveTask(form);
+      if (cover) await cover.cleanup();
       const out2 = ok("Aufgabe geändert.", { id: r.id, name: r.name, kind: r.kind });
       const w2 = arbeitsblattWarnungen(a);
       if (w2) out2.warnungen = w2;
