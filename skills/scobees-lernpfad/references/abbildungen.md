@@ -42,13 +42,13 @@ Diagramme aus Zahlen (Kennlinie, Balken, Zeitverlauf) dürfen direkt mit matplot
 - Zeichenfläche `viewBox="0 0 800 H"`, Querformat, H zwischen 300 und 500. Hochformate und sehr breite Streifen werden im Arbeitsblatt zu klein.
 - Weißer Hintergrund als Rechteck über die ganze Fläche, damit die Abbildung auf jedem Seitenhintergrund lesbar bleibt.
 - **Rand von 40 px** rundum bleibt frei. Texte mit `text-anchor="end"` oder `"middle"` laufen sonst über den Rand und werden abgeschnitten.
-- Schrift: `font-family="Arial, Helvetica, sans-serif"`, mindestens 18 px, Formelzeichen und Werte 20 px. Kleiner wird auf einem Tablet unlesbar.
+- Schrift: `font-family="Arial, Helvetica, sans-serif"`, mindestens 22 px, Formelzeichen und Werte 24 px. Die Abbildung erscheint nur in der halben Bildschirmbreite: Eine 800 px breite Zeichnung wird auf einem Notebook auf etwa 80 % und auf einem Tablet auf etwa 60 % verkleinert.
 - Linien mindestens 2 px, Leiter und Hauptlinien 3 px.
 - Höchstens vier Farben, jede mit fester Bedeutung in allen Abbildungen des Lernpfads (z. B. Dunkelgrau für die Schaltung, Rot für Strom, Grün für das Messgerät). Farbe ist nie der einzige Bedeutungsträger; was farbig ist, ist auch beschriftet.
 - Beschriftung direkt am Objekt, keine Legende, keine Nummern mit Auflösung im Text.
 - Werte, Namen und Bezeichnungen stammen aus dem Szenario und stimmen mit dem Text des Arbeitsblatts überein.
 - Höchstens etwa sieben Elemente. Was mehr braucht, wird zu zwei Abbildungen.
-- Kein Titel im Bild; die Überschrift steht im Arbeitsblatt, die Aussage in der Bildunterschrift.
+- Kein Titel und keine Bildunterschrift im Bild; die Überschrift steht im Arbeitsblatt, die Aussage in der Bildunterschrift. Ein Satz, der in der Zeichnung und in der Bildunterschrift steht, erscheint für Lernende doppelt.
 - Die Abbildung verrät nicht die Lösung der Frage, die zu ihr gehört. Gesuchte Größen stehen als „I = ?“ im Bild.
 
 ## Prüfliste beim Ansehen des PNG
@@ -58,7 +58,7 @@ Diagramme aus Zahlen (Kennlinie, Balken, Zeitverlauf) dürfen direkt mit matplot
 - Leitungen treffen die Bauteile; es gibt keine Lücken und keine überstehenden Enden.
 - Pfeile zeigen in die fachlich richtige Richtung.
 - Sonderzeichen sind dargestellt (Ω, µ, °, ≥, Indizes).
-- Bei halber Größe ist jede Beschriftung noch lesbar.
+- Bei halber Größe ist jede Beschriftung noch lesbar (so sehen Lernende die Abbildung auf einem Tablet).
 - Fachlich richtig: Werte, Einheiten, Polung, Symbole. Bei Schaltplänen die Symbol-Prüfliste unten.
 - Die Aussage aus Schritt 1 ist ohne den Text erkennbar.
 

@@ -73,3 +73,9 @@ Beim Aufbau einer Lernsituation wurden die Bilderfrage und der Grobplan überspr
 Die Darstellungsregeln (Etiketten der Kästen, Nummerierung nach Tabellen, Tabellenbreite, Codezeilen, gemischte Antworten, Satz vor dem Quiz) stammen aus der Vorschau „Ansicht Lernende“ und stehen in `references/markdown.md`. Die Bildunterschrift war in 0.1.11 als „ganzer Satz“ beschrieben; weil sie sichtbar unter der Abbildung steht, ist sie jetzt auf einen kurzen Satz begrenzt.
 
 Bewusst nicht im Skill: konkrete Lernpfade, Klassen, Fächer und Jahrgänge einer Schule. Der Skill fragt danach; was für eine bestimmte Lernsituation gilt, gehört in die Unterlagen der Lehrkraft.
+
+## 12.11.2026: Durchgang aus Schülersicht
+
+Mit einem Dummy-Konto der Lehrkraft durchgespielt (Einzelheiten: API-Karte, Mitschrift 16). Drei Befunde haben Regeln des Skills geändert, die bisher auf Annahmen beruhten: (1) „Nach Reihenfolge“ sperrt nicht, der rote Faden muss aus dem Aufbau kommen. (2) Bei Stift-Abgaben sehen Lernende das PDF, nicht das Arbeitsblatt. (3) Quiz-Eingaben werden nicht gespeichert, Arbeitsblätter müssen in einem Zug zu schaffen sein. Die Sorge, beim Überschreiben eines Arbeitsblatts gingen Stände verloren, ist damit erledigt; die Vorsicht bei laufenden Lernpfaden bleibt, weil Änderungen sofort wirken.
+
+Die eigene Test-Abbildung hat nebenbei zwei Zeichenregeln geliefert: Der Satz im Bild stand doppelt (einmal gezeichnet, einmal als Bildunterschrift), und 20 px Schrift waren in der halben Bildschirmbreite knapp.

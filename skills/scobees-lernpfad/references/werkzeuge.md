@@ -38,7 +38,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 
 | `art` | Lernende sehen | Wann |
 |---|---|---|
-| `info` | Schaltfläche „Infoinput erledigt“ | Situation, Auftrag, reine Lesebausteine |
+| `info` | keine Abgabe; abgeschlossen mit „Lernergebnis abgeben“ | Situation, Auftrag, reine Lesebausteine |
 | `selbstkontrolle` | „Lernergebnis abgeben – bist du fertig?“ ohne Upload; Quiz prüft sich im Arbeitsblatt | Theorie mit Quiz (Standard) |
 | `abgabe_optional` | Abgabe möglich (Datei, Stift-PDF oder Link), nicht erzwungen | Ergebnis erwünscht, aber nicht nötig |
 | `abgabe_pflicht` | „Zum Abgeben musst du eine Datei hochladen“ bzw. „auf dem PDF schreiben“ | Handlungsergebnis |
@@ -64,11 +64,21 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Vorschau: dort „Ansicht Lernende“ → Niveau wählen → Aufgabe anklicken. Quizze lassen sich ausprobieren, Eingaben werden nicht gespeichert, Abgaben lassen sich nicht testen.
 - Anmelden muss sich die Lehrkraft selbst.
 
+## Was Lernende sehen (Dummy-Konto, scobees 94.6)
+
+- Weg: Lernplaner → Lernbereich → Fach → Lernpfad. In der Fachübersicht stehen die Lernpfade als kleine Kacheln mit abgeschnittenem Titel.
+- Lernpfad: Titelbild, Titel, Fortschritt, Beschreibung unter „Was ist zu tun“. Darunter je Gliederung eine Karte mit Kachelbild, Zeit und Fortschritt; aufgeklappt zeigt sie ihre Beschreibung und die Aufgaben als kleine Kacheln mit Symbol für Pflicht, Training, Extra oder Wahl.
+- Fortschritt zählt Pflichtaufgaben und Wahlpflichtaufgaben (sobald die geforderte Anzahl gelöst ist); Training und Extra zählen nicht.
+- Wahlpflichtaufgaben stehen als eigener Block unter den übrigen Aufgaben der Gliederung.
+- Aufgabe: links das Arbeitsblatt (bei Stift-Abgabe das PDF), rechts Zeit, „Worum geht's“ (Beschreibung) und Materialien; unten „Lernergebnis abgeben“.
+- Abgabe mit Selbstkorrektur: Nach dem Abgeben öffnet sich der Reiter „Selbstkorrektur“ mit dem eigenen Ergebnis links (mit Stift kommentierbar) und der Musterlösung rechts; „Ich habe alles kontrolliert“ schließt ab, danach folgt die Reflexion.
+- „Nach Reihenfolge“ hat im Test keine Aufgabe gesperrt.
+
 ## Kachelbilder (`cover_image_path`)
 
 Lernpfad, Gliederung, Wahlpflichtaufgabe und Aufgabe können ein eigenes Kachelbild tragen; ohne Bild zeigt scobees das Standardbild (Kompass). Kachelbilder sind Schmuck und Orientierung und damit optional – anders als die Abbildungen im Arbeitsblatt, die zum Lerninhalt gehören und immer entstehen (`references/abbildungen.md`). Regeln:
 
-- PNG oder JPG als lokaler Pfad; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet; Motiv muss klein erkennbar bleiben (keine feinen Details, kein Fließtext im Bild).
+- PNG oder JPG als lokaler Pfad; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet; Motiv muss klein erkennbar bleiben (keine feinen Details, kein Fließtext im Bild): Lernende sehen das Titelbild in der Fachübersicht und die Aufgaben-Kachel nur etwa daumennagelgroß, die Gliederungs-Kachel etwa briefmarkengroß.
 - Nur für die Ebenen erzeugen, die die Lehrkraft in Schritt 1 des Skills freigegeben hat – jedes Bild kostet deutlich mehr Rechenaufwand als Text.
 - Ein gesetztes Bild bleibt bei späteren Änderungen erhalten; ein neues `cover_image_path` ersetzt es (bei Aufgaben wird die alte Bilddatei dabei entfernt).
 - Kachelbilder liegen in scobees (nicht öffentlich wie Arbeitsblatt-Bilder bei Serlo), trotzdem keine Personenfotos.

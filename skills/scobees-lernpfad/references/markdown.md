@@ -31,7 +31,7 @@ Jede Zeile wird ein eigener Absatz; Leerzeilen sind nicht nötig. `---` wird aus
 Text
 :::
 ```
-Typen und das Etikett, das Lernende über dem Kasten sehen: `note` „Beachte“, `attention` „Vorsicht“, `example` „Beispiel“, `quote` „Zitat“, `blank` ohne Etikett; außerdem `warning`, `definition`, `theorem`, `proof`. Den Typ nach dem Etikett wählen: Ein Arbeitsauftrag in einem `quote`-Kasten trägt die Überschrift „Zitat“. Aufzählungen im Kasten funktionieren. Gut für „So gehst du vor“, „Beachte“, das Szenario-Zitat der Teamleitung. Bilder funktionieren auch innerhalb einer Box oder eines Spoilers (`![…](URL)`), live geprüft.
+Typen und das Etikett, das Lernende über dem Kasten sehen: `note` „Beachte“, `attention` „Vorsicht“, `example` „Beispiel“, `quote` „Zitat“, `definition` „Definition“, `blank` und `warning` ohne Etikett; außerdem `theorem`, `proof` (nicht geprüft). Für Warnungen `attention` nehmen, weil `warning` wie ein leerer Kasten aussieht. Den Typ nach dem Etikett wählen: Ein Arbeitsauftrag in einem `quote`-Kasten trägt die Überschrift „Zitat“. Aufzählungen im Kasten funktionieren. Gut für „So gehst du vor“, „Beachte“, das Szenario-Zitat der Teamleitung. Bilder funktionieren auch innerhalb einer Box oder eines Spoilers (`![…](URL)`), live geprüft.
 
 ```markdown
 :::spoiler Lösungshinweis
@@ -100,15 +100,19 @@ Begründe, warum das Gäste-WLAN ein eigenes Subnetz bekommt.
 ````
 Freitext ohne automatische Prüfung; Lösungshinweis als Spoiler darunter oder Abgabe mit Musterlösung.
 
-## So sieht es für Lernende aus (Vorschau, scobees 94.6)
+## So sieht es für Lernende aus (Vorschau und Dummy-Konto, scobees 94.6)
 
 Das Arbeitsblatt belegt nur die linke Hälfte des Bildschirms; rechts stehen Zeit, Beschreibung und Material. Daraus folgt:
 
 - **Tabellen** mit mehr als vier Spalten müssen seitlich gescrollt werden. Höchstens vier Spalten, kurze Zellen; breitere Vergleiche auf zwei Tabellen verteilen oder als Fachabbildung zeichnen.
-- **Codeblöcke** haben Zeilennummern, lange Zeilen werden abgeschnitten. Zeilen bis etwa 60 Zeichen, längere Befehle umbrechen.
+- **Codeblöcke** haben Zeilennummern; lange Zeilen laufen aus dem sichtbaren Bereich und müssen seitlich gescrollt werden. Zeilen bis etwa 60 Zeichen, längere Befehle umbrechen.
 - **Nummerierte Listen** beginnen nach einer Tabelle, einem Kasten, einer Abbildung oder einem Quiz wieder bei 1. Läuft eine Schrittfolge über so ein Element hinweg, die Schritte als Text schreiben: `**Schritt 5:** …`.
 - **Bildunterschrift**: Der Text in `![…](URL)` steht sichtbar unter der Abbildung. Ein kurzer Satz, höchstens etwa zwölf Wörter.
 - **Kästen** tragen ein Etikett je Typ (siehe oben).
+- **Abbildungen** füllen die Breite der Arbeitsblatt-Spalte; die Bildunterschrift steht kursiv darunter. Steht derselbe Satz noch einmal in der Zeichnung, erscheint er doppelt.
+- **Aufklapp-Blöcke** sind zugeklappt, zu sehen ist nur der Titel.
+- **Eingaben bleiben nicht erhalten**: Nach Neuladen oder Verlassen der Aufgabe sind alle Quizfelder leer und die Antworten neu gemischt. Beim Abgeben speichert scobees ein Bild des ausgefüllten Arbeitsblatts als Teil des Lernergebnisses.
+- **Stift-Abgaben** zeigen links das PDF statt des Arbeitsblatts; das Arbeitsblatt ist dann nur über die Kachel „Serlo-Inhalt“ rechts erreichbar.
 - **Auswahlfragen**: Die Antworten erscheinen in gemischter Reihenfolge.
 - **Quiz prüfen**: Lernende tippen und bestätigen mit „Stimmt's?“; die Rückmeldung erscheint direkt darunter.
 

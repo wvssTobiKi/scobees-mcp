@@ -33,7 +33,15 @@ Erkenntnisse aus dem Aufbau einer Lernsituation im Unterrichtsalltag (18 Punkte)
 - Darstellungsregeln aus der Vorschau in `references/markdown.md`: Etiketten der Kastentypen, Bildunterschrift sichtbar und kurz, Nummerierung nach Tabellen, höchstens vier Tabellenspalten, kurze Codezeilen, gemischte Antworten, Hinweissatz vor einem Quiz.
 - Modus C: Vor dem Überschreiben eines Arbeitsblatts fragen, ob der Lernpfad schon bei einer Lerngruppe läuft.
 
-Offen: ob Quiz-Eingaben von Lernenden verloren gehen, wenn ein Arbeitsblatt während der Bearbeitung überschrieben wird (nur mit einem Dummy-Konto prüfbar).
+**Aus der Schülersicht (Durchgang mit einem Dummy-Konto, Mitschrift 16)**
+
+- Quiz-Eingaben werden nicht gespeichert; erst beim Abgeben legt scobees ein Bild des ausgefüllten Arbeitsblatts zum Lernergebnis. Änderungen an einem Arbeitsblatt sind für zugewiesene Lernende nach dem Neuladen sofort sichtbar. Damit ist die offene Frage beantwortet: Es gehen keine gespeicherten Stände verloren, weil es keine gibt.
+- Stift-Abgaben zeigen das PDF statt des Arbeitsblatts: Der Auftrag gehört auf das PDF und in die Beschreibung.
+- Wahlpflichtaufgaben stehen für Lernende immer unter den übrigen Aufgaben der Gliederung: ans Ende setzen.
+- „Nach Reihenfolge“ hat im Test nichts gesperrt; der Skill verlässt sich nicht mehr darauf.
+- Titel kurz und mit dem unterscheidenden Wort vorn; Kachelbilder müssen daumennagelgroß erkennbar sein.
+- Abbildungen: Schrift mindestens 22 px, kein Satz im Bild, der auch Bildunterschrift ist. Kasten `warning` hat kein Etikett; für Warnungen `attention`.
+- Jede Aufgabe wird mit „Lernergebnis abgeben“ abgeschlossen; der frühere Hinweis auf eine Schaltfläche „Infoinput erledigt“ ist entfernt.
 
 ## 0.1.11 – 2026-11-12
 

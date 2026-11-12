@@ -116,9 +116,9 @@ Gliederungen sind Orientierung, keine Dekoration. Zu viele Ebenen zerstückeln d
 - Eine Gliederung ist eine Phase oder ein Themenblock mit **2 bis 5 Aufgaben**. Eine Gliederung mit nur einer Aufgabe gibt es nur für den Einstieg (Situation und Auftrag) oder den Abschluss.
 - **Eine Ebene**. Verschachtelte Gliederungen erst ab etwa 12 Aufgaben, und dann nach Phasen, nicht nach Unterthemen.
 - Theorie und ihre Kontrolle gehören in **eine** Aufgabe (Arbeitsblatt mit Quiz), nicht in „Lesen“ plus „Quiz“.
-- Nummerierung im Aufgabentitel („2.1 IPv4 und Subnetzmaske“) hilft, weil scobees Aufgaben in der Kachelansicht ohne Kontext zeigt.
+- Nummerierung im Aufgabentitel („2.1 IPv4 und Subnetzmaske“) hilft, weil scobees Aufgaben in der Kachelansicht ohne Kontext zeigt. Titel kurz halten: Lernende sehen Aufgaben als kleine Kacheln, in denen der Titel nach wenigen Wörtern umbricht, und Lernpfade in der Fachübersicht nur mit den ersten etwa 18 Zeichen. Das unterscheidende Wort gehört deshalb an den Anfang („Smart House: Netz verstehen“, nicht „Lernsituation 2 im Lernfeld 11: …“).
 - Extra- und Trainingsaufgaben in eine Gliederung „Vertiefung“ oder ans Ende der passenden Phase, nie lose in die Wurzel.
-- Wahlpflichtaufgaben nur, wenn echte Wahl besteht (n von m), und nie leer lassen. Unteraufgaben mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID anlegen, das funktioniert direkt. Eine bestehende Aufgabe lässt sich auch per `scobees_move` in eine Wahlpflichtaufgabe verschieben (ab scobees 94.6); sie verliert dabei ihren Aufgabentyp und kommt nicht wieder heraus. Deshalb vor dem Verschieben mit der Lehrkraft klären, ob die Aufgabe wirklich zur Wahl stehen soll.
+- Wahlpflichtaufgaben nur, wenn echte Wahl besteht (n von m), und nie leer lassen. Unteraufgaben mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID anlegen, das funktioniert direkt. Eine bestehende Aufgabe lässt sich auch per `scobees_move` in eine Wahlpflichtaufgabe verschieben (ab scobees 94.6); sie verliert dabei ihren Aufgabentyp und kommt nicht wieder heraus. Deshalb vor dem Verschieben mit der Lehrkraft klären, ob die Aufgabe wirklich zur Wahl stehen soll. Lernende sehen eine Wahlpflichtaufgabe immer als eigenen Block **unter** allen anderen Aufgaben ihrer Gliederung, egal wo sie einsortiert ist. Sie gehört deshalb ans Ende der Gliederung und bekommt die letzte Nummer; soll danach noch etwas folgen, kommt es in die nächste Gliederung.
 
 ### 4. Grobplan zeigen und freigeben lassen (immer)
 
@@ -145,7 +145,7 @@ Erst nach Freigabe anlegen; Änderungswünsche („2.2 auf 20 min, 5.1 Pflicht�
 
 Alles, was hochgeladen wird, erwartet der Server als **lokalen Pfad auf dem Rechner der Lehrkraft**. Dateien also zuerst in den passenden Themenordner der Lehrkraft schreiben (fragen, wenn kein Ordner genannt ist), dann hochladen.
 
-- **PDF-Vorlagen** für Stift-Abgaben (`abgabeformen: ["pen"]`): ohne PDF als Material ist keine Abgabe möglich.
+- **PDF-Vorlagen** für Stift-Abgaben (`abgabeformen: ["pen"]`): ohne PDF als Material ist keine Abgabe möglich. Bei einer Stift-Abgabe sehen Lernende links **das PDF mit den Stiftwerkzeugen, nicht das Arbeitsblatt**; das Arbeitsblatt liegt nur als Kachel „Serlo-Inhalt“ unter den Materialien und wird leicht übersehen. Der vollständige Arbeitsauftrag steht deshalb auf dem PDF selbst und in der Beschreibung der Aufgabe. Theorie und Quiz gehören in eine eigene Aufgabe davor, nicht in das Arbeitsblatt der Stift-Aufgabe.
 - **Musterlösungen** als PDF: `scobees_upload_material … als_musterloesung: true`. Ohne sie ist der Reiter Selbstkorrektur leer.
 - **HTML-Simulationen**: eine einzige Datei, keine Bibliotheken aus dem Internet, vor dem Hochladen im Browser testen. Sie laufen in scobees direkt als Material.
 - **Abbildungen** fürs Arbeitsblatt: zeichnen, als PNG rendern, ansehen, dann `scobees_upload_bild` → URL → `![Bildunterschrift](URL)` (Vorgehen in `references/abbildungen.md`). Die SVG-Quelldatei bleibt im Themenordner, damit sich die Abbildung später ändern lässt. Die hochgeladenen Bilder liegen öffentlich im Medienspeicher des Serlo-Editors: keine Personenfotos, nichts Vertrauliches, keine Schulgrafiken mit Namen.
@@ -157,14 +157,14 @@ Reihenfolge: `scobees_create_lernpfad` → je Gliederung `scobees_create_glieder
 
 Jede Aufgabe hat:
 
-- **Beschreibung** (`description_html`), die mit „**Ergebnis:** …“ beginnt: was wird abgegeben, in welcher Form, woran erkennt man, dass man fertig ist. Ohne Abgabe steht das ausdrücklich da („Keine Abgabe. Lies die Situation und mach weiter mit 2.1.“). Danach höchstens zwei Sätze; alles Inhaltliche gehört ins Arbeitsblatt.
-- **Art** nach der Abgabe, nicht nach dem Quiz: `info` (nur lesen, Schaltfläche „Infoinput erledigt“), `selbstkontrolle` (Arbeitsblatt mit Quiz, keine Abgabe; Standard für Theorie), `abgabe_optional`, `abgabe_pflicht`, `abgabe_selbstkorrektur`, `abgabe_pflicht_selbstkorrektur`. Selbstkorrektur nur bewusst, mit Musterlösung.
+- **Beschreibung** (`description_html`), die mit „**Ergebnis:** …“ beginnt: was wird abgegeben, in welcher Form, woran erkennt man, dass man fertig ist. Ohne Abgabe steht das ausdrücklich da („Keine Abgabe. Lies die Situation und mach weiter mit 2.1.“). Danach höchstens zwei Sätze; alles Inhaltliche gehört ins Arbeitsblatt. Lernende sehen sie rechts neben dem Arbeitsblatt unter „Worum geht's“; fehlt sie, steht dort „Keine Beschreibung vorhanden“. Die Beschreibung einer Gliederung erscheint aufgeklappt unter „Was ist zu tun“.
+- **Art** nach der Abgabe, nicht nach dem Quiz: `info` (nur lesen), `selbstkontrolle` (Arbeitsblatt mit Quiz, keine Abgabe; Standard für Theorie), `abgabe_optional`, `abgabe_pflicht`, `abgabe_selbstkorrektur`, `abgabe_pflicht_selbstkorrektur`. Selbstkorrektur nur bewusst, mit Musterlösung. Abgeschlossen wird jede Aufgabe, auch Info und Selbstkontrolle, mit der Schaltfläche „Lernergebnis abgeben“ und der Rückfrage „Bist du mit der Aufgabe fertig?“; ob die Quizfragen beantwortet sind, prüft scobees dabei nicht. Danach folgt die Reflexion (Smileys und Freitext).
 - **Typ** `aufgabentyp`: ohne Angabe Pflichtaufgabe; `info`, `training`, `extra` gezielt.
 - **Niveaus** `differenzierungen`: leer = alle. Differenzieren heißt je Variante eine eigene Aufgabe mit ihrem Niveau. In Technikerschule, BG und FOS in der Regel leer lassen; in BES und BFS lohnt sich die Unterscheidung.
 - **Zeit** `estimated_time` aus dem Grobplan.
 - **Erwartungshorizont** in `interne_notiz`, wenn es etwas zu bewerten gibt.
 
-Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; nach Reihenfolge erzwingt den roten Faden), `jahrgaenge` und `stichwoerter` setzen. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
+Der Lernpfad: `solve_order` nach Rücksprache (frei oder nach Reihenfolge). Verlass dich nicht darauf, dass „nach Reihenfolge“ sperrt: Im Test mit einem Dummy-Konto (scobees 94.6) ließen sich spätere Aufgaben öffnen und abgeben, bevor die früheren erledigt waren. Der rote Faden muss aus Nummerierung, Gliederung und den Texten selbst hervorgehen, `jahrgaenge` und `stichwoerter` setzen. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
 
 ### 8. Zurücklesen und prüfen
 
@@ -174,7 +174,7 @@ Geprüft wird in dieser Reihenfolge; die Zuweisung an die Lerngruppe kommt erst 
 
 **2. Vorschau in der Weboberfläche.** Was Lernende sehen, zeigt nur die Vorschau: `https://teach.scobees.com/library/editor/<Lernpfad-ID>` öffnen (oder Bib → Lernpfad), dort „Ansicht Lernende“, im Dialog „Lernpfad aus Sicht der Lernenden“ ein Niveau wählen und **jede Aufgabe einmal öffnen**. Quizze lassen sich ausprobieren (Antwort eingeben, „Stimmt's?“); Eingaben werden nicht gespeichert, Abgaben lassen sich hier nicht testen. Achten auf: Abbildungen geladen und lesbar, Tabellen ohne seitliches Scrollen, Nummerierung, Kästen, Quiz-Rückmeldungen, Anhänge. Steht ein Browser-Werkzeug zur Verfügung, die Seite öffnen und die Lehrkraft bitten, sich selbst anzumelden; Zugangsdaten gibst du nie ein, und andere Bereiche der Oberfläche (Lerndoku, Klassen, Konfiguration) öffnest du nicht. Ohne Browser-Werkzeug bekommt die Lehrkraft diese Prüfpunkte als Liste.
 
-**3. Durchgang als Test-Lernende/r (optional, Sache der Lehrkraft).** Sollen Abgaben, die Selbstkorrektur oder die Bearbeitungsreihenfolge geprüft werden, weist die Lehrkraft den veröffentlichten Lernpfad einem Dummy-Konto zu und geht ihn in `https://learn.scobees.com` durch. Du schlägst das vor und nennst, worauf zu achten ist; Zuweisung und Anmeldung macht die Lehrkraft, und du liest dort nur mit, wenn sie ausdrücklich darum bittet und es ein Dummy-Konto ist.
+**3. Durchgang als Test-Lernende/r (optional, Sache der Lehrkraft).** Sollen Abgaben, die Selbstkorrektur oder die Bearbeitungsreihenfolge geprüft werden, weist die Lehrkraft den veröffentlichten Lernpfad einem Dummy-Konto zu und geht ihn in `https://learn.scobees.com` durch. Du schlägst das vor und nennst, worauf zu achten ist (Stift-Abgabe: Auftrag auf dem PDF lesbar? Selbstkorrektur: eigenes Ergebnis links, Musterlösung rechts? Wahlpflicht am Ende der Gliederung?); Zuweisung und Anmeldung macht die Lehrkraft, und du liest dort nur mit, wenn sie ausdrücklich darum bittet und es ein Dummy-Konto ist.
 
 **4. Befundliste.** Was abweicht, was du korrigiert hast, was nur in der Weboberfläche geht. Sie geht in den Abschlussbericht (Schritt 9).
 
@@ -196,7 +196,7 @@ Checkliste, immer dabei:
 ## Modus C: Bestehenden Pfad überarbeiten
 
 - Zuerst lesen: `scobees_get_lernpfad` (Baum mit IDs), dann `scobees_get_aufgabe` für alles, was geändert wird. Das Arbeitsblatt kommt als Markdown zurück und wird beim Ändern über `scobees_update_aufgabe` **komplett ersetzt**; also das gelesene Markdown ändern, nicht neu schreiben. Betrifft die Änderung nur wenige Stellen (ein ausgetauschter Satz, eine neue Bild-URL), stattdessen `scobees_patch_arbeitsblatt` mit den betroffenen Textstellen verwenden – spart das Mitschicken des ganzen, oft langen Markdowns und schlägt kontrolliert fehl, wenn eine Stelle nicht eindeutig ist.
-- **Läuft der Lernpfad schon bei einer Lerngruppe?** Vor dem Überschreiben eines Arbeitsblatts fragen. Ob Lernende dabei ihre Quiz-Eingaben verlieren, ist nicht geklärt; bis dahin Arbeitsblätter laufender Lernpfade nur nach ausdrücklicher Zustimmung ändern und möglichst außerhalb der Unterrichtszeit.
+- **Läuft der Lernpfad schon bei einer Lerngruppe?** Dann vorher fragen: Jede Änderung ist für zugewiesene Lernende sofort wirksam, sobald sie die Aufgabe neu öffnen (mit Dummy-Konto geprüft). Gespeicherte Quiz-Stände gehen dabei nicht verloren, weil scobees keine speichert; wer aber gerade an der Aufgabe sitzt, arbeitet nach dem Neuladen mit geändertem Inhalt und leeren Feldern. Änderungen an laufenden Lernpfaden deshalb nur mit Zustimmung und möglichst außerhalb der Unterrichtszeit.
 - Den Grobplan auf die Änderung beschränken: Tabelle nur mit betroffenen Zeilen und einer Spalte „vorher / nachher“.
 - Der Mindeststandard für Abbildungen (2a) gilt für jedes Arbeitsblatt, das neu entsteht oder inhaltlich überarbeitet wird. Fehlen Abbildungen in Aufgaben, die nicht angefasst werden, das im Grobplan als Vorschlag nennen und nicht ungefragt nachrüsten.
 - Vor dem Löschen (`scobees_delete`, `confirm: true`) immer ausdrücklich bestätigen lassen; Löschen nimmt Unterelemente mit.
@@ -220,7 +220,8 @@ Checkliste, immer dabei:
 - IP-Adressen, Netzmasken und Bitmuster lassen sich eingeben und prüfen (`= 172.16.40.1`, `= 0100`); führende Nullen bleiben erhalten. Typische Verwechslungen als Fehlerwert hinterlegen (`≠ 172.16.40.0 :: Das ist die Netzadresse.`).
 - Tipp-Lückentexte vermeiden, wenn die Schreibweise scheitern kann; Drag-and-drop mit Distraktoren, Ziffern als Lösung oder Wortspeicher sind robuster.
 - Rückmeldungen je Antwort bei Auswahlfragen: `- [x] Antwort :: Rückmeldung`.
-- Die Antworten von Auswahlfragen werden für Lernende gemischt. Keine Verweise auf „a)“, „die erste Antwort“ oder „alle oben genannten“, weder in der Frage noch in Rückmeldungen.
+- Quiz-Eingaben werden nicht gespeichert: Verlassen Lernende die Aufgabe oder laden sie neu, sind alle Felder leer. Erst beim Abgeben legt scobees ein Bild des ausgefüllten Arbeitsblatts zum Lernergebnis. Ein Arbeitsblatt muss deshalb in einem Zug zu schaffen sein (Richtwert 20 bis 30 Minuten), und die Beschreibung sagt es: „Bearbeite die Fragen und klicke dann auf Lernergebnis abgeben.“
+- Die Antworten von Auswahlfragen werden für Lernende gemischt, bei jedem Öffnen neu. Keine Verweise auf „a)“, „die erste Antwort“ oder „alle oben genannten“, weder in der Frage noch in Rückmeldungen.
 - Der Satz vor einem Quiz ist ein Hinweis („Prüfe dein Verständnis:“), keine Frage. Steht dort eine Frage, wirkt es, als fehle die Antwortauswahl; die Frage gehört in den Quiz-Block.
 - Bei Freitext (`quiz-text`) gibt es keine automatische Prüfung; dann Aufklapp-Block „Lösungshinweis“ darunter.
 

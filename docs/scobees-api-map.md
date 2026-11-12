@@ -337,3 +337,21 @@ Eine hineingeschobene Aufgabe lässt sich danach normal ändern (`POST lerninput
 
 Folgerung: Auch die Zahleneingabe vergleicht zeichengenau, nicht dem Wert nach. Die frühere Notiz „Bitmuster `0100` werden zu 100“ trifft für v94.6 nicht zu. Seit 0.1.12 legt der Umwandler Nicht-Zahlen (mehr als ein Trennzeichen, führende Null) als Texteingabe an. Nicht geprüft: ob bei einer Zahleneingabe `8.4` gegen ein allein hinterlegtes `8,4` als richtig gilt; deshalb weiterhin beide Schreibweisen hinterlegen.
 
+## Mitschrift 16 (12.11.2026, v94.6): Durchgang aus Schülersicht mit einem Dummy-Konto
+
+Test-Lernpfad mit Info-Aufgabe, Selbstkontrolle, Pflichtabgabe mit Selbstkorrektur (Stift und Datei), freiwilliger Abgabe, Wahlpflicht (eine von zwei) und Extra-Aufgabe, `solve_order: after_solving`; von der Lehrkraft veröffentlicht und nur dem Dummy-Konto zugewiesen. Beobachtet in `learn.scobees.com`:
+
+- **Adressen:** Fachübersicht `…/lernergebnisse/workspaces/<LB-ID>/subjects/<SUB-ID>`, Aufgabe `…/lernergebnisse/player/assignment/<ASS-ID>/task/<LI-ID>`.
+- **Übersicht:** Lernpfade als kleine Kacheln mit Titel bis etwa 18 Zeichen. Gliederung als Karte mit Kachelbild (ohne eigenes Bild der Kompass), Zeit „0 von 15 Minuten“ (Summe der Pflichtzeiten) und Fortschritt. Aufgaben als kleine Kacheln mit Typ-Symbol.
+- **Reihenfolge der Anzeige:** erst alle Aufgaben der Gliederung, darunter die Wahlpflichtaufgabe als eigener Block mit „0 von 1 Aufgaben“, unabhängig von `sortOrder`.
+- **Bearbeitungsreihenfolge:** Trotz `after_solving` ließen sich 1.2 vor 1.1 und 2.1 vor 1.1 öffnen und abgeben. Ob eine Einstellung bei der Zuweisung das beeinflusst, ist nicht geprüft.
+- **Abschließen:** Bei jeder Aufgabenart „Lernergebnis abgeben“ → Rückfrage „Bist du mit der Aufgabe fertig?“ → Reiter „Reflexion“. Quizfragen müssen dafür nicht beantwortet sein.
+- **Quiz-Eingaben:** nach Neuladen leer, Antworten neu gemischt. Beim Abgeben entsteht ein Ergebnis „Serlo-Arbeitsblatt-ausgefüllt.png“.
+- **Änderung während der Bearbeitung:** `scobees_patch_arbeitsblatt` auf eine zugewiesene Aufgabe; die offene Seite zeigte den alten Stand, nach Neuladen den neuen.
+- **Stift-Abgabe:** links das PDF mit Stiftwerkzeugen und dem Hinweis „Hier kannst du dir die Datei herunterladen“, das Arbeitsblatt nur als Material-Kachel „Serlo-Inhalt“. „Lernergebnis abgeben“ wird aktiv, sobald auf dem PDF geschrieben oder eine Datei hochgeladen wurde.
+- **Selbstkorrektur:** Reiter „Selbstkorrektur“ mit „Hochgeladenes Ergebnis“ links (Auswahl: Arbeitsblatt-Bild und beschriftetes PDF) und „Musterlösung“ rechts; „Ich habe alles kontrolliert“ → „Ja, Korrektur abgeben“ → Reflexion.
+- **Fortschritt:** Pflichtaufgaben und erfüllte Wahlpflicht zählen, Training und Extra nicht.
+- **Darstellung:** wie in der Lehrer-Vorschau (Mitschrift 15). Zusätzlich: Codezeilen laufen seitlich aus dem Bereich (Scrollbalken), Kasten `warning` ohne Etikett, `definition` mit „Definition“.
+
+Nicht geprüft: Datei-Upload, Videolink, wie die Lehrkraft das Ergebnis sieht (liegt in der Lerndoku und damit außerhalb dessen, was dieser Server und Claude ansehen).
+
