@@ -141,7 +141,7 @@ Erweitern, reparieren, Mitschneiden: siehe [CONTRIBUTING.md](CONTRIBUTING.md). F
 
 Testumgebung in scobees (WvSS): Lernbereich „testbereich“ `LB-9QX4VN79SPUN59XTXC`, Lernpfad „TEST MCP“ `LI-M1SUFLY8QBQBD65MHU`.
 
-Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Statusmodell: DRAFT = nicht in der Bib, INACTIVE = in der Bib (beides live geprüft über `in_bib`). ACTIVE wird vom Backend gesetzt – vermutlich durch die Zuweisung an eine Lerngruppe; das ist nicht belegt und für den Server ohne Belang, da die Zuweisung bewusst außerhalb bleibt.
+Status der Aufrufe: alles in `docs/scobees-api-map.md` mit „Mitschrift“ ist beobachtet. Am 27.10.2026 live geprüft: Anmeldung, Lesen, Gliederung/Aufgabe/Wahlpflicht anlegen, Aufgabe und Gliederung ändern, Material-Upload, Verschieben, Löschen. Nachtrag (2. Mitschnitt): Lernpfad-Wurzel und Wahlpflichtaufgabe ändern sowie Bild-Upload ins Arbeitsblatt ebenfalls live geprüft. Statusmodell: DRAFT = nicht in der Bib, INACTIVE = in der Bib (beides live geprüft über `in_bib`). ACTIVE wird vom Backend an der Wurzel gesetzt, sobald der Lernpfad einer Lerngruppe zugewiesen ist (am 12.11.2026 mit einem Dummy-Konto belegt). Die Zuweisung selbst bleibt bewusst außerhalb des Servers; er erkennt sie aber und warnt bei jedem Schreibzugriff auf einen zugewiesenen Lernpfad, weil Änderungen dann sofort bei den Lernenden ankommen.
 
 ## Lizenz
 

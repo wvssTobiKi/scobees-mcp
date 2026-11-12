@@ -112,7 +112,8 @@ Das Arbeitsblatt belegt nur die linke Hälfte des Bildschirms; rechts stehen Zei
 - **Abbildungen** füllen die Breite der Arbeitsblatt-Spalte; die Bildunterschrift steht kursiv darunter. Steht derselbe Satz noch einmal in der Zeichnung, erscheint er doppelt.
 - **Aufklapp-Blöcke** sind zugeklappt, zu sehen ist nur der Titel.
 - **Eingaben bleiben nicht erhalten**: Nach Neuladen oder Verlassen der Aufgabe sind alle Quizfelder leer und die Antworten neu gemischt. Beim Abgeben speichert scobees ein Bild des ausgefüllten Arbeitsblatts als Teil des Lernergebnisses.
-- **Stift-Abgaben** zeigen links das PDF statt des Arbeitsblatts; das Arbeitsblatt ist dann nur über die Kachel „Serlo-Inhalt“ rechts erreichbar.
+- **Anhänge verdrängen das Arbeitsblatt**: Hat die Aufgabe Material (PDF, Bild, HTML-Datei), steht links zuerst der erste Anhang, bei Stift-Abgaben das PDF mit den Stiftwerkzeugen. Das Arbeitsblatt ist dann nur über die Kachel „Serlo-Inhalt“ rechts erreichbar, und ein Wechsel zwischen den Kacheln leert alle Quizfelder.
+- **Videos** (Zeile nur mit YouTube-Adresse) werden über youtube-nocookie.com eingebettet und starten beim Öffnen des Arbeitsblatts.
 - **Auswahlfragen**: Die Antworten erscheinen in gemischter Reihenfolge.
 - **Quiz prüfen**: Lernende tippen und bestätigen mit „Stimmt's?“; die Rückmeldung erscheint direkt darunter.
 

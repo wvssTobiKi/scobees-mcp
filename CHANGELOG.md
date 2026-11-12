@@ -41,7 +41,14 @@ Erkenntnisse aus dem Aufbau einer Lernsituation im Unterrichtsalltag (18 Punkte)
 - „Nach Reihenfolge“ hat im Test nichts gesperrt; der Skill verlässt sich nicht mehr darauf.
 - Titel kurz und mit dem unterscheidenden Wort vorn; Kachelbilder müssen daumennagelgroß erkennbar sein.
 - Abbildungen: Schrift mindestens 22 px, kein Satz im Bild, der auch Bildunterschrift ist. Kasten `warning` hat kein Etikett; für Warnungen `attention`.
-- Jede Aufgabe wird mit „Lernergebnis abgeben“ abgeschlossen; der frühere Hinweis auf eine Schaltfläche „Infoinput erledigt“ ist entfernt.
+- Jede Aufgabe wird mit „Lernergebnis abgeben“ abgeschlossen; „Infoinput erledigt“ heißt die Schaltfläche nur bei `aufgabentyp: info`.
+
+**Zugewiesene Lernpfade (Mitschrift 17)**
+
+- **Neu im Server:** `scobees_get_lernpfad` zeigt an der Wurzel `zugewiesen`. Jedes schreibende Werkzeug prüft vor dem Schreiben, ob der Lernpfad zugewiesen ist, und meldet dann `zugewiesen: true` mit `warnung_zugewiesen`. Hintergrund: In einem zugewiesenen Lernpfad ist jede Änderung über die Schnittstelle sofort für Lernende sichtbar, auch neu angelegte Gliederungen und Aufgaben; ein Veröffentlichen der einzelnen Aufgaben ist dafür nicht nötig. Ausgegeben wird nur die Tatsache der Zuweisung, nicht an wen.
+- **Neu im Server:** `scobees_upload_material` liefert `hinweis_ansicht`, wenn der Anhang das Arbeitsblatt aus der Startansicht der Lernenden verdrängt, mit Zusatz, wenn das Arbeitsblatt Quizfragen enthält (beim Wechsel zwischen Anhang und Arbeitsblatt gehen die Eingaben verloren).
+- Skill: kein Anhang an einem Arbeitsblatt mit Quiz; Simulationen und Datenblätter in eine eigene Aufgabe davor. In zugewiesenen Lernpfaden entsteht jede Aufgabe in einem Aufruf vollständig. Niveau-Varianten tragen dieselbe Nummer, weil Lernende nur ihre Variante sehen. Der Checklistenpunkt „Gliederungen und Aufgaben veröffentlichen“ entfällt.
+- Statusmodell bestätigt: ACTIVE an der Wurzel heißt zugewiesen. Der Status DRAFT an Unterelementen sagt nichts über die Sichtbarkeit.
 
 ## 0.1.11 – 2026-11-12
 

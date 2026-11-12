@@ -234,3 +234,16 @@ test("Kachelbild: cover_image_path an allen vier Ebenen, hat_titelbild im Baum, 
   assert.equal(form.isAiCorrectionEnabled, true);
   assert.equal(taskToForm({ id: "LI-4", name: "ohne Bild" }).coverImagePath, undefined);
 });
+
+test("anhangAnsichtHinweis: Material an einer Aufgabe mit Arbeitsblatt verdrängt das Arbeitsblatt aus der Startansicht", () => {
+  const { anhangAnsichtHinweis } = require("../src/tools");
+  const { markdownToSerlo } = require("../src/serlo");
+  const nurText = { taskDescription: markdownToSerlo("# Titel") };
+  const mitQuiz = { taskDescription: markdownToSerlo(["# Titel", "", "```quiz-sc", "Frage?", "- [x] ja", "- [ ] nein", "```"].join(String.fromCharCode(10))) };
+  assert.match(anhangAnsichtHinweis(nurText, false), /zuerst das Material/);
+  assert.doesNotMatch(anhangAnsichtHinweis(nurText, false), /Eingaben verloren/);
+  assert.match(anhangAnsichtHinweis(mitQuiz, false), /Eingaben verloren/);
+  assert.equal(anhangAnsichtHinweis(mitQuiz, true), undefined);            // Musterlösung
+  assert.equal(anhangAnsichtHinweis({ taskDescription: null }, false), undefined);  // kein Arbeitsblatt
+});
+

@@ -79,3 +79,7 @@ Bewusst nicht im Skill: konkrete Lernpfade, Klassen, Fächer und Jahrgänge eine
 Mit einem Dummy-Konto der Lehrkraft durchgespielt (Einzelheiten: API-Karte, Mitschrift 16). Drei Befunde haben Regeln des Skills geändert, die bisher auf Annahmen beruhten: (1) „Nach Reihenfolge“ sperrt nicht, der rote Faden muss aus dem Aufbau kommen. (2) Bei Stift-Abgaben sehen Lernende das PDF, nicht das Arbeitsblatt. (3) Quiz-Eingaben werden nicht gespeichert, Arbeitsblätter müssen in einem Zug zu schaffen sein. Die Sorge, beim Überschreiben eines Arbeitsblatts gingen Stände verloren, ist damit erledigt; die Vorsicht bei laufenden Lernpfaden bleibt, weil Änderungen sofort wirken.
 
 Die eigene Test-Abbildung hat nebenbei zwei Zeichenregeln geliefert: Der Satz im Bild stand doppelt (einmal gezeichnet, einmal als Bildunterschrift), und 20 px Schrift waren in der halben Bildschirmbreite knapp.
+
+## 12.11.2026: Zweiter Block mit dem Dummy-Konto
+
+Zwei Befunde mit Folgen für den Aufbau jeder Lernsituation: (1) Ein Anhang verdrängt das Arbeitsblatt aus der Startansicht, und der Wechsel zwischen Anhang und Arbeitsblatt leert die Quizfelder. Das bisherige Muster „Arbeitsblatt mit Quiz plus HTML-Simulation als Material an derselben Aufgabe“ funktioniert für Lernende also schlecht; Simulation und Quiz gehören in zwei aufeinanderfolgende Aufgaben. (2) In einem zugewiesenen Lernpfad gibt es keinen Entwurfszustand: Was über die Schnittstelle entsteht, steht sofort bei den Lernenden. Der Server warnt deshalb jetzt selbst, damit die Regel nicht allein vom Skill abhängt.

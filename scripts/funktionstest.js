@@ -181,6 +181,8 @@ async function main() {
       const m1 = await tool("scobees_upload_material")({ aufgabe_id: taskId, file_path: FILES.txt });
       const m2 = await tool("scobees_upload_material")({ aufgabe_id: taskId, file_path: FILES.pdf, ersetzt_attachment_id: m1.attachment_id });
       must(!m2.warnung, `Ersetzen meldet: ${m2.warnung}`);
+      must(/zuerst das Material/.test(m1.hinweis_ansicht || "") && /Eingaben verloren/.test(m1.hinweis_ansicht || ""), "Hinweis zur Startansicht fehlt");
+      must(m1.zugewiesen === undefined, "Warnung „zugewiesen“ an einem nicht zugewiesenen Lernpfad");
       const sol = await tool("scobees_upload_material")({ aufgabe_id: taskId, file_path: FILES.pdf, als_musterloesung: true });
       let a = await tool("scobees_get_aufgabe")({ id: taskId });
       must(a.anhaenge.length === 1 && a.anhaenge[0].id === m2.attachment_id, `Anhänge: ${a.anhaenge.map((x) => x.filename)}`);
@@ -234,6 +236,7 @@ async function main() {
     });
     await step("scobees_get_lernpfad (Baum)", async () => {
       const t = await tool("scobees_get_lernpfad")({ id: rootId });
+      must(t.zugewiesen === false, `zugewiesen ist ${t.zugewiesen}`);
       must(t.typ === "lernpfad" && t.hat_titelbild && t.beschreibung === "Test & Text\nZweite Zeile", "Wurzel stimmt nicht");
       const g = t.children.find((c) => c.id === folderId);
       must(g && g.typ === "gliederung" && g.hat_titelbild, "Gliederung fehlt oder ohne Bild");

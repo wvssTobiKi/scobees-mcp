@@ -93,6 +93,19 @@ function findAttachment(cur, attachmentId) {
 const isPdfAttachment = (x) => /\.pdf$/i.test(x.filename || "") || x.mimetype === "application/pdf";
 
 /** Warnt, wenn der zu löschende Anhang das letzte PDF-Material einer Stift-Abgabe (abgabeform „pen“) ist. */
+// Mit einem Dummy-Konto geprüft (scobees 94.6): Hat eine Aufgabe Material, sehen Lernende links zuerst das erste
+// Material und nicht das Arbeitsblatt; dieses liegt als letzte Kachel („Serlo-Inhalt“) bei den Materialien. Beim
+// Wechsel zwischen Material und Arbeitsblatt gehen alle Quiz-Eingaben verloren. Musterlösungen betrifft das nicht.
+const QUIZ_PLUGINS = ["scMcExercise", "inputExercise", "blanksExercise", "textAreaExercise"];
+function anhangAnsichtHinweis(cur, istMusterloesung) {
+  if (istMusterloesung || !cur.taskDescription) return undefined;
+  const plugins = listPlugins(cur.taskDescription);
+  if (!plugins.length) return undefined;
+  let h = "Lernende sehen in dieser Aufgabe jetzt zuerst das Material, nicht das Arbeitsblatt; das Arbeitsblatt erreichen sie über die Kachel „Serlo-Inhalt“ bei den Materialien. In der Beschreibung der Aufgabe darauf hinweisen.";
+  if (plugins.some((p) => QUIZ_PLUGINS.includes(p))) h += " Das Arbeitsblatt enthält Quizfragen: Wechseln Lernende zwischen Material und Arbeitsblatt, gehen ihre Eingaben verloren. Besser das Material in eine eigene Aufgabe davor legen.";
+  return h;
+}
+
 function letztesPenPdfWarnung(cur, attachmentId, found) {
   if (found.list !== "attachments" || !(cur.requiredSubmissions || []).includes("pen")) return undefined;
   const otherPdfs = (cur.attachments || []).some((x) => x.id !== attachmentId && isPdfAttachment(x));
@@ -341,9 +354,15 @@ const TOOLS = [
   },
   {
     name: "scobees_get_lernpfad",
-    description: "Lädt einen Lernpfad mit vollständigem Aufbau (Gliederungen → Aufgaben) als kompakten Baum. IDs daraus werden für Änderungen benötigt. Je Element: typ, Status, hat_titelbild (eigenes Kachelbild gesetzt?), bei Aufgaben zusätzlich Art-Kennung, Anhänge und Arbeitsblatt-Bausteine. Die Beschreibung der Lernpfad-Wurzel kommt unverändert zurück.",
+    description: "Lädt einen Lernpfad mit vollständigem Aufbau (Gliederungen → Aufgaben) als kompakten Baum. IDs daraus werden für Änderungen benötigt. An der Wurzel steht zugewiesen (true = Lernende arbeiten bereits damit, jede Änderung ist für sie sofort sichtbar). Je Element: typ, Status, hat_titelbild (eigenes Kachelbild gesetzt?), bei Aufgaben zusätzlich Art-Kennung, Anhänge und Arbeitsblatt-Bausteine. Die Beschreibung der Lernpfad-Wurzel kommt unverändert zurück.",
     inputSchema: { type: "object", properties: { id: { type: "string", description: "Lernpfad-ID (LI-…)" } }, required: ["id"] },
-    run: async ({ id }) => compact(await api.lerninput(id)),
+    run: async ({ id }) => {
+      const node = await api.lerninput(id);
+      const out = compact(node);
+      // Nur die Wurzel trägt den Zustand der Zuweisung (state ACTIVE); bei Unterelementen sagt er nichts aus.
+      if (!node.parentId) out.zugewiesen = node.state === "ACTIVE";
+      return out;
+    },
   },
   {
     name: "scobees_get_aufgabe",
@@ -730,6 +749,8 @@ const TOOLS = [
       const cur = await api.lerninput(a.aufgabe_id);
       await api.saveTask(taskToForm(cur));
       const out = ok("Datei hochgeladen und mit der Aufgabe verknüpft.", { attachment_id: att.id, filename: att.filename, url: api.attachmentUrl(att.path) });
+      const ansicht = anhangAnsichtHinweis(cur, !!a.als_musterloesung);
+      if (ansicht) out.hinweis_ansicht = ansicht;
       if (a.ersetzt_attachment_id) {
         try {
           await api.removeAttachment(a.ersetzt_attachment_id);
@@ -820,4 +841,48 @@ const TOOLS = [
   },
 ];
 
-module.exports = { TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches };
+// ── Schutz bei zugewiesenen Lernpfaden ────────────────────────────────────────
+// Mit einem Dummy-Konto geprüft (scobees 94.6): Sobald ein Lernpfad einer Lerngruppe zugewiesen ist, sehen Lernende
+// jede Änderung über diese Schnittstelle sofort – auch neu angelegte Gliederungen und Aufgaben, ohne dass die
+// Lehrkraft etwas veröffentlicht. Ob zugewiesen ist, steht nur an der Wurzel (state "ACTIVE"). Jedes schreibende
+// Werkzeug prüft das deshalb vor dem Schreiben und hängt eine Warnung an sein Ergebnis. Ausgegeben wird nur die
+// Tatsache der Zuweisung, nie an wen.
+const ASSIGNED_WARNING = "Dieser Lernpfad ist Lernenden zugewiesen: Die Änderung ist für sie sofort sichtbar, ohne weiteren Schritt der Lehrkraft.";
+const _assignedCache = new Map();
+async function isAssigned(id) {
+  const hit = _assignedCache.get(id);
+  if (hit && Date.now() - hit.t < 30000) return hit.v;
+  let cur = await api.lerninput(id);
+  for (let i = 0; i < 8 && cur.parentId; i++) cur = await api.lerninput(cur.parentId);
+  const v = cur.state === "ACTIVE";
+  _assignedCache.set(id, { v, t: Date.now() });
+  return v;
+}
+const ZIEL = {
+  scobees_update_lernpfad: (a) => a.id,
+  scobees_create_gliederung: (a) => a.parent_id,
+  scobees_update_gliederung: (a) => a.id,
+  scobees_create_wahlpflicht: (a) => a.parent_id,
+  scobees_update_wahlpflicht: (a) => a.id,
+  scobees_create_aufgabe: (a) => a.parent_id,
+  scobees_update_aufgabe: (a) => a.id,
+  scobees_patch_arbeitsblatt: (a) => a.id,
+  scobees_upload_material: (a) => a.aufgabe_id,
+  scobees_delete_material: (a) => a.aufgabe_id,
+  scobees_move: (a) => a.id,
+  scobees_delete: (a) => (a.confirm === true ? a.id : null),
+};
+for (const tool of TOOLS) {
+  const ziel = ZIEL[tool.name];
+  if (!ziel) continue;
+  const run = tool.run;
+  tool.run = async (a) => {
+    let assigned = false;
+    try { const id = ziel(a || {}); if (id) assigned = await isAssigned(id); } catch { /* die Prüfung darf das Werkzeug nie verhindern */ }
+    const out = await run(a);
+    if (assigned && out && typeof out === "object") { out.zugewiesen = true; out.warnung_zugewiesen = ASSIGNED_WARNING; }
+    return out;
+  };
+}
+
+module.exports = { isAssigned, anhangAnsichtHinweis, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches };

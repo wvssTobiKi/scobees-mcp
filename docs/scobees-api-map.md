@@ -355,3 +355,18 @@ Test-Lernpfad mit Info-Aufgabe, Selbstkontrolle, Pflichtabgabe mit Selbstkorrekt
 
 Nicht geprüft: Datei-Upload, Videolink, wie die Lehrkraft das Ergebnis sieht (liegt in der Lerndoku und damit außerhalb dessen, was dieser Server und Claude ansehen).
 
+## Mitschrift 17 (12.11.2026, v94.6): Zugewiesener Lernpfad – was Schreibzugriffe bewirken
+
+Derselbe Test-Lernpfad wie in Mitschrift 16, zugewiesen an ein Dummy-Konto.
+
+- **Status:** `GET lerninput/{Wurzel}` liefert nach der Zuweisung `state: "ACTIVE"` und eine nicht leere Liste `assignedClassGroupNames` (der Server liest daraus nur, ob zugewiesen ist, und gibt die Namen nie aus). Im Baum der Wurzel tragen alle Kinder `state: "ACTIVE"`; einzeln abgerufen (`GET lerninput/{Kind}`) zeigen dieselben Elemente `state: "DRAFT"`, `isPublished: false` und eine leere Liste. Verlässlich ist nur die Wurzel.
+- **Neu Angelegtes:** Eine nach der Zuweisung per `POST lerninput/folder` und `POST lerninput/task` angelegte Gliederung mit sechs Aufgaben war beim Dummy-Konto nach dem Neuladen sichtbar, ohne Veröffentlichen.
+- **Geändertes:** `scobees_patch_arbeitsblatt` und `scobees_upload_material` wirkten ebenso sofort.
+- **Niveaus:** Von drei Aufgaben mit je einem Niveau sah das Dummy-Konto nur die seines Niveaus; die Zeitsumme der Gliederung zählte nur diese.
+- **Aufgabentyp Info:** eigenes Symbol, Schaltfläche „Infoinput erledigt“, nicht in der Zeitsumme.
+- **Material:** Reihenfolge der Kacheln: Anhänge, Links, zuletzt „Serlo-Inhalt“. Angezeigt wird beim Öffnen die erste Kachel. HTML-Anhänge laufen in einem `iframe` mit `sandbox="allow-scripts allow-modals"`. Bilder im Betrachter mit Zoom. Link-Kachel: Schaltfläche „Hier weiter zum Link“.
+- **Wechsel zwischen Kacheln:** Eine im Arbeitsblatt gewählte Antwort war nach dem Wechsel zur Bild-Kachel und zurück wieder leer.
+- **Video:** `iframe` auf `youtube-nocookie.com/embed/<id>?autoplay=1`.
+- **Videolink-Abgabe:** Feld „Link zu deinem Ergebnis (Video)“, Hinweis „Zum Abgeben musst du einen Link angeben.“
+- **Bearbeitungsreihenfolge:** Auch nach Umstellen auf `after_teacher_correction` ließ sich eine spätere Aufgabe öffnen, obwohl frühere offen waren.
+
