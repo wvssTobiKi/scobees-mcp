@@ -372,3 +372,14 @@ Derselbe Test-Lernpfad wie in Mitschrift 16, zugewiesen an ein Dummy-Konto.
 
 Nachtrag zu Mitschrift 16 (Datei-Abgabe, von der Lehrkraft am Dummy-Konto ausgelöst): Nach „Datei hochladen“ erscheint ein Zähler „1“ an der Schaltfläche, keine Vorschau. „Lernergebnis abgeben“ → Rückfrage → Reflexion. Danach zeigt der Reiter „Aufgabe“ die Ergebnisse in einer Auswahl (Bild des Arbeitsblatts „Serlo-Arbeitsblatt-ausgefüllt.png“ und die hochgeladene Datei); die Schaltflächen zum Hochladen und Abgeben sind deaktiviert. Das Bild des Arbeitsblatts zeigte bei der Quiz-Aufgabe das ganze Arbeitsblatt im Zustand der Abgabe, bei zwei sehr kurzen Arbeitsblättern nur die Überschrift.
 
+## Mitschrift 18 (12.11.2026, v94.6): Lehrersicht auf die Abgaben des Dummy-Kontos
+
+Von der Lehrkraft in der Lerndoku angesehen und als Bildschirmfotos mitgeteilt (Namen anderer Lernender abgedeckt). Kein Zugriff des Servers, keine Netzaufrufe mitgeschnitten.
+
+- **Lernergebnisse pro Schüler:in:** je Abgabe eine Zeile mit Status, Bearbeiten (Kürzel LE = Lernergebnis, SK = Selbstkorrektur), Aufgabe, Lernpfad mit Gliederung und Niveau-Kürzel, „Feedback geben“, Verlauf.
+- **Lernergebnisse pro Aufgabe:** Matrix Lernende × Aufgaben; Aufgabentitel nach etwa 13 Zeichen abgeschnitten („1.1 Darstellun…“, „2.1 Pflichtabg…“). Wahlaufgaben und nach der Zuweisung angelegte Aufgaben erscheinen als eigene Spalten. Fortschritt in Prozent.
+- **Abgabe einer Selbstkontrolle (1.2):** „Abgegebene Lernergebnisse (1)“ mit „Serlo-Arbeitsblatt-ausgefüllt.png“ (220 KB), dargestellt mit Stiftwerkzeugen. Das Bild zeigte das Arbeitsblatt im Zustand der Abgabe (hier leer); bei der Einfachauswahl fehlte die dritte Antwort, stattdessen ein Scrollbalken. Rechts Rückmeldung (Text bis 2000 Zeichen, Mikrofon), „Wiederholen“, „Angesehen“, Material der Aufgabe, Hinweis „Es wurde keine Musterlösung bereitgestellt“.
+- **Abgabe mit Stift und Selbstkorrektur (2.1):** „Abgegebene Lernergebnisse (2)“ (beschriftetes PDF, Arbeitsblatt-Bild) mit dem Vermerk „Enthält Aufgabenblätter, die mit dem Tabletstift bearbeitet wurden“; „Selbstkorrektur (2)“ mit „Keine Änderungen vorgenommen“.
+- **Aufgabenstatus:** LE: Lernergebnis zurücksetzen / ergänzen / Aufgabe komplett zurücksetzen. SK: Selbstkorrektur zurücksetzen / ergänzen.
+- **Dialog „Zuweisen“:** Reiter „Klassen / Gruppe zuweisen“, „Nach Differenzierungen zuweisen“, „Lernenden gezielt zuweisen“; Felder Lernender, Fach, Wochenfrist („dauerhaft offen“). Keine Einstellung zur Reihenfolge.
+

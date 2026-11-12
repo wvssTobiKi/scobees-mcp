@@ -81,6 +81,16 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Datei-Abgabe: Nach dem Hochladen zeigt nur ein Zähler an der Schaltfläche „Datei hochladen“, dass eine Datei bereitliegt; eine Vorschau gibt es vor der Abgabe nicht. Nach der Abgabe zeigt der Reiter „Aufgabe“ die eigenen Ergebnisse (Bild des Arbeitsblatts und die Datei); erneut abgeben können Lernende nicht.
 - Eine vollständig erledigte Gliederung zeigt statt ihres Kachelbilds einen Haken.
 
+## Was die Lehrkraft von einer Abgabe sieht (Lerndoku, scobees 94.6)
+
+Der Server und der Skill greifen auf diesen Bereich nie zu; die Angaben stammen von der Lehrkraft und dienen dazu, Aufgaben passend zu bauen.
+
+- Auswertung je Lernender und je Aufgabe. In der Matrix „Lernergebnisse pro Aufgabe“ stehen die Aufgabentitel nur mit etwa 13 Zeichen, Lernpfad und Gliederung ebenfalls gekürzt; filtern lässt sich nach Fach und Niveau.
+- Zu jeder abgegebenen Aufgabe: das Bild des Arbeitsblatts im Zustand der Abgabe (auch bei Selbstkontrolle), bei Stift-Abgaben das beschriftete PDF, hochgeladene Dateien, die Selbstkorrektur, das Material der Aufgabe und die Musterlösung („Es wurde keine Musterlösung bereitgestellt“, wenn keine hochgeladen ist).
+- Rückmeldung: Text bis 2000 Zeichen, Sprachnachricht, Anmerkungen mit dem Stift direkt im Ergebnis; dazu „Angesehen“ und „Wiederholen“.
+- Aufgabenstatus: „Lernergebnis zurücksetzen“, „Lernergebnis ergänzen“, „Aufgabe komplett zurücksetzen“, ebenso für die Selbstkorrektur. Damit kann die Lehrkraft eine Aufgabe nach einer Änderung neu bearbeiten lassen.
+- Zuweisen: immer der ganze Lernpfad, an Klasse oder Gruppe, nach Differenzierungen oder gezielt an einzelne Lernende; Fach und optionale Wochenfrist. Eine Einstellung zur Bearbeitungsreihenfolge gibt es dort nicht.
+
 ## Kachelbilder (`cover_image_path`)
 
 Lernpfad, Gliederung, Wahlpflichtaufgabe und Aufgabe können ein eigenes Kachelbild tragen; ohne Bild zeigt scobees das Standardbild (Kompass). Kachelbilder sind Schmuck und Orientierung und damit optional – anders als die Abbildungen im Arbeitsblatt, die zum Lerninhalt gehören und immer entstehen (`references/abbildungen.md`). Regeln:
