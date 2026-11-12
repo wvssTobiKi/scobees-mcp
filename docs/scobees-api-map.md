@@ -370,3 +370,5 @@ Derselbe Test-Lernpfad wie in Mitschrift 16, zugewiesen an ein Dummy-Konto.
 - **Videolink-Abgabe:** Feld „Link zu deinem Ergebnis (Video)“, Hinweis „Zum Abgeben musst du einen Link angeben.“
 - **Bearbeitungsreihenfolge:** Auch nach Umstellen auf `after_teacher_correction` ließ sich eine spätere Aufgabe öffnen, obwohl frühere offen waren.
 
+Nachtrag zu Mitschrift 16 (Datei-Abgabe, von der Lehrkraft am Dummy-Konto ausgelöst): Nach „Datei hochladen“ erscheint ein Zähler „1“ an der Schaltfläche, keine Vorschau. „Lernergebnis abgeben“ → Rückfrage → Reflexion. Danach zeigt der Reiter „Aufgabe“ die Ergebnisse in einer Auswahl (Bild des Arbeitsblatts „Serlo-Arbeitsblatt-ausgefüllt.png“ und die hochgeladene Datei); die Schaltflächen zum Hochladen und Abgeben sind deaktiviert. Das Bild des Arbeitsblatts zeigte bei der Quiz-Aufgabe das ganze Arbeitsblatt im Zustand der Abgabe, bei zwei sehr kurzen Arbeitsblättern nur die Überschrift.
+

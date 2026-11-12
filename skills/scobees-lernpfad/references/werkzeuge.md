@@ -78,6 +78,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Material: Der erste Anhang steht links statt des Arbeitsblatts; das Arbeitsblatt ist die letzte Kachel („Serlo-Inhalt“). Ein Wechsel zwischen den Kacheln leert die Quizfelder. Bilder öffnen sich in einem Betrachter mit Zoom, HTML-Dateien laufen eingebettet (Skripte ja; Speichern, Formulare, neue Fenster nein), Links zeigen „Hier weiter zum Link“.
 - Niveaus: Aufgaben mit einem anderen Niveau als dem des Lernenden fehlen in seiner Ansicht.
 - Videolink-Abgabe: Eingabefeld „Link zu deinem Ergebnis (Video)“ rechts neben dem Arbeitsblatt.
+- Datei-Abgabe: Nach dem Hochladen zeigt nur ein Zähler an der Schaltfläche „Datei hochladen“, dass eine Datei bereitliegt; eine Vorschau gibt es vor der Abgabe nicht. Nach der Abgabe zeigt der Reiter „Aufgabe“ die eigenen Ergebnisse (Bild des Arbeitsblatts und die Datei); erneut abgeben können Lernende nicht.
 - Eine vollständig erledigte Gliederung zeigt statt ihres Kachelbilds einen Haken.
 
 ## Kachelbilder (`cover_image_path`)
