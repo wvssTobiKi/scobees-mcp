@@ -1,4 +1,4 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.10)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.11)
 
 Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
@@ -17,7 +17,7 @@ Absatz mit **fett**, *kursiv*, `code`, [Link](https://…) und $U = R \cdot I$ (
 
 > Hinweis-Box (Zitat)
 
-![Bildbeschreibung](URL aus scobees_upload_bild)
+![Bildunterschrift als ganzer Satz](URL aus scobees_upload_bild)
 
 https://www.geogebra.org/m/…      (Zeile nur mit URL → GeoGebra-Applet; YouTube/mp4 → Video)
 ```

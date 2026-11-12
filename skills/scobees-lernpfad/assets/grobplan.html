@@ -25,6 +25,7 @@ h1{font-size:20px;font-weight:600;margin:0}
 .row{display:flex;gap:10px;align-items:flex-start;padding:5px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}
 .row .n{color:var(--sec);min-width:30px}.row .t{flex:1;min-width:200px}
 .row .d{font-size:13px;color:var(--sec)}
+.row .f{font-size:13px;color:var(--p)}.row .f.no{color:var(--mut);font-style:italic}
 .b{display:inline-block;font-size:12px;padding:1px 8px;border-radius:8px;margin-left:6px;vertical-align:1px;white-space:nowrap}
 .b.p{background:var(--p-bg);color:var(--p)}.b.a{background:var(--a-bg);color:var(--a)}.b.v{background:var(--v-bg);color:var(--v)}.b.m{background:var(--m-bg);color:var(--m)}
 .min{min-width:56px;text-align:right;color:var(--sec);font-size:13px}
@@ -56,6 +57,7 @@ const PLAN = __PLAN_JSON__;
  "fach": "PB Elektrotechnik Grundlagen", "jahrgang": "Jg 1", "umfang_min": 360, "reihenfolge": "nach Reihenfolge",
  "szenario": "…", "ergebnis": "…",
  "material": ["fehlerstromkreis.html → 3.1", "Messprotokoll_Vorlage.pdf → 5.1"], "ablage": "…\\Schutzmaßnahmen\\scobees\\",
+ "kacheln": "Titelbild + 4 Gliederungs-Kacheln",                // Kachelbilder wie in Schritt 1 vereinbart, sonst "keine"
  "fragen": ["Bearbeitung frei oder nach Reihenfolge?"],         // Fragen zum ganzen Pfad
  "checkliste": ["Lerngruppe zuweisen", "…"],                      // nur Bericht
  "vorschlaege": ["5.1 als Pflicht, wenn …"],
@@ -64,6 +66,8 @@ const PLAN = __PLAN_JSON__;
    "aufgaben": [
     {"nr": "2.1", "name": "Besichtigen, Erproben, Messen", "min": 25, "pflicht": true,
      "marken": [["p","Theorie + Drag-and-drop"]],                 // p = Theorie/Quiz, a = Abgabe, v = freiwillig/Info, m = Musterlösung
+     "abbildungen": ["Fachabbildung: Prüfablauf als Dreischritt"],  // je Abbildung Art und was zu sehen ist; Pflicht nach SKILL.md 2a
+     "ohne_abbildung": "",                                         // nur wenn keine entsteht: der Grund
      "inhalt": "", "frage": "", "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-blanks-dnd",
      "id": "", "status": "ok", "hinweis": ""}                     // status: ok | warn (Bericht)
    ]}
@@ -76,10 +80,11 @@ const all = P.gliederungen.flatMap(g => g.aufgaben);
 const sumP = all.filter(a => a.pflicht).reduce((s,a)=>s+(a.min||0),0);
 const sumF = all.filter(a => !a.pflicht).reduce((s,a)=>s+(a.min||0),0);
 const total = P.umfang_min || (sumP+sumF) || 1;
+const nAbb = all.reduce((s,a)=>s+(a.abbildungen||[]).length,0), nOhne = all.filter(a=>!(a.abbildungen||[]).length).length;
 let h = `<div class="head"><h1>${bericht ? "✓ " : ""}${esc(P.titel)}${bericht ? " ist angelegt" : ""}</h1>${P.id ? `<span class="id">${esc(P.id)}</span>` : ""}</div>`;
 h += `<p class="sub">${esc(P.fach)} · ${esc(P.jahrgang)} · ${P.umfang_min ? Math.round(P.umfang_min/45)+" UStd ("+P.umfang_min+" min)" : ""} · ${esc(P.reihenfolge)}${bericht ? " · in der schuleigenen Bib (Status inaktiv, normal)" : ""}</p>`;
 if (P.szenario || P.ergebnis) h += `<p class="sub">${P.szenario ? "Szenario: "+esc(P.szenario)+" " : ""}${P.ergebnis ? "· Ergebnis: "+esc(P.ergebnis) : ""}</p>`;
-h += `<div class="kpi"><div><div class="l">Pflicht</div><div class="v">${sumP} <small>von ${total} min</small></div></div><div><div class="l">Freiwillig</div><div class="v">${sumF} <small>min</small></div></div><div><div class="l">Umfang</div><div class="v">${P.gliederungen.length} <small>Gliederungen · ${all.length} Aufgaben</small></div></div></div>`;
+h += `<div class="kpi"><div><div class="l">Pflicht</div><div class="v">${sumP} <small>von ${total} min</small></div></div><div><div class="l">Freiwillig</div><div class="v">${sumF} <small>min</small></div></div><div><div class="l">Umfang</div><div class="v">${P.gliederungen.length} <small>Gliederungen · ${all.length} Aufgaben</small></div></div><div><div class="l">Abbildungen</div><div class="v">${nAbb} <small>${nOhne ? "· "+nOhne+(nOhne===1?" Aufgabe":" Aufgaben")+" ohne" : "· jede Aufgabe versorgt"}</small></div></div></div>`;
 for (const g of P.gliederungen) {
   const gp = g.aufgaben.filter(a=>a.pflicht).reduce((s,a)=>s+(a.min||0),0), gf = g.aufgaben.filter(a=>!a.pflicht).reduce((s,a)=>s+(a.min||0),0);
   h += `<div class="gl"><div class="gh"><p class="gt">${esc(g.nr)} · ${esc(g.name)}</p><span class="gm">${bericht && g.id ? `<span class="id">${esc(g.id)}</span> · ` : ""}${gp} min${gf ? " + "+gf+" min freiwillig" : ""}</span></div>`;
@@ -87,7 +92,7 @@ for (const g of P.gliederungen) {
   if (g.frage) h += `<div class="q" style="margin-left:0">${esc(g.frage)}</div>`;
   let tech = [];
   for (const a of g.aufgaben) {
-    h += `<div class="row"><span class="n">${esc(a.nr)}</span><span class="t">${esc(a.name)}${(a.marken||[]).map(([k,t])=>`<span class="b ${k}">${esc(t)}</span>`).join("")}${a.inhalt ? `<div class="d">${esc(a.inhalt)}</div>` : ""}</span>`;
+    h += `<div class="row"><span class="n">${esc(a.nr)}</span><span class="t">${esc(a.name)}${(a.marken||[]).map(([k,t])=>`<span class="b ${k}">${esc(t)}</span>`).join("")}${a.inhalt ? `<div class="d">${esc(a.inhalt)}</div>` : ""}${(a.abbildungen||[]).map(x=>`<div class="f">▣ ${esc(x)}</div>`).join("")}${!(a.abbildungen||[]).length && a.ohne_abbildung ? `<div class="f no">ohne Abbildung: ${esc(a.ohne_abbildung)}</div>` : ""}</span>`;
     if (bericht && a.id) h += `<span class="id">${esc(a.id)}</span>`;
     if (bericht) h += `<span class="st ${a.status==="warn"?"warn":"ok"}">${a.status==="warn"?"⚠":"✓"}</span>`;
     h += `<span class="min">${a.min||0} min</span></div>`;
@@ -100,11 +105,12 @@ for (const g of P.gliederungen) {
 }
 h += `<div class="grid">`;
 if (P.material?.length) h += `<div class="box"><h3>${bericht ? "Dateien" : "Material, das entsteht"}${P.ablage ? ` <span style="font-weight:400;color:var(--mut)">· ${esc(P.ablage)}</span>` : ""}</h3><ul>${P.material.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`;
+if (P.kacheln) h += `<div class="box"><h3>Kachelbilder</h3>${esc(P.kacheln)}</div>`;
 if (P.fragen?.length) h += `<div class="box warn"><h3>Vor der Freigabe klären</h3><ul>${P.fragen.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`;
 if (P.checkliste?.length) h += `<div class="box"><h3>Noch von Hand in scobees</h3><ul style="list-style:none;padding:0">${P.checkliste.map(m=>`<li>☐ ${esc(m)}</li>`).join("")}</ul></div>`;
 h += `</div>`;
 if (P.vorschlaege?.length) h += `<p class="foot">Vorschläge: ${P.vorschlaege.map(esc).join(" · ")}</p>`;
-h += `<details style="margin-top:12px"><summary>Alle Werte als Tabelle (zum Kopieren)</summary><table><tr><th>Nr.</th>${bericht?"<th>ID</th>":""}<th>Aufgabe</th><th>min</th><th>Technik</th></tr>${all.map(a=>`<tr><td>${esc(a.nr)}</td>${bericht?`<td>${esc(a.id)}</td>`:""}<td>${esc(a.name)}</td><td>${a.min||0}</td><td>${esc(a.tech)}</td></tr>`).join("")}</table></details>`;
+h += `<details style="margin-top:12px"><summary>Alle Werte als Tabelle (zum Kopieren)</summary><table><tr><th>Nr.</th>${bericht?"<th>ID</th>":""}<th>Aufgabe</th><th>min</th><th>Technik</th><th>Abbildungen</th></tr>${all.map(a=>`<tr><td>${esc(a.nr)}</td>${bericht?`<td>${esc(a.id)}</td>`:""}<td>${esc(a.name)}</td><td>${a.min||0}</td><td>${esc(a.tech)}</td><td>${esc((a.abbildungen||[]).join("; ") || (a.ohne_abbildung ? "ohne: "+a.ohne_abbildung : ""))}</td></tr>`).join("")}</table></details>`;
 document.getElementById("app").innerHTML = h;
 </script>
 </body>

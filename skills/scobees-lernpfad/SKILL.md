@@ -5,7 +5,7 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.10** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.11** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist.
 
@@ -23,13 +23,14 @@ Die Modi mischen sich oft (Unterlagen + Erweiterung eines Pfads). Der Ablauf unt
 
 ### 1. Rahmen klären (eine kurze Nachfrage, nicht ein Fragebogen)
 
-Du brauchst fünf Dinge, bevor du planst. Was die Lehrkraft schon gesagt hat, fragst du nicht noch einmal.
+Du brauchst sechs Dinge, bevor du planst. Was die Lehrkraft schon gesagt hat, fragst du nicht noch einmal.
 
 1. **Bildungsgang** (BFS-dual mit Beruf, Technikerschule mit Fachrichtung, BG Technik mit Schwerpunkt, FOS Technik, BES) und Jahr/Klasse. Daraus folgen Vokabular, Niveau, Sprache und Umfang (`references/bildungsgaenge.md`).
 2. **Curriculare Einheit**: Lernfeld, Modul, Lerngebiet oder Kompetenzbereich. Ist sie nicht genannt, recherchiere die gültige Vorgabe (Fundorte in der Referenz) und schlage die passende Einheit vor. Nenne die Quelle und lass bestätigen; Rahmenlehrpläne ändern sich, und die Lehrkraft kennt die schulinterne Umsetzung.
 3. **Umfang**: Unterrichtsstunden oder Wochen. Fehlt die Angabe, schlage einen Richtwert vor (Referenz).
 4. **Fach in scobees**: Das Fach wird nie geraten und nie aus dem Thema abgeleitet. Immer zuerst `scobees_list_subjects` (bei vielen Fächern vorher `scobees_list_workspaces` und nach dem Lernbereich fragen), dann die in Frage kommenden Fächer mit Namen und ID zeigen und die Lehrkraft wählen lassen. Hat sie ein Fach genannt, den passenden Eintrag aus der Liste nennen und bestätigen lassen; gibt es keinen eindeutigen Treffer, nachfragen statt den ähnlichsten nehmen. Grund: Lernende haben ihr Niveau pro Fach, ein Pfad im falschen Fach lässt sich nicht zuweisen, und Fächer legt nur der Administrator an.
-5. **Bilder**: Bilder zu erzeugen ist der teuerste Teil der Arbeit (viel Rechenaufwand je Bild). Deshalb bei einer neuen Lernsituation ausdrücklich fragen, **ob und für welche Ebenen** Bilder entstehen sollen: Titelbild des Lernpfads · Kachelbilder der Gliederungen · Kachelbilder der Aufgaben · Abbildungen im Arbeitsblatt. Die Ebenen einzeln anbieten, nicht „Bilder ja/nein“. Ohne Antwort gilt: keine Kachelbilder, im Arbeitsblatt nur Abbildungen, die etwas erklären (Abschnitt 2a). Bilder, die die Lehrkraft mitbringt, gehen immer vor selbst erzeugten. Die Entscheidung im Grobplan ausweisen (Anzahl Bilder je Ebene), damit sie vor dem Anlegen noch gestrichen werden kann.
+5. **Kachelbilder** (optional): Das Titelbild des Lernpfads und die Kachelbilder von Gliederungen und Aufgaben sind Schmuck und Orientierung, kein Lerninhalt, und jedes kostet spürbar Rechenaufwand. Deshalb ausdrücklich fragen, **für welche Ebenen** sie entstehen sollen: Titelbild · Gliederungen · Aufgaben. Die Ebenen einzeln anbieten, nicht „Bilder ja/nein“. Ohne Antwort gilt: keine Kachelbilder.
+6. **Abbildungen der Lehrkraft**: Abbildungen im Arbeitsblatt stehen nicht zur Wahl; sie gehören zum Lerninhalt und entstehen immer (Abschnitt 2a). Gefragt wird nur, ob die Lehrkraft Abbildungen mitbringt und wie sie verwendet werden sollen: **übernehmen** (unverändert einbinden), **als Grundlage** (Inhalt übernehmen, im Stil des Lernpfads neu zeichnen) oder **neu erstellen** (nur das Thema ist vorgegeben). Eine Antwort für alle genügt, Ausnahmen für einzelne Abbildungen nennt die Lehrkraft. Ohne Antwort gilt: Abbildungen, die die Lehrkraft selbst erstellt hat, werden übernommen; alles andere wird neu erstellt. Fremde Abbildungen (Lehrbuch, Hersteller, Internet) werden nie übernommen und nicht abgezeichnet; der Sachverhalt wird eigenständig neu dargestellt.
 
 Zu Beginn einmal `scobees_me`: prüft Anmeldung und meldet, ob scobees sich seit der Prüfung des Servers geändert hat. Bei einer Warnung weiterarbeiten, aber am Ende darauf hinweisen.
 
@@ -45,40 +46,56 @@ Eine Lernsituation ist eine vollständige berufliche Handlung, kein Kapitel aus 
 - **Praktische Festigung nach großer Theorie**: Folgen mehr als zwei Theorie-Aufgaben aufeinander, schlage der Lehrkraft eine praktische Anwendungs- oder Festigungseinheit vor (Laboraufgabe, Konfiguration, Messung, Bau, Simulation). Passt sie nicht für alle (Lernort, Zeit, Material), lege sie als Wahlpflichtaufgabe oder `aufgabentyp: training` an. Den Vorschlag im Grobplan ausweisen, nicht stillschweigend weglassen.
 - **Du-Form** in allen Texten für Lernende.
 
-### 2a. Anschaulich darstellen, interaktiv wo es trägt
+### 2a. Abbildungen (Pflicht) und interaktive Elemente (wo sie tragen)
 
-**Zeigen vor Erklären.** Jeder abstrakte Begriff bekommt zuerst eine konkrete Darstellung aus dem Szenario, dann die Definition: ein Zahlenbeispiel mit den Werten des Betriebs, eine Skizze, eine Vergleichstabelle, ein Diagramm, ein Vorher-Nachher. Ein Arbeitsblatt, das nur aus Absätzen besteht, ist ein Zeichen, dass die Darstellung fehlt. Aussagekräftig heißt: Die Darstellung beantwortet die Frage des Abschnitts auf einen Blick (Welches RAID verliert wie viel Kapazität? Wo liegt die Netzgrenze?), nicht „ein Bild zum Thema“.
+Der Skill unterscheidet drei Dinge und benutzt für jedes genau ein Wort:
 
-Lernende sollen Inhalte darüber hinaus nicht nur lesen, sondern erkunden können. Die Lehrkraft erwartet ansprechend aufbereitete Information; das heißt nicht „überall ein Gimmick“, sondern das passende Mittel an der Stelle, an der Text allein nicht reicht. Prüfe für jeden Theorieabschnitt: Lässt sich das Prinzip **ausprobieren**, **beobachten** oder **vergleichen**? Dann lohnt sich ein interaktives Element; eine Definition braucht keins.
+| Begriff | Was es ist | Wozu | Verbindlichkeit |
+|---|---|---|---|
+| **Fachabbildung** | gezeichnete, beschriftete Abbildung im Arbeitsblatt: Schaltplan, Aufbau, Messanordnung, Ablauf, Blockdiagramm, Diagramm, Kennlinie, Vergleich | trägt den Inhalt | Pflicht (Mindeststandard unten) |
+| **Situationsillustration** | gezeichnete Szene aus dem Szenario im Arbeitsblatt: Ort, Rolle, Auftrag | holt die Lernenden in die Situation und hält sie darin | Pflicht (Mindeststandard unten) |
+| **Kachelbild** | Titelbild des Lernpfads, Kachel einer Gliederung oder Aufgabe (`cover_image_path`) | Schmuck und Orientierung in der Übersicht | optional, nur nach Rückfrage in Schritt 1 |
+
+„Abbildung“ meint im Folgenden immer Fachabbildung oder Situationsillustration, nie ein Kachelbild. Abbildungen dienen dem Lernfortschritt; sie werden nicht erfragt, nicht aus Aufwandsgründen weggelassen und nicht durch ein Kachelbild ersetzt.
+
+**Mindeststandard (feste Regel):**
+
+1. Die Einstiegsaufgabe (Situation und Auftrag) beginnt mit einer **Situationsillustration**. Ändert sich die Situation im Verlauf deutlich (neuer Ort, neuer Auftrag, eine Störung tritt auf), bekommt die erste Aufgabe dieser Phase eine weitere.
+2. Jedes Arbeitsblatt mit Theorie enthält mindestens eine **Fachabbildung**, die seine Kernaussage zeigt.
+3. Jede Aufgabe, in der etwas aufgebaut, angeschlossen, gemessen oder konfiguriert wird, zeigt den Aufbau als **Fachabbildung**.
+4. Abweichen darf der Skill nur in zwei Fällen: Eine HTML-Simulation oder ein GeoGebra-Applet in derselben Aufgabe zeigt denselben Zusammenhang bereits, oder das Arbeitsblatt enthält nichts, was sich zeichnen lässt (reine Begriffsklärung, Organisatorisches, Reflexion). Die Abweichung steht mit Grund im Grobplan an der Aufgabe (`ohne_abbildung`), damit die Lehrkraft widersprechen kann.
+
+Tabellen, Zahlenbeispiele und Vergleichslisten bleiben sinnvoll, zählen aber nicht als Fachabbildung.
+
+**Was eine Abbildung leisten muss:**
+
+- Eine **Fachabbildung** beantwortet die Frage des Abschnitts auf einen Blick (Welches RAID verliert wie viel Kapazität? Wo liegt die Netzgrenze? Wo wird das Messgerät angeschlossen?), mit den Werten und Bezeichnungen des Szenarios. „Ein Bild zum Thema“ ist keine Fachabbildung.
+- Eine **Situationsillustration** zeigt Ort, Rolle und Auftrag dieses Szenarios mit einem konkreten Detail (das Ticket auf dem Monitor, der geöffnete Verteiler, die Kundin am Empfang). Ein beliebiges Themenbild ist keine Situationsillustration. Stil und Figuren bleiben im ganzen Lernpfad gleich.
+- Jede Abbildung ist **eingebunden**: Der Text davor oder danach nimmt auf sie Bezug, die Bildunterschrift sagt, was zu sehen ist, und zu jeder Fachabbildung gehört mindestens eine Frage oder ein Arbeitsauftrag, der sich nur mit ihr lösen lässt (Wert ablesen, Bauteil benennen, Fehler finden, Anschluss begründen).
+- **Zeigen vor Erklären:** Die Abbildung steht vor der Definition, nicht als Abschluss darunter.
+- **Herstellung:** Abbildungen werden gezeichnet (SVG), als PNG gerendert, vor dem Hochladen angesehen und erst dann eingebunden. Zeichenregeln, Rendern, Prüfliste, Stil der Situationsillustrationen und der Umgang mit mitgebrachten Abbildungen stehen in `references/abbildungen.md`; lies die Datei, bevor du die erste Abbildung zeichnest.
+- **Schaltpläne und Stromlaufpläne immer mit europäischen Symbolen** (DIN EN 60617 / IEC 60617), nie mit amerikanischen (ANSI/IEEE): Widerstand als Rechteck, nicht als Zickzacklinie. Die vollständige Prüfliste steht in `references/abbildungen.md`. Trägt der Schaltplan die Hauptaufgabe, liest die Lehrkraft ihn vor dem Hochladen kurz gegen.
+
+**Interaktive Elemente.** Lernende sollen Inhalte darüber hinaus nicht nur lesen, sondern erkunden können. Die Lehrkraft erwartet ansprechend aufbereitete Information; das heißt nicht „überall ein Gimmick“, sondern das passende Mittel an der Stelle, an der Text allein nicht reicht. Prüfe für jeden Theorieabschnitt: Lässt sich das Prinzip **ausprobieren**, **beobachten** oder **vergleichen**? Dann lohnt sich ein interaktives Element; eine Definition braucht keins.
 
 | Inhalt | Geeignetes Mittel | Beispiel |
 |---|---|---|
 | Zusammenhang mit Stellgrößen (Formel, Parameter, Konfiguration) | **HTML-Simulation** als Material: Regler, Eingabefelder, sofortige Anzeige | Ohm-Rechner, Subnetz-Rechner mit Bitdarstellung, RAID-Lab (Platten ausfallen lassen, Kapazität sehen) |
 | Ablauf oder Prozess (Schritte, Zustände, Datenfluss) | HTML-Seite mit Schrittfolge oder Animation; Video, wenn ein gutes existiert | Boot-Vorgang, Handshake, Fertigungsablauf |
 | Geometrie, Funktionen, Vektoren | **GeoGebra**-Applet per URL-Zeile im Arbeitsblatt | Kennlinien, Kräfte, Winkel |
-| Aufbau, Schaltung, Skizze | **Bild** im Arbeitsblatt (`scobees_upload_bild`), gern selbst als SVG erzeugt (bei Schaltplänen: europäische Symbole, siehe Regel unten); bei Beschriftungsaufgaben als PDF-Vorlage mit Stift-Abgabe | Netzplan, Schaltplan, Explosionszeichnung |
+| Aufbau, Schaltung, Skizze, die Lernende selbst beschriften oder ergänzen | Fachabbildung zusätzlich als **PDF-Vorlage** mit Stift-Abgabe | Netzplan ergänzen, Schaltplan vervollständigen, Bauteile beschriften |
 | Begriffe, Zuordnungen, Reihenfolgen | **Drag-and-drop-Lückentext** mit Wortspeicher und Distraktoren | Protokoll ↔ Schicht, Bauteil ↔ Funktion |
 | Entscheidung zwischen Varianten | Vergleichstabelle im Arbeitsblatt plus Einfachauswahl mit Rückmeldung je Antwort | RAID 1 oder RAID 5 für diesen Kunden? |
 | Vorwissen aktivieren, Gespräch anstoßen | Zitat-Box mit Aussage aus dem Szenario, dann Freitext oder Mehrfachauswahl | „Der Chef sagt: Backup brauchen wir dann nicht mehr.“ |
 
-Regeln für die Gestaltung:
+Regeln für interaktive Elemente und Kontrollen:
 
 - **Ein interaktives Element pro Abschnitt** reicht; es muss direkt mit einer Aufgabe verbunden sein („Stelle im Rechner … ein und trage ab, was passiert“). Ein Element, zu dem keine Frage gehört, wird übersprungen.
 - **HTML-Simulationen** sind eine einzige Datei ohne Netzbibliotheken, laufen offline im Browser, haben eine Überschrift, eine Zeile Anleitung und sinnvolle Startwerte. Nicht mehr als drei Stellgrößen; sichtbares Ergebnis innerhalb von zwei Sekunden Bedienung. Vor dem Hochladen im Browser testen. Sie sind als Material an der Aufgabe erreichbar; das Arbeitsblatt verweist mit Namen darauf.
-- **Bilder** erklären, nicht schmücken: Beschriftung im Bild oder in der Bildunterschrift, keine Stockfotos. Keine fremden Bilder aus Lehrbüchern.
-- **Schaltpläne und Stromlaufpläne immer mit europäischen Symbolen** (DIN EN 60617 / IEC 60617), nie mit amerikanischen (ANSI/IEEE) – die beiden Normen unterscheiden sich sichtbar, und ein selbst gezeichnetes SVG rutscht sonst leicht in die amerikanische Form (Trainingsdaten sind überwiegend US-geprägt). Vor dem Hochladen gegenprüfen:
-  - Widerstand: Rechteck (nicht die amerikanische Zickzacklinie)
-  - Schalter: schräger Strich mit Kontaktpunkt, offen dargestellt (nicht der amerikanische Knick mit Kreisen)
-  - Sicherung: Rechteck mit Linie durch die Mitte (nicht die amerikanische Schlangenlinie im Kästchen)
-  - Erdung: drei waagerechte Striche abnehmender Länge; Schutzerde zusätzlich mit Gehäusesymbol
-  - Leuchte: Kreis mit Kreuz; Motor: Kreis mit „M“ und Phasenzahl als Index (M 3~)
-  - Spule/Relais: Rechteck (nicht die amerikanische Schleifenspirale)
-  - Steckdose, Schütz, Taster, Transformator: nach DIN EN 60617, wie im Lehrbuch der Lehrkraft abgebildet
-  Im Zweifel ein Normsymbol aus einer vorhandenen Schulvorlage als Bild-Referenz verwenden statt freihändig zu zeichnen, und die Lehrkraft vor dem Hochladen kurz gegenlesen lassen, wenn der Schaltplan die Hauptaufgabe trägt.
 - **Videos** nur mit Zeitangabe („Minute 2:10 bis 4:30“) und einer Beobachtungsfrage; keine Videos als Ersatz für den Theorietext.
 - **Kontrollform zum Inhalt**: Zahl → Eingabe mit Einheit; Begriff → Drag-and-drop; Entscheidung → Einfachauswahl; Eigenschaften → Mehrfachauswahl; Begründung → Freitext oder Abgabe. Eine Frage, die man ohne den Abschnitt beantworten kann, ist überflüssig; eine, die Wortlaut abfragt statt Verständnis, wirkt konstruiert.
-- **BES und BFS**: mehr Bilder und Drag-and-drop, weniger Text; **Technikerschule, BG, FOS**: Simulationen mit Parametern, Diagramme, Datenblätter als Material.
-- Reiche Medien kosten Zeit: im Grobplan in der Aufgabenzeile nennen („+ Simulation“), damit die Lehrkraft streichen kann.
+- **BES und BFS**: mehr Abbildungen und Drag-and-drop, weniger Text; **Technikerschule, BG, FOS**: Simulationen mit Parametern, Diagramme, Datenblätter als Material.
+- Simulationen und Videos kosten Zeit: im Grobplan in der Aufgabenzeile nennen („+ Simulation“), damit die Lehrkraft streichen kann. Abbildungen stehen ebenfalls je Aufgabe im Grobplan, aber zum Prüfen und Tauschen, nicht zum Streichen.
 
 ### 3. Gliederung bemessen
 
@@ -101,7 +118,9 @@ Regeln für den Inhalt:
 
 - Marken in Klartext: „Info“ · „Theorie + <Kontrollform>“ · „Abgabe: <Form>“ · „Pflichtabgabe: <Form>“ · „+ Musterlösung“ · „Training, freiwillig“ / „Extra, freiwillig“. Formen heißen Datei, Stift auf PDF, Videolink.
 - Eine Frage, die eine Aufgabe oder eine Gliederung betrifft, steht **dort** (`frage` an der Aufgabe oder Gliederung). Unten unter „Vor der Freigabe klären“ nur, was den ganzen Pfad betrifft (Reihenfolge, Umfang, Fach, Niveau-Varianten).
-- Der Vorschlag für die praktische Einheit und was an Material entsteht, stehen ausdrücklich dabei – einschließlich der Bilder je Ebene aus Schritt 1 („Bilder: 1 Titelbild, 4 Gliederungs-Kacheln, keine Aufgaben-Kacheln, 3 Abbildungen“).
+- Der Vorschlag für die praktische Einheit und was an Material entsteht, stehen ausdrücklich dabei.
+- **Abbildungen je Aufgabe** (`abbildungen`): Art und was zu sehen ist, z. B. „Situation: Übergabe des Prüfauftrags in der Werkstatt“ oder „Fachabbildung: Messschaltung Schutzleiterwiderstand“. Mitgebrachte Abbildungen tragen den Zusatz „übernommen“ oder „neu gezeichnet nach Vorlage“. Entsteht an einer Aufgabe keine Abbildung, steht dort der Grund (`ohne_abbildung`). Vor der Ausgabe den Plan gegen den Mindeststandard aus 2a halten.
+- **Kachelbilder** als eine Zeile zum ganzen Pfad (`kacheln`), so wie in Schritt 1 vereinbart: „Titelbild + 4 Gliederungs-Kacheln“ oder „keine“.
 - In Modus C nur die betroffenen Gliederungen, Änderungen als „vorher → nachher“ im Aufgabentext.
 
 Erst nach Freigabe anlegen; Änderungswünsche („2.2 auf 20 min, 5.1 Pflicht“) einarbeiten, nicht diskutieren.
@@ -117,7 +136,7 @@ Alles, was hochgeladen wird, erwartet der Server als **lokalen Pfad auf dem Rech
 - **PDF-Vorlagen** für Stift-Abgaben (`abgabeformen: ["pen"]`): ohne PDF als Material ist keine Abgabe möglich.
 - **Musterlösungen** als PDF: `scobees_upload_material … als_musterloesung: true`. Ohne sie ist der Reiter Selbstkorrektur leer.
 - **HTML-Simulationen**: eine einzige Datei, keine Bibliotheken aus dem Internet, vor dem Hochladen im Browser testen. Sie laufen in scobees direkt als Material.
-- **Bilder** fürs Arbeitsblatt über `scobees_upload_bild` → URL → `![…](URL)`. Die Bilder liegen öffentlich im Medienspeicher des Serlo-Editors: keine Personenfotos, nichts Vertrauliches, keine Schulgrafiken mit Namen.
+- **Abbildungen** fürs Arbeitsblatt: zeichnen, als PNG rendern, ansehen, dann `scobees_upload_bild` → URL → `![Bildunterschrift](URL)` (Vorgehen in `references/abbildungen.md`). Die SVG-Quelldatei bleibt im Themenordner, damit sich die Abbildung später ändern lässt. Die hochgeladenen Bilder liegen öffentlich im Medienspeicher des Serlo-Editors: keine Personenfotos, nichts Vertrauliches, keine Schulgrafiken mit Namen.
 - Das Arbeitsblatt nennt Materialien an der Stelle, an der man sie braucht („Öffne die Vorlage im Anhang“). Anhänge ergänzen das Arbeitsblatt, sie ersetzen es nicht. In der Schüler-Kachel heißt das Arbeitsblatt immer „Serlo-Inhalt“; Orientierung geben Aufgabentitel, Beschreibung und die erste Überschrift des Arbeitsblatts, deshalb beginnt jedes Arbeitsblatt mit einer sprechenden Überschrift.
 
 ### 7. Anlegen
@@ -133,15 +152,15 @@ Jede Aufgabe hat:
 - **Zeit** `estimated_time` aus dem Grobplan.
 - **Erwartungshorizont** in `interne_notiz`, wenn es etwas zu bewerten gibt.
 
-Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; nach Reihenfolge erzwingt den roten Faden), `jahrgaenge` und `stichwoerter` setzen. Titel- und Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
+Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; nach Reihenfolge erzwingt den roten Faden), `jahrgaenge` und `stichwoerter` setzen. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
 
 ### 8. Zurücklesen und prüfen
 
-Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge. Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste. Liefert ein Werkzeug `warnungen[]` mit (z. B. bei `$…$` in einer Lückenantwort), diese im Abschlussbericht nennen, nicht stillschweigend übergehen. Für eine kleine Korrektur an einem schon bestehenden Arbeitsblatt eignet sich `scobees_patch_arbeitsblatt` (gezielte Textersetzung) besser als `scobees_update_aufgabe` mit komplett neu geschriebenem `arbeitsblatt_markdown`.
+Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge und Abbildungen (jede geplante Abbildung steht als `![Bildunterschrift](URL)` im Arbeitsblatt, mit Bildunterschrift und Bezug im Text). Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste. Liefert ein Werkzeug `warnungen[]` mit (z. B. bei `$…$` in einer Lückenantwort), diese im Abschlussbericht nennen, nicht stillschweigend übergehen. Für eine kleine Korrektur an einem schon bestehenden Arbeitsblatt eignet sich `scobees_patch_arbeitsblatt` (gezielte Textersetzung) besser als `scobees_update_aufgabe` mit komplett neu geschriebenem `arbeitsblatt_markdown`.
 
 ### 9. Abschlussbericht an die Lehrkraft (immer)
 
-Dieselbe Vorlage mit `"modus": "bericht"`: jede Gliederung und Aufgabe mit vollständiger ID (zum Kopieren für Folgeaufträge), Prüfstatus je Aufgabe aus dem Zurücklesen (`status: "ok"` oder `"warn"` mit `hinweis`, was abweicht), Dateien mit Zuordnung zur Aufgabe, Checkliste für die Weboberfläche, Vorschläge. Jede Warnung wird automatisch auch ein Punkt der Checkliste. Dazu im Chat drei Sätze: Was ist angelegt, was bleibt von Hand, was schlägst du vor.
+Dieselbe Vorlage mit `"modus": "bericht"`: jede Gliederung und Aufgabe mit vollständiger ID (zum Kopieren für Folgeaufträge), Prüfstatus je Aufgabe aus dem Zurücklesen (`status: "ok"` oder `"warn"` mit `hinweis`, was abweicht), Abbildungen je Aufgabe, Dateien mit Zuordnung zur Aufgabe (auch die SVG-Quelldateien der Abbildungen), Checkliste für die Weboberfläche, Vorschläge. Jede Warnung wird automatisch auch ein Punkt der Checkliste. Dazu im Chat drei Sätze: Was ist angelegt, was bleibt von Hand, was schlägst du vor.
 
 Checkliste, immer dabei:
 
@@ -155,6 +174,7 @@ Checkliste, immer dabei:
 
 - Zuerst lesen: `scobees_get_lernpfad` (Baum mit IDs), dann `scobees_get_aufgabe` für alles, was geändert wird. Das Arbeitsblatt kommt als Markdown zurück und wird beim Ändern über `scobees_update_aufgabe` **komplett ersetzt**; also das gelesene Markdown ändern, nicht neu schreiben. Betrifft die Änderung nur wenige Stellen (ein ausgetauschter Satz, eine neue Bild-URL), stattdessen `scobees_patch_arbeitsblatt` mit den betroffenen Textstellen verwenden – spart das Mitschicken des ganzen, oft langen Markdowns und schlägt kontrolliert fehl, wenn eine Stelle nicht eindeutig ist.
 - Den Grobplan auf die Änderung beschränken: Tabelle nur mit betroffenen Zeilen und einer Spalte „vorher / nachher“.
+- Der Mindeststandard für Abbildungen (2a) gilt für jedes Arbeitsblatt, das neu entsteht oder inhaltlich überarbeitet wird. Fehlen Abbildungen in Aufgaben, die nicht angefasst werden, das im Grobplan als Vorschlag nennen und nicht ungefragt nachrüsten.
 - Vor dem Löschen (`scobees_delete`, `confirm: true`) immer ausdrücklich bestätigen lassen; Löschen nimmt Unterelemente mit.
 - Eine neue Fassung einer Datei ersetzt die alte nicht automatisch: `scobees_upload_material` mit `ersetzt_attachment_id` (ATT-ID der alten Fassung aus `scobees_get_aufgabe`) hochladen, oder erst `scobees_delete_material` (`confirm: true`) und danach neu hochladen. Sonst hängen beide Fassungen nebeneinander an der Aufgabe. Bei einer Stift-Abgabe (`abgabeformen: pen`) warnt `scobees_delete_material`, wenn dabei das letzte PDF-Material wegfällt – das vor dem Löschen beachten.
 - Beim Verschieben die `sort_order` der Nachbarn mitdenken; nach dem Umbau Baum zurücklesen.
@@ -165,7 +185,8 @@ Checkliste, immer dabei:
 - Unterlagen vollständig lesen, bevor der Grobplan entsteht; Aufbau, Reihenfolge und Formulierungen der Lehrkraft übernehmen, wo sie tragen.
 - Fehlendes (Szenario, Ergebniszeile, Kontrolle nach Theorie) ergänzen und im Grobplan als Ergänzung markieren, damit die Lehrkraft sieht, was neu ist.
 - Aufgaben aus Arbeitsblättern mit Rechnungen werden zu `quiz-input` mit Einheit und typischen Fehlerwerten; Zuordnungen zu `quiz-blanks-dnd`; offene Aufgaben zu Abgaben mit Musterlösung, wenn eine Lösung in den Unterlagen steht.
-- Urheberrecht: fremde Bilder und Texte aus Schulbüchern nicht hochladen; Ersatz vorschlagen oder weglassen und das in den Bericht schreiben.
+- Abbildungen aus den Unterlagen so verwenden, wie in Schritt 1 vereinbart (übernehmen, als Grundlage, neu erstellen). Reichen sie für den Mindeststandard aus 2a nicht, die fehlenden ergänzen und im Grobplan als Ergänzung markieren.
+- Urheberrecht: fremde Abbildungen und Texte aus Schulbüchern nicht hochladen und nicht abzeichnen; den Sachverhalt eigenständig neu darstellen und das in den Bericht schreiben.
 
 ## Qualitätsregeln für Quizze und Eingaben
 

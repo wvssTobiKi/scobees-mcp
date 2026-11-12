@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.11 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | nur Skill geändert, Server unverändert gegenüber 0.1.10; Bild-Upload ins Arbeitsblatt mit SVG und PNG live geprüft (beide werden mit richtigem Inhaltstyp ausgeliefert) |
 | 0.1.10 | v94.6 | main-FWSHPEPF.js | 2026-11-11 | alle 22 Werkzeuge mit `scripts/funktionstest.js` live geprüft (23 Schritte, jeweils mit Zurücklesen). Einzige Änderung in scobees: eine bestehende Aufgabe lässt sich jetzt in eine Wahlpflichtaufgabe verschieben. Bild-Upload ins Arbeitsblatt (Serlo-Medienspeicher) funktioniert wieder |
 | 0.1.9 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Kachelbild für Gliederung und Aufgabe per Browser-Mitschnitt ermittelt und live geprüft (anlegen, behalten, ersetzen); `scobees_patch_arbeitsblatt` live geprüft (Erfolg, Mehrfachtreffer, kein Treffer, verlustbehafteter Baustein); Bilder in Box/Spoiler und geschütztes Leerzeichen (U+00A0/U+202F) bestätigt unverändert erhalten |
 | 0.1.8 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Bundle seit v94.2 gewechselt (main-LEMTLTST.js → main-K73FMJMP.js, deutlich gewachsen); Lernpfad/Gliederung/Aufgabe/Wahlpflicht-Unteraufgabe anlegen dabei bestätigt unverändert. Neue Werkzeuge live geprüft: Anhang löschen (`DELETE attachments/{id}`), Lernpfad-Beschreibung als reiner Text |
@@ -13,6 +14,17 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.11 – 2026-11-12
+
+Nur der Skill `scobees-lernpfad` ändert sich; die Werkzeuge des Servers sind dieselben wie in 0.1.10.
+
+- **Abbildungen und Kachelbilder sind getrennt.** Bisher fragte der Skill nach „Bildern“ für vier Ebenen, darunter die Abbildungen im Arbeitsblatt, und stellte alles unter den Vorbehalt des Aufwands. In der Praxis entstanden Kachelbilder zuverlässig, Abbildungen im Arbeitsblatt aber zu selten. Jetzt gibt es drei feste Begriffe: Fachabbildung, Situationsillustration (beide Pflicht, im Arbeitsblatt) und Kachelbild (optional, nur nach Rückfrage).
+- **Mindeststandard als feste Regel:** Situationsillustration in der Einstiegsaufgabe, mindestens eine Fachabbildung je Theorie-Arbeitsblatt und je Aufbau-, Mess- oder Konfigurationsaufgabe. Abweichungen nur in zwei benannten Fällen und mit Grund im Grobplan.
+- **Rückfrage zu mitgebrachten Abbildungen:** übernehmen, als Grundlage neu zeichnen oder neu erstellen. Fremde Abbildungen werden weder übernommen noch abgezeichnet.
+- **Neue Referenz `references/abbildungen.md`:** Weg von der Idee bis zum Hochladen (als SVG zeichnen, als PNG rendern, ansehen, erst dann hochladen), Zeichenregeln, Prüfliste, Stil der Situationsillustrationen, europäische Schaltsymbole, Einbinden mit Bildunterschrift und zugehöriger Frage.
+- **Grobplan und Abschlussbericht** zeigen je Aufgabe die geplanten Abbildungen (`abbildungen`) oder den Grund, warum keine entsteht (`ohne_abbildung`), dazu eine Kennzahl und eine Zeile zu den Kachelbildern (`kacheln`).
+- Zurücklesen prüft, ob jede geplante Abbildung mit Bildunterschrift im Arbeitsblatt steht.
 
 ## 0.1.10 – 2026-11-11
 

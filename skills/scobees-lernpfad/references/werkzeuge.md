@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.10)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.11)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -30,7 +30,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_patch_arbeitsblatt` | `id`*, `ersetzungen`* (Liste `{alt, neu}`). Ersetzt im aktuellen Arbeitsblatt-Markdown gezielt Zeichenketten statt alles neu zu senden – jede `alt` muss genau einmal vorkommen (alles oder nichts, sonst keine Änderung und Meldung, welche scheiterte). Nur bei verlustfrei als Markdown darstellbarem Arbeitsblatt (sonst Fehler mit Verweis auf `serlo_json`); Werkzeugergebnis kann ebenfalls `warnungen[]` enthalten |
 | `scobees_upload_material` | `aufgabe_id`*, `file_path`* (absoluter lokaler Pfad), `als_musterloesung`, `ersetzt_attachment_id` (alten Anhang nach erfolgreichem Upload löschen) |
 | `scobees_delete_material` | `aufgabe_id`*, `attachment_id`* (aus `scobees_get_aufgabe` → `anhaenge[].id`/`musterloesungen[].id`), `confirm`* (muss `true` sein). Löscht genau einen Anhang oder eine Musterlösung; prüft die Zugehörigkeit und warnt, wenn es das letzte PDF einer Stift-Abgabe (`abgabeformen: pen`) ist |
-| `scobees_upload_bild` | `file_path`* → URL für `![…](URL)` im Arbeitsblatt (öffentlich bei Serlo) |
+| `scobees_upload_bild` | `file_path`* (PNG, JPG, GIF, WebP, SVG) → URL für `![Bildunterschrift](URL)` im Arbeitsblatt (öffentlich bei Serlo). Für Fachabbildungen und Situationsillustrationen; Herstellung in `references/abbildungen.md` |
 | `scobees_move` | `id`*, `parent_id`*, `sort_order`* (0-basiert; auch in andere Gliederung desselben Pfads). Einzelne Aufgabe in eine Wahlpflichtaufgabe: geht, sie wird Unteraufgabe und verliert ihren Aufgabentyp (`warnung` im Ergebnis). Nicht möglich: Unteraufgabe aus der Wahlpflichtaufgabe heraus, Gliederung oder Wahlpflichtaufgabe in eine Wahlpflichtaufgabe |
 | `scobees_delete` | `id`*, `confirm: true`* – löscht mit allen Unterelementen; vorher ausdrücklich bestätigen lassen |
 
@@ -59,7 +59,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 
 ## Kachelbilder (`cover_image_path`)
 
-Lernpfad, Gliederung, Wahlpflichtaufgabe und Aufgabe können ein eigenes Kachelbild tragen; ohne Bild zeigt scobees das Standardbild (Kompass). Regeln:
+Lernpfad, Gliederung, Wahlpflichtaufgabe und Aufgabe können ein eigenes Kachelbild tragen; ohne Bild zeigt scobees das Standardbild (Kompass). Kachelbilder sind Schmuck und Orientierung und damit optional – anders als die Abbildungen im Arbeitsblatt, die zum Lerninhalt gehören und immer entstehen (`references/abbildungen.md`). Regeln:
 
 - PNG oder JPG als lokaler Pfad; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet; Motiv muss klein erkennbar bleiben (keine feinen Details, kein Fließtext im Bild).
 - Nur für die Ebenen erzeugen, die die Lehrkraft in Schritt 1 des Skills freigegeben hat – jedes Bild kostet deutlich mehr Rechenaufwand als Text.

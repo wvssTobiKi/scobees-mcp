@@ -55,3 +55,13 @@ Gesammelt aus den ersten Praxisläufen (27.10.2026, Lernpfad „Datensicherheit 
 - **Aufgabentyp**: `pflicht` für den roten Faden, `extra`/`training` für Vertiefung und Übung (zählen nicht zum Pflicht-Fortschritt), `info` für Infobausteine.
 - **Interaktive Inhalte**: eigenständige HTML-Simulationen als Material anhängen (laufen direkt im Browser, siehe Ohm-Rechner/RAID-Lab); Bilder fürs Arbeitsblatt mit `scobees_upload_bild`; GeoGebra/YouTube per URL-Zeile.
 - **Abschlussbericht an die Lehrkraft**: Baum mit IDs, was manuell bleibt (Zuweisung, Sichtprüfung), bekannte Grenzen (keine Bild-Zuordnung per Markdown).
+
+## 12.11.2026: Abbildungen von Kachelbildern getrennt (0.1.11)
+
+Rückmeldung aus der Praxis: Kachelbilder (Titelbild, Gliederung, Aufgabe) entstehen gut, Abbildungen auf den Arbeitsblättern dagegen zu selten oder am Zweck vorbei. Ursache im Skill-Text: Die Rückfrage in Schritt 1 führte „Abbildungen im Arbeitsblatt“ als vierte Bild-Ebene neben den Kacheln und stellte alle unter „teuerster Teil der Arbeit“; die Begriffe Bild, Abbildung, Darstellung, Skizze und Diagramm wechselten; nirgends stand, wie eine Abbildung entsteht und wann sie gut ist.
+
+Entscheidungen der Lehrkraft: Kachelbilder sind Schmuck und optional. Fachabbildungen und Situationsillustrationen dienen dem Lernfortschritt und sind Pflicht, als feste Regel. Für mitgebrachte Abbildungen wird gefragt: übernehmen, als Grundlage, neu erstellen.
+
+Erfahrung beim Ausprobieren des Herstellungswegs: Eine nach den Regeln gezeichnete Messschaltung sah im SVG-Quelltext richtig aus, im gerenderten PNG war die Beschriftung links der Spannungsquelle am Bildrand abgeschnitten. Deshalb ist „rendern und ansehen“ ein fester Schritt und der 40-px-Rand eine Zeichenregel. `scobees_upload_bild` liefert SVG und PNG korrekt aus; PNG ist der Normalfall, weil es auf jedem Gerät gleich aussieht.
+
+Noch offen: ein vollständiger Praxislauf mit der neuen Fassung (Testfall `neu-bfs-dual-subnetting` oder die nächste echte Lernsituation).

@@ -11,7 +11,8 @@
  "material": [
   "fehlerstromkreis.html → 3.1",
   "Messprotokoll_Vorlage.pdf → 5.1",
-  "Pruefprotokoll_Loesung.pdf → 5.2 (Musterlösung)"
+  "Pruefprotokoll_Loesung.pdf → 5.2 (Musterlösung)",
+  "2-1_pruefablauf.svg, 2-2_messkategorien.svg, 5-1_messschaltung_rpe.svg, 6-2_isolationsmessung.svg → Quelldateien der Abbildungen"
  ],
  "ablage": "…\\Schutzmaßnahmen\\scobees\\",
  "fragen": [
@@ -38,7 +39,10 @@
       ]
      ],
      "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-blanks-dnd",
-     "id": ""
+     "id": "",
+     "abbildungen": [
+      "Fachabbildung: Prüfablauf Besichtigen → Erproben → Messen mit je einem Beispiel aus der Werkstatt"
+     ]
     },
     {
      "nr": "2.2",
@@ -54,7 +58,10 @@
      "inhalt": "Installationstester, Messkategorie, fünf Sicherheitsregeln",
      "frage": "Reichen die fünf Sicherheitsregeln hier, oder gehört die Messkategorie in eine eigene Aufgabe?",
      "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-sc, quiz-mc",
-     "id": ""
+     "id": "",
+     "abbildungen": [
+      "Fachabbildung: Messkategorien CAT I bis IV am Weg vom Hausanschluss bis zum Gerät"
+     ]
     }
    ]
   },
@@ -80,7 +87,10 @@
       ]
      ],
      "tech": "art=abgabe_optional · aufgabentyp=training · abgabeformen=[pen]",
-     "id": ""
+     "id": "",
+     "abbildungen": [
+      "Fachabbildung: Messschaltung Schutzleiterwiderstand an der Übungswand (übernommen aus der Vorlage der Lehrkraft)"
+     ]
     },
     {
      "nr": "5.2",
@@ -98,7 +108,8 @@
       ]
      ],
      "tech": "art=abgabe_pflicht_selbstkorrektur · aufgabentyp=pflicht · abgabeformen=[pen,file]",
-     "id": ""
+     "id": "",
+     "ohne_abbildung": "Protokoll wird ausgefüllt; der Aufbau steht in 5.1"
     }
    ]
   },
@@ -123,9 +134,13 @@
       ]
      ],
      "tech": "art=selbstkontrolle · aufgabentyp=extra · quiz-input",
-     "id": ""
+     "id": "",
+     "abbildungen": [
+      "Fachabbildung: Isolationsmessung L–PE mit eingezeichnetem Fehlerort"
+     ]
     }
    ]
   }
- ]
+ ],
+ "kacheln": "Titelbild + 3 Gliederungs-Kacheln, keine Aufgaben-Kacheln"
 }
