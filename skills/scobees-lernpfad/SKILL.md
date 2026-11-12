@@ -5,7 +5,7 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.12** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.13** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist. **Danach gilt das Gegenteil:** In einem zugewiesenen Lernpfad ist alles, was du anlegst, änderst oder löschst, für die Lernenden sofort sichtbar, ohne Veröffentlichen und ohne weiteren Schritt der Lehrkraft. `scobees_get_lernpfad` zeigt das an der Wurzel als `zugewiesen: true`, und jedes schreibende Werkzeug meldet es als `warnung_zugewiesen`.
 
@@ -166,7 +166,9 @@ Jede Aufgabe hat:
 - **Zeit** `estimated_time` aus dem Grobplan.
 - **Erwartungshorizont** in `interne_notiz`, wenn es etwas zu bewerten gibt.
 
-Der Lernpfad: `solve_order` nach Rücksprache (frei oder nach Reihenfolge). Verlass dich nicht darauf, dass „nach Reihenfolge“ sperrt: Im Test mit einem Dummy-Konto (scobees 94.6) ließen sich spätere Aufgaben öffnen und abgeben, bevor die früheren erledigt waren, mit „nach Reihenfolge“ ebenso wie mit „nach Lehrerkorrektur“. Der rote Faden muss aus Nummerierung, Gliederung und den Texten selbst hervorgehen, `jahrgaenge` und `stichwoerter` setzen. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
+**Bearbeitungsreihenfolge** nach Rücksprache, und zwar **an jeder Gliederung** (`solve_order` bei `scobees_create_gliederung`): `after_solving` sperrt jede Aufgabe der Gliederung, bis die davor abgegeben ist; Lernende sehen die gesperrten Aufgaben mit Schloss. Ohne Angabe ist die Gliederung frei. Die Einstellung am Lernpfad selbst sperrt Aufgaben in Gliederungen nicht (beides mit einem Dummy-Konto geprüft, scobees 94.6). Soll der ganze Lernpfad in Reihenfolge laufen, bekommt jede Gliederung `after_solving`; freiwillige Aufgaben (Training, Extra) stehen dann am Ende ihrer Gliederung oder in einer freien Gliederung, damit sie niemanden aufhalten. Im Grobplan steht die Einstellung je Gliederung.
+
+Der Lernpfad: `jahrgaenge` und `stichwoerter` setzen. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
 
 ### 8. Zurücklesen und prüfen
 
@@ -191,7 +193,7 @@ Checkliste, immer dabei:
 - Lernpfad zuweisen (bis dahin sehen Lernende nichts; Status „inaktiv“ ist normal): an eine Klasse oder Gruppe, nach Differenzierungen oder gezielt an einzelne Lernende; zugewiesen wird immer der ganze Lernpfad, optional mit Wochenfrist. Vorher prüfen, ob die Lernenden im Fach ein Niveau haben
 - Vorschau „Ansicht Lernende“ durchgehen, falls in Schritt 8 noch nicht geschehen
 - Der Status „Entwurf“ an Gliederungen und Aufgaben ist normal und hindert die Sichtbarkeit nicht: Nach der Zuweisung sehen Lernende alles, was im Lernpfad liegt
-- Bearbeitungsreihenfolge und Aufgabenwahl kontrollieren
+- Bearbeitungsreihenfolge je Gliederung kontrollieren (frei oder nach Reihenfolge)
 - Stift-Abgaben und Selbstkorrektur einmal mit einem Dummy-Konto in learn.scobees.com ausprobieren (in der Vorschau nicht testbar)
 - alles, was sich über die Schnittstelle nicht setzen ließ
 

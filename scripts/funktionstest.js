@@ -129,14 +129,16 @@ async function main() {
     });
 
     await step("scobees_create_gliederung (Kachelbild, Farbe)", async () => {
-      const g = await tool("scobees_create_gliederung")({ parent_id: rootId, name: "1 · Gliederung", description_html: "<p>Phase</p>", cover_image_path: FILES.bildA, color: "#b71c1c" });
+      const g = await tool("scobees_create_gliederung")({ parent_id: rootId, name: "1 · Gliederung", description_html: "<p>Phase</p>", cover_image_path: FILES.bildA, color: "#b71c1c", solve_order: "after_solving" });
       folderId = g.id; must(g.hat_titelbild, "Kachelbild nicht gesetzt");
+      must(g.solveOrder === "after_solving", `Reihenfolge der Gliederung ist ${g.solveOrder}`);
     });
     await step("scobees_update_gliederung (Bild und Farbe bleiben)", async () => {
       await tool("scobees_update_gliederung")({ id: folderId, name: "1 · Gliederung (umbenannt)" });
       const cur = await api.lerninput(folderId);
       must(cur.name.endsWith("(umbenannt)"), "Name nicht geändert");
       must(cur.color === "#b71c1c", `Farbe ist ${cur.color}`);
+      must(cur.solveOrder === "after_solving", `Reihenfolge ging verloren: ${cur.solveOrder}`);
       must(cur.coverImage, "Kachelbild verloren");
     });
 

@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.13 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Bearbeitungsreihenfolge an der Gliederung mit einem Dummy-Konto geprüft (Sperre, Freischalten nach Abgabe, freie Gliederung daneben); `scripts/funktionstest.js` prüft das Setzen und Erhalten der Einstellung |
 | 0.1.12 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Eingabefelder in der Vorschau „Ansicht Lernende“ ausprobiert (IP-Adresse, Netzmaske, Bitmuster, Kommazahl; richtige und falsche Eingaben, als Zahlen- und als Texteingabe); `hat_titelbild` in allen Ergebnissen mit `scripts/funktionstest.js` geprüft |
 | 0.1.11 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | nur Skill geändert, Server unverändert gegenüber 0.1.10; Bild-Upload ins Arbeitsblatt mit SVG und PNG live geprüft (beide werden mit richtigem Inhaltstyp ausgeliefert) |
 | 0.1.10 | v94.6 | main-FWSHPEPF.js | 2026-11-11 | alle 22 Werkzeuge mit `scripts/funktionstest.js` live geprüft (23 Schritte, jeweils mit Zurücklesen). Einzige Änderung in scobees: eine bestehende Aufgabe lässt sich jetzt in eine Wahlpflichtaufgabe verschieben. Bild-Upload ins Arbeitsblatt (Serlo-Medienspeicher) funktioniert wieder |
@@ -15,6 +16,12 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.13 – 2026-11-12
+
+- **Bearbeitungsreihenfolge funktioniert jetzt.** Neuer Parameter `solve_order` an `scobees_create_gliederung` und `scobees_update_gliederung`. Mit einem Dummy-Konto geprüft: Steht „nach Reihenfolge“ an der Gliederung, sind alle Aufgaben nach der ersten offenen für Lernende gesperrt und werden mit jeder Abgabe einzeln frei. Bisher setzte der Server die Reihenfolge nur am Lernpfad und legte Gliederungen immer mit „frei“ an; das hat keine Aufgabe gesperrt. Die Aussage aus 0.1.12, „nach Reihenfolge“ sperre nicht, ist damit überholt.
+- `scobees_update_gliederung` erhält die Reihenfolge einer Gliederung beim Ändern anderer Felder (war schon so) und kann sie jetzt gezielt umstellen.
+- Skill: Reihenfolge wird je Gliederung vereinbart und steht je Gliederung im Grobplan; freiwillige Aufgaben ans Ende oder in eine freie Gliederung.
 
 ## 0.1.12 – 2026-11-12
 

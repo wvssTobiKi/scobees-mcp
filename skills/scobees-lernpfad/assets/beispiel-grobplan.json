@@ -5,7 +5,7 @@
  "fach": "PB Elektrotechnik Grundlagen",
  "jahrgang": "Jg 1",
  "umfang_min": 360,
- "reihenfolge": "nach Reihenfolge",
+ "reihenfolge": "je Gliederung",
  "szenario": "Erstprüfung einer neuen Werkstattinstallation bei Elektro Brandt",
  "ergebnis": "bewertetes Prüfprotokoll mit Freigabe",
  "material": [
@@ -16,7 +16,7 @@
  ],
  "ablage": "…\\Schutzmaßnahmen\\scobees\\",
  "fragen": [
-  "Bearbeitung frei oder nach Reihenfolge?"
+  "Sollen alle Gliederungen in Reihenfolge bearbeitet werden, oder nur die Grundlagen?"
  ],
  "vorschlaege": [
   "5.1 als Pflicht, wenn die Übungswand für alle erreichbar ist"
@@ -63,7 +63,8 @@
       "Fachabbildung: Messkategorien CAT I bis IV am Weg vom Hausanschluss bis zum Gerät"
      ]
     }
-   ]
+   ],
+   "reihenfolge": "nach Reihenfolge"
   },
   {
    "nr": "5",
@@ -111,7 +112,8 @@
      "id": "",
      "ohne_abbildung": "Protokoll wird ausgefüllt; der Aufbau steht in 5.1"
     }
-   ]
+   ],
+   "reihenfolge": "nach Reihenfolge"
   },
   {
    "nr": "6",
@@ -139,7 +141,8 @@
       "Fachabbildung: Isolationsmessung L–PE mit eingezeichnetem Fehlerort"
      ]
     }
-   ]
+   ],
+   "reihenfolge": "frei"
   }
  ],
  "kacheln": "Titelbild + 3 Gliederungs-Kacheln, keine Aufgaben-Kacheln"

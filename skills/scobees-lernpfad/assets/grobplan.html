@@ -62,7 +62,7 @@ const PLAN = __PLAN_JSON__;
  "checkliste": ["Lerngruppe zuweisen", "…"],                      // nur Bericht
  "vorschlaege": ["5.1 als Pflicht, wenn …"],
  "gliederungen": [
-  {"nr": "2", "name": "Grundlagen", "id": "", "frage": "",
+  {"nr": "2", "name": "Grundlagen", "id": "", "frage": "", "reihenfolge": "nach Reihenfolge",   // je Gliederung: "frei" oder "nach Reihenfolge"
    "aufgaben": [
     {"nr": "2.1", "name": "Besichtigen, Erproben, Messen", "min": 25, "pflicht": true,
      "marken": [["p","Theorie + Drag-and-drop"]],                 // p = Theorie/Quiz, a = Abgabe, v = freiwillig/Info, m = Musterlösung
@@ -87,7 +87,7 @@ if (P.szenario || P.ergebnis) h += `<p class="sub">${P.szenario ? "Szenario: "+e
 h += `<div class="kpi"><div><div class="l">Pflicht</div><div class="v">${sumP} <small>von ${total} min</small></div></div><div><div class="l">Freiwillig</div><div class="v">${sumF} <small>min</small></div></div><div><div class="l">Umfang</div><div class="v">${P.gliederungen.length} <small>Gliederungen · ${all.length} Aufgaben</small></div></div><div><div class="l">Abbildungen</div><div class="v">${nAbb} <small>${nOhne ? "· "+nOhne+(nOhne===1?" Aufgabe":" Aufgaben")+" ohne" : "· jede Aufgabe versorgt"}</small></div></div></div>`;
 for (const g of P.gliederungen) {
   const gp = g.aufgaben.filter(a=>a.pflicht).reduce((s,a)=>s+(a.min||0),0), gf = g.aufgaben.filter(a=>!a.pflicht).reduce((s,a)=>s+(a.min||0),0);
-  h += `<div class="gl"><div class="gh"><p class="gt">${esc(g.nr)} · ${esc(g.name)}</p><span class="gm">${bericht && g.id ? `<span class="id">${esc(g.id)}</span> · ` : ""}${gp} min${gf ? " + "+gf+" min freiwillig" : ""}</span></div>`;
+  h += `<div class="gl"><div class="gh"><p class="gt">${esc(g.nr)} · ${esc(g.name)}</p><span class="gm">${bericht && g.id ? `<span class="id">${esc(g.id)}</span> · ` : ""}${g.reihenfolge ? esc(g.reihenfolge)+" · " : ""}${gp} min${gf ? " + "+gf+" min freiwillig" : ""}</span></div>`;
   h += `<div class="bar"><i style="width:${Math.round(gp/total*100)}%"></i><i class="f" style="width:${Math.round(gf/total*100)}%"></i></div>`;
   if (g.frage) h += `<div class="q" style="margin-left:0">${esc(g.frage)}</div>`;
   let tech = [];

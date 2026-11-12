@@ -1,4 +1,4 @@
-# Abbildungen herstellen (scobees-mcp 0.1.12)
+# Abbildungen herstellen (scobees-mcp 0.1.13)
 
 Gilt für Fachabbildungen und Situationsillustrationen im Arbeitsblatt. Wann welche Abbildung Pflicht ist, steht in `SKILL.md`, Abschnitt 2a. Kachelbilder sind etwas anderes und stehen in `references/werkzeuge.md`.
 

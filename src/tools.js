@@ -417,7 +417,7 @@ const TOOLS = [
         jahrgaenge: { type: "array", items: { type: "string" }, description: "z. B. [\"Jg 1\"] oder Tag-IDs" },
         stichwoerter: { type: "array", items: { type: "string" }, description: "Freie Schlagworte" },
         cover_image_path: { type: "string", description: COVER_HINT },
-        solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], default: "none", description: "Aufgabenwahl: none = frei; after_solving = nach Reihenfolge; after_selfcorrection = nach Reihenfolge mit Selbstkorrektur; after_teacher_correction = nach Reihenfolge mit Feedback der Lehrkraft" },
+        solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], default: "none", description: "Aufgabenwahl am Lernpfad selbst. Achtung: Sie sperrt Aufgaben in Gliederungen nicht (mit Dummy-Konto geprüft); die Bearbeitungsreihenfolge wird an der Gliederung gesetzt (scobees_create_gliederung, solve_order)" },
       },
       required: ["subject_id", "name"],
     },
@@ -484,7 +484,7 @@ const TOOLS = [
   },
   {
     name: "scobees_create_gliederung",
-    description: "Legt eine Gliederungsstruktur (Ordner/Phase) in einem Lernpfad oder einer anderen Gliederung an. Beschreibung ist HTML (h2, p, strong, em, u, a, span style=color). Optional mit eigenem Kachelbild (cover_image_path) und Farbe; ohne Bild zeigt scobees das Standardbild.",
+    description: "Legt eine Gliederungsstruktur (Ordner/Phase) in einem Lernpfad oder einer anderen Gliederung an. Beschreibung ist HTML (h2, p, strong, em, u, a, span style=color). solve_order=after_solving sperrt jede Aufgabe der Gliederung, bis die davor abgegeben ist (Standard: frei). Optional mit eigenem Kachelbild (cover_image_path) und Farbe; ohne Bild zeigt scobees das Standardbild.",
     inputSchema: {
       type: "object",
       properties: {
@@ -493,26 +493,28 @@ const TOOLS = [
         description_html: { type: "string", default: "" },
         cover_image_path: { type: "string", description: COVER_HINT },
         color: { type: "string", default: "#00838F", description: "Hex-Farbe der Gliederung" },
+        solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], description: "Bearbeitungsreihenfolge der Aufgaben in dieser Gliederung: none = frei (Standard); after_solving = nach Reihenfolge; after_selfcorrection = nach Selbstkorrektur; after_teacher_correction = nach Korrektur durch die Lehrkraft" },
       },
       required: ["parent_id", "name"],
     },
     run: async (a) => {
       if (a.cover_image_path) assertCoverImage(a.cover_image_path);
       const r = await api.saveFolder(
-        { parentId: a.parent_id, name: a.name, description: a.description_html || "", color: a.color || "#00838F", order: "none", coverImagePath: undefined },
+        { parentId: a.parent_id, name: a.name, description: a.description_html || "", color: a.color || "#00838F", order: a.solve_order || "none", coverImagePath: undefined },
         { coverImage: a.cover_image_path });
-      return ok("Gliederung angelegt.", { id: r.id, name: r.name, sortOrder: r.sortOrder, parentId: r.parentId, hat_titelbild: !!r.coverImage });
+      return ok("Gliederung angelegt.", { id: r.id, name: r.name, sortOrder: r.sortOrder, parentId: r.parentId, hat_titelbild: !!r.coverImage, solveOrder: r.solveOrder });
     },
   },
   {
     name: "scobees_update_gliederung",
-    description: "Ändert Name, Beschreibung, Kachelbild und/oder Farbe einer Gliederungsstruktur. Nicht angegebene Felder bleiben erhalten (auch ein vorhandenes Kachelbild und die Farbe).",
+    description: "Ändert Name, Beschreibung, Kachelbild, Farbe und/oder Bearbeitungsreihenfolge (solve_order) einer Gliederungsstruktur. Nicht angegebene Felder bleiben erhalten (auch ein vorhandenes Kachelbild, die Farbe und die Reihenfolge).",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "string" }, name: { type: "string" }, description_html: { type: "string" },
         cover_image_path: { type: "string", description: COVER_HINT },
         color: { type: "string", description: "Hex-Farbe der Gliederung" },
+        solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], description: "Bearbeitungsreihenfolge der Aufgaben in dieser Gliederung: none = frei (Standard); after_solving = nach Reihenfolge; after_selfcorrection = nach Selbstkorrektur; after_teacher_correction = nach Korrektur durch die Lehrkraft" },
       },
       required: ["id"],
     },
@@ -523,10 +525,10 @@ const TOOLS = [
       // color/order/coverImagePath mitschicken wie die Weboberfläche – ohne sie verliert die Gliederung beim Speichern ihre Farbe.
       const r = await api.saveFolder({
         id: a.id, parentId: cur.parentId, name: a.name ?? cur.name, description: a.description_html ?? cur.description ?? "",
-        color: a.color ?? cur.color ?? "#00838F", order: cur.solveOrder ?? "none",
+        color: a.color ?? cur.color ?? "#00838F", order: a.solve_order ?? cur.solveOrder ?? "none",
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
       }, { coverImage: a.cover_image_path });
-      return ok("Gliederung geändert.", { id: r.id, name: r.name, hat_titelbild: !!r.coverImage });
+      return ok("Gliederung geändert.", { id: r.id, name: r.name, hat_titelbild: !!r.coverImage, solveOrder: r.solveOrder });
     },
   },
   {

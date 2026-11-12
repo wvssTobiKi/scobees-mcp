@@ -83,3 +83,7 @@ Die eigene Test-Abbildung hat nebenbei zwei Zeichenregeln geliefert: Der Satz im
 ## 12.11.2026: Zweiter Block mit dem Dummy-Konto
 
 Zwei Befunde mit Folgen für den Aufbau jeder Lernsituation: (1) Ein Anhang verdrängt das Arbeitsblatt aus der Startansicht, und der Wechsel zwischen Anhang und Arbeitsblatt leert die Quizfelder. Das bisherige Muster „Arbeitsblatt mit Quiz plus HTML-Simulation als Material an derselben Aufgabe“ funktioniert für Lernende also schlecht; Simulation und Quiz gehören in zwei aufeinanderfolgende Aufgaben. (2) In einem zugewiesenen Lernpfad gibt es keinen Entwurfszustand: Was über die Schnittstelle entsteht, steht sofort bei den Lernenden. Der Server warnt deshalb jetzt selbst, damit die Regel nicht allein vom Skill abhängt.
+
+## 12.11.2026: Reihenfolge – eine falsche Schlussfolgerung korrigiert (0.1.13)
+
+In 0.1.12 stand im Skill, „nach Reihenfolge“ sperre nicht, und der rote Faden müsse allein aus dem Aufbau kommen. Der Befund war richtig beobachtet, die Erklärung falsch: Die Einstellung saß am falschen Element. Aufgefallen ist das erst beim Zurücklesen eines Lernpfads, den die Lehrkraft in der Weboberfläche gebaut hatte. Lehre für künftige Tests: Wenn sich die Plattform anders verhält als ihre Oberfläche verspricht, zuerst einen in der Oberfläche gebauten Lernpfad über die Schnittstelle lesen und mit dem eigenen vergleichen.

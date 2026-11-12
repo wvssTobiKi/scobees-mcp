@@ -397,3 +397,15 @@ Von der Lehrkraft in der Lerndoku angesehen und als Bildschirmfotos mitgeteilt (
 
 Folge für den Server: `scobees_delete` prüft vor dem Löschen eines Unterelements, ob der Lernpfad zugewiesen ist, und verlangt dann `auch_wenn_zugewiesen: true`. Was mit den abgegebenen Lernergebnissen einer gelöschten Aufgabe in der Lerndoku geschieht, ist nicht geprüft.
 
+## Mitschrift 20 (12.11.2026, v94.6): Bearbeitungsreihenfolge sitzt an der Gliederung
+
+Auslöser: In einem in der Weboberfläche gebauten Lernpfad stand `solveOrder: "after_solving"` an jeder Gliederung, an der Wurzel `"none"`. Der Server hatte es umgekehrt gemacht (Wurzel gesetzt, `POST lerninput/folder` immer mit `order: "none"`), und in den Mitschriften 16 und 17 war deshalb nichts gesperrt.
+
+Test mit einem Dummy-Konto: Lernpfad `order: none`; Gliederung 1 per `POST lerninput/folder` mit `order: "after_solving"` (zurückgelesen als `solveOrder`), drei Aufgaben; Gliederung 2 mit `order: "none"`, zwei Aufgaben.
+
+- Gliederung 1: Aufgabe 1.1 offen, 1.2 und 1.3 als graue Kacheln mit Schloss; ein Klick darauf bewirkt nichts.
+- Nach Abgabe von 1.1: 1.2 frei, 1.3 weiter gesperrt.
+- Gliederung 2: beide Aufgaben von Anfang an frei, unabhängig vom Stand in Gliederung 1.
+
+Nicht geprüft: was `order` an der Wurzel für Aufgaben bewirkt, die direkt im Lernpfad liegen; ob Training- und Extra-Aufgaben in einer Gliederung mit Reihenfolge die folgenden Aufgaben sperren; die Varianten `after_selfcorrection` und `after_teacher_correction` an einer Gliederung.
+

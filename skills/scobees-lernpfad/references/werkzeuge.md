@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.12)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.13)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -19,10 +19,10 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 
 | Werkzeug | Parameter (Pflicht mit *) |
 |---|---|
-| `scobees_create_lernpfad` | `subject_id`*, `name`*, `description` (**reiner Text** – scobees rendert hier kein HTML, Tags würden sichtbar; wird notfalls automatisch entfernt), `jahrgaenge` (z. B. `["Jg 1"]`), `stichwoerter`, `cover_image_path`, `solve_order` (`none` frei, `after_solving` nach Reihenfolge, `after_selfcorrection`, `after_teacher_correction`) |
+| `scobees_create_lernpfad` | `subject_id`*, `name`*, `description` (**reiner Text** – scobees rendert hier kein HTML, Tags würden sichtbar; wird notfalls automatisch entfernt), `jahrgaenge` (z. B. `["Jg 1"]`), `stichwoerter`, `cover_image_path`, `solve_order` (wirkt nicht auf Aufgaben in Gliederungen; die Reihenfolge wird an der Gliederung gesetzt) |
 | `scobees_update_lernpfad` | `id`*, dazu dieselben Felder; `in_bib` (Schalter „In schuleigener Bib veröffentlichen“); `subject_id` verschiebt in ein anderes Fach |
-| `scobees_create_gliederung` | `parent_id`*, `name`*, `description_html` (h2, p, strong, em, u, a), `cover_image_path` (Kachelbild), `color` (Hex) |
-| `scobees_update_gliederung` | `id`*, `name`, `description_html`, `cover_image_path`, `color`; nicht Angegebenes bleibt erhalten, auch Bild und Farbe |
+| `scobees_create_gliederung` | `parent_id`*, `name`*, `description_html` (h2, p, strong, em, u, a), `cover_image_path` (Kachelbild), `color` (Hex), `solve_order` (`none` frei, `after_solving` nach Reihenfolge: jede Aufgabe bleibt gesperrt, bis die davor abgegeben ist; `after_selfcorrection`, `after_teacher_correction`) |
+| `scobees_update_gliederung` | `id`*, `name`, `description_html`, `cover_image_path`, `color`, `solve_order`; nicht Angegebenes bleibt erhalten, auch Bild, Farbe und Reihenfolge |
 | `scobees_create_wahlpflicht` | `parent_id`*, `name`*, `description_html`, `mindest_aufgaben`, `color`, `cover_image_path`; Unteraufgaben danach mit `scobees_create_aufgabe` und `parent_id` = Wahlpflicht-ID. Bestehende Aufgaben lassen sich ab scobees 94.6 auch mit `scobees_move` hineinschieben (live geprüft 11.11.2026) |
 | `scobees_update_wahlpflicht` | `id`*, dieselben Felder |
 | `scobees_create_aufgabe` | `parent_id`*, `name`*, `description_html`, `art`, `abgabeformen`, `aufgabentyp`, `arbeitsblatt_markdown` oder `serlo_json`, `estimated_time` (Minuten), `differenzierungen`, `links`, `interne_notiz`, `cover_image_path` (Kachelbild) |
@@ -74,7 +74,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Wahlpflichtaufgaben stehen als eigener Block unter den übrigen Aufgaben der Gliederung.
 - Aufgabe: links das Arbeitsblatt (bei Stift-Abgabe das PDF), rechts Zeit, „Worum geht's“ (Beschreibung) und Materialien; unten „Lernergebnis abgeben“.
 - Abgabe mit Selbstkorrektur: Nach dem Abgeben öffnet sich der Reiter „Selbstkorrektur“ mit dem eigenen Ergebnis links (mit Stift kommentierbar) und der Musterlösung rechts; „Ich habe alles kontrolliert“ schließt ab, danach folgt die Reflexion.
-- „Nach Reihenfolge“ und „nach Lehrerkorrektur“ haben im Test keine Aufgabe gesperrt.
+- Bearbeitungsreihenfolge: Steht „nach Reihenfolge“ an der Gliederung, sind alle Aufgaben nach der ersten offenen gesperrt (graue Kachel mit Schloss, ein Klick bewirkt nichts); mit jeder Abgabe wird die nächste frei. Dieselbe Einstellung nur am Lernpfad hat keine Aufgabe in einer Gliederung gesperrt.
 - Material: Der erste Anhang steht links statt des Arbeitsblatts; das Arbeitsblatt ist die letzte Kachel („Serlo-Inhalt“). Ein Wechsel zwischen den Kacheln leert die Quizfelder. Bilder öffnen sich in einem Betrachter mit Zoom, HTML-Dateien laufen eingebettet (Skripte ja; Speichern, Formulare, neue Fenster nein), Links zeigen „Hier weiter zum Link“.
 - Niveaus: Aufgaben mit einem anderen Niveau als dem des Lernenden fehlen in seiner Ansicht.
 - Videolink-Abgabe: Eingabefeld „Link zu deinem Ergebnis (Video)“ rechts neben dem Arbeitsblatt.
