@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.11)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.12)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -27,7 +27,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_update_wahlpflicht` | `id`*, dieselben Felder |
 | `scobees_create_aufgabe` | `parent_id`*, `name`*, `description_html`, `art`, `abgabeformen`, `aufgabentyp`, `arbeitsblatt_markdown` oder `serlo_json`, `estimated_time` (Minuten), `differenzierungen`, `links`, `interne_notiz`, `cover_image_path` (Kachelbild) |
 | `scobees_update_aufgabe` | `id`*, dieselben Felder; nur Übergebenes ändert sich, `arbeitsblatt_markdown`/`serlo_json` ersetzen das Arbeitsblatt komplett |
-| `scobees_patch_arbeitsblatt` | `id`*, `ersetzungen`* (Liste `{alt, neu}`). Ersetzt im aktuellen Arbeitsblatt-Markdown gezielt Zeichenketten statt alles neu zu senden – jede `alt` muss genau einmal vorkommen (alles oder nichts, sonst keine Änderung und Meldung, welche scheiterte). Nur bei verlustfrei als Markdown darstellbarem Arbeitsblatt (sonst Fehler mit Verweis auf `serlo_json`); Werkzeugergebnis kann ebenfalls `warnungen[]` enthalten |
+| `scobees_patch_arbeitsblatt` | `id`*, `ersetzungen`* (Liste `{alt, neu}`). Ersetzt im aktuellen Arbeitsblatt-Markdown gezielt Zeichenketten statt alles neu zu senden – jede `alt` muss genau einmal vorkommen (alles oder nichts, sonst keine Änderung und Meldung, welche scheiterte). Nur bei verlustfrei als Markdown darstellbarem Arbeitsblatt (sonst Fehler mit Verweis auf `serlo_json`); Werkzeugergebnis kann ebenfalls `warnungen[]` enthalten `alt` und `neu` dürfen mehrzeilig sein (z. B. eine Abbildung nach einer Überschrift einfügen: `alt` = Überschrift, `neu` = Überschrift, Leerzeile, Bildzeile) und in Tabellenzeilen liegen |
 | `scobees_upload_material` | `aufgabe_id`*, `file_path`* (absoluter lokaler Pfad), `als_musterloesung`, `ersetzt_attachment_id` (alten Anhang nach erfolgreichem Upload löschen) |
 | `scobees_delete_material` | `aufgabe_id`*, `attachment_id`* (aus `scobees_get_aufgabe` → `anhaenge[].id`/`musterloesungen[].id`), `confirm`* (muss `true` sein). Löscht genau einen Anhang oder eine Musterlösung; prüft die Zugehörigkeit und warnt, wenn es das letzte PDF einer Stift-Abgabe (`abgabeformen: pen`) ist |
 | `scobees_upload_bild` | `file_path`* (PNG, JPG, GIF, WebP, SVG) → URL für `![Bildunterschrift](URL)` im Arbeitsblatt (öffentlich bei Serlo). Für Fachabbildungen und Situationsillustrationen; Herstellung in `references/abbildungen.md` |
@@ -57,6 +57,13 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Sichtbar für Lernende erst nach Zuweisung an eine Lerngruppe in der Weboberfläche; einen Aktivieren-Schalter gibt es nicht.
 - Zuweisung scheitert mit „keine passende Fach-Differenzierung“, wenn Lernende im Fach des Pfads kein Niveau haben; Abhilfe: Niveau im Fach setzen oder Pfad in das Fach legen, in dem die Gruppe arbeitet.
 
+## Vorschau und Adressen
+
+- Lehrkräfte: `https://teach.scobees.com`, Lernende: `https://learn.scobees.com`.
+- Ein Lernpfad öffnet sich direkt unter `https://teach.scobees.com/library/editor/<Lernpfad-ID>`.
+- Vorschau: dort „Ansicht Lernende“ → Niveau wählen → Aufgabe anklicken. Quizze lassen sich ausprobieren, Eingaben werden nicht gespeichert, Abgaben lassen sich nicht testen.
+- Anmelden muss sich die Lehrkraft selbst.
+
 ## Kachelbilder (`cover_image_path`)
 
 Lernpfad, Gliederung, Wahlpflichtaufgabe und Aufgabe können ein eigenes Kachelbild tragen; ohne Bild zeigt scobees das Standardbild (Kompass). Kachelbilder sind Schmuck und Orientierung und damit optional – anders als die Abbildungen im Arbeitsblatt, die zum Lerninhalt gehören und immer entstehen (`references/abbildungen.md`). Regeln:
@@ -65,5 +72,5 @@ Lernpfad, Gliederung, Wahlpflichtaufgabe und Aufgabe können ein eigenes Kachelb
 - Nur für die Ebenen erzeugen, die die Lehrkraft in Schritt 1 des Skills freigegeben hat – jedes Bild kostet deutlich mehr Rechenaufwand als Text.
 - Ein gesetztes Bild bleibt bei späteren Änderungen erhalten; ein neues `cover_image_path` ersetzt es (bei Aufgaben wird die alte Bilddatei dabei entfernt).
 - Kachelbilder liegen in scobees (nicht öffentlich wie Arbeitsblatt-Bilder bei Serlo), trotzdem keine Personenfotos.
-- `scobees_get_lernpfad` zeigt je Element `hat_titelbild`, damit sich nach dem Anlegen prüfen lässt, ob alle vereinbarten Bilder sitzen.
+- Alle Anlege- und Änderungswerkzeuge melden `hat_titelbild` im Ergebnis, und `scobees_get_lernpfad` zeigt es je Element; so lässt sich prüfen, ob alle vereinbarten Kachelbilder sitzen.
 - Die Icon-Bibliothek der Schule („Icon aus Library auswählen“ in der Weboberfläche) bedient der Server nicht; ein dort gewähltes Icon bleibt aber beim Ändern erhalten.

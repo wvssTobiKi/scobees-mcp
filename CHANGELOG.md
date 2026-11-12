@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.12 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Eingabefelder in der Vorschau „Ansicht Lernende“ ausprobiert (IP-Adresse, Netzmaske, Bitmuster, Kommazahl; richtige und falsche Eingaben, als Zahlen- und als Texteingabe); `hat_titelbild` in allen Ergebnissen mit `scripts/funktionstest.js` geprüft |
 | 0.1.11 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | nur Skill geändert, Server unverändert gegenüber 0.1.10; Bild-Upload ins Arbeitsblatt mit SVG und PNG live geprüft (beide werden mit richtigem Inhaltstyp ausgeliefert) |
 | 0.1.10 | v94.6 | main-FWSHPEPF.js | 2026-11-11 | alle 22 Werkzeuge mit `scripts/funktionstest.js` live geprüft (23 Schritte, jeweils mit Zurücklesen). Einzige Änderung in scobees: eine bestehende Aufgabe lässt sich jetzt in eine Wahlpflichtaufgabe verschieben. Bild-Upload ins Arbeitsblatt (Serlo-Medienspeicher) funktioniert wieder |
 | 0.1.9 | v94.5 | main-K73FMJMP.js | 2026-11-11 | Kachelbild für Gliederung und Aufgabe per Browser-Mitschnitt ermittelt und live geprüft (anlegen, behalten, ersetzen); `scobees_patch_arbeitsblatt` live geprüft (Erfolg, Mehrfachtreffer, kein Treffer, verlustbehafteter Baustein); Bilder in Box/Spoiler und geschütztes Leerzeichen (U+00A0/U+202F) bestätigt unverändert erhalten |
@@ -14,6 +15,25 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.12 – 2026-11-12
+
+Erkenntnisse aus dem Aufbau einer Lernsituation im Unterrichtsalltag (18 Punkte), eingearbeitet in Skill und Server.
+
+**Server**
+
+- `quiz-input`: IP-Adressen, Netzmasken, Versionsnummern und Bitmuster mit führender Null werden als Texteingabe angelegt statt als Zahleneingabe. In der Vorschau geprüft: scobees vergleicht in beiden Arten zeichengenau, IP-Adressen und Bitmuster lassen sich also abfragen. Die bisherige Aussage „`0100` wird zu 100“ ließ sich in scobees 94.6 nicht bestätigen und ist entfernt.
+- `hat_titelbild` steht jetzt im Ergebnis aller Anlege- und Änderungswerkzeuge (bisher nur bei Gliederungen).
+
+**Skill**
+
+- Zwei Sperren vor dem ersten Schreibaufruf: Rahmen geklärt (Kachelbild-Frage wirklich gestellt) und Grobplan gezeigt und danach freigegeben. Gilt auch für einzelne Aufgaben.
+- Schritt 1 fragt zusätzlich nach Jahrgang (nie aus dem Klassennamen abgeleitet) und Ablageordner und sagt bei einem genannten Termin, was nur die Lehrkraft in der Weboberfläche erledigen kann.
+- Schritt 8 ist eine feste Prüffolge: Zurücklesen, Vorschau „Ansicht Lernende“ mit jeder Aufgabe, optional Durchgang mit Dummy-Konto durch die Lehrkraft, Befundliste, erst danach Zuweisung.
+- Darstellungsregeln aus der Vorschau in `references/markdown.md`: Etiketten der Kastentypen, Bildunterschrift sichtbar und kurz, Nummerierung nach Tabellen, höchstens vier Tabellenspalten, kurze Codezeilen, gemischte Antworten, Hinweissatz vor einem Quiz.
+- Modus C: Vor dem Überschreiben eines Arbeitsblatts fragen, ob der Lernpfad schon bei einer Lerngruppe läuft.
+
+Offen: ob Quiz-Eingaben von Lernenden verloren gehen, wenn ein Arbeitsblatt während der Bearbeitung überschrieben wird (nur mit einem Dummy-Konto prüfbar).
 
 ## 0.1.11 – 2026-11-12
 

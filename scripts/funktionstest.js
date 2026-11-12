@@ -85,6 +85,7 @@ const MARKDOWN = [
   "```quiz-sc", "Frage?", "- [x] richtig :: gut", "- [ ] falsch", "```", "",
   "```quiz-mc", "Mehrere?", "- [x] a", "- [x] b", "- [ ] c", "```", "",
   "```quiz-input", "Wie viel?", "= 42 V", "≠ 41 :: knapp daneben", "```", "",
+  "```quiz-input", "Gateway?", "= 172.16.40.1", "```", "",
   "```quiz-blanks", "Strom in [[Ampere|A]].", "```", "",
   "```quiz-blanks-dnd", "Spannung in [[Volt]].", "Zweite Zeile ohne Lücke.", "+ Ohm", "```", "",
   "```quiz-text", "Begründe.", "```", "",
@@ -109,6 +110,7 @@ async function main() {
     const okRoot = await step("scobees_create_lernpfad (Beschreibung wird reiner Text, Titelbild)", async () => {
       const r = await tool("scobees_create_lernpfad")({ subject_id: subjectId, name: "FUNKTIONSTEST scobees-mcp [wird automatisch gelöscht]", description: "<p>Test &amp; Text</p><p>Zweite Zeile</p>", cover_image_path: FILES.bildA });
       rootId = r.id;
+      must(r.hat_titelbild === true, "create_lernpfad meldet hat_titelbild nicht");
       const cur = await api.lerninput(rootId);
       must(cur.description === "Test & Text\nZweite Zeile", `Beschreibung gespeichert als ${JSON.stringify(cur.description)}`);
       must(cur.coverImage, "Titelbild fehlt");
@@ -118,7 +120,8 @@ async function main() {
 
     await step("scobees_list_lernpfade (Suche)", async () => { const l = await tool("scobees_list_lernpfade")({ subject_id: subjectId, title: "FUNKTIONSTEST" }); must(l.some((x) => x.id === rootId), "Test-Lernpfad nicht gefunden"); });
     await step("scobees_update_lernpfad", async () => {
-      await tool("scobees_update_lernpfad")({ id: rootId, stichwoerter: ["funktionstest"], solve_order: "after_solving" });
+      const u = await tool("scobees_update_lernpfad")({ id: rootId, stichwoerter: ["funktionstest"], solve_order: "after_solving" });
+      must(u.hat_titelbild === true, "update_lernpfad meldet hat_titelbild nicht");
       const cur = await api.lerninput(rootId);
       must(cur.solveOrder === "after_solving", `solveOrder ist ${cur.solveOrder}`);
       must(cur.coverImage, "Titelbild ging beim Ändern verloren");
@@ -140,6 +143,7 @@ async function main() {
     await step("scobees_create_aufgabe (alle Markdown-Bausteine, Kachelbild)", async () => {
       const a = await tool("scobees_create_aufgabe")({ parent_id: folderId, name: "1.1 Bausteine", description_html: "<p><strong>Ergebnis:</strong> Keine Abgabe.</p>", arbeitsblatt_markdown: MARKDOWN, estimated_time: 10, interne_notiz: "Erwartungshorizont", cover_image_path: FILES.bildA });
       taskId = a.id;
+      must(a.hat_titelbild === true, "create_aufgabe meldet hat_titelbild nicht");
       for (const p of ["text", "serloTable", "box", "spoiler", "equations", "scMcExercise", "inputExercise", "blanksExercise", "textAreaExercise"]) must(a.bausteine.includes(p), `Baustein ${p} fehlt`);
       return a.bausteine.length + " Bausteintypen";
     });
@@ -152,6 +156,7 @@ async function main() {
       must(md.includes("unit: V") && md.includes("≠ 41 :: knapp daneben"), "quiz-input nicht verlustfrei");
       must(md.includes("Zeile eins\n\nZeile zwei"), "Zeilen im Spoiler zusammengezogen");
       must(md.includes("[[Ampere|A]]") && md.includes("+ Ohm"), "Lückentexte nicht verlustfrei");
+      must(md.includes("= 172.16.40.1") && JSON.stringify(a.serlo_json).includes("input-string-normalized-match-challenge"), "IP-Adresse nicht als Texteingabe angelegt");
       must(a.titelbild && a.interne_notiz === "Erwartungshorizont" && a.estimatedTime === 10, "Titelbild, Notiz oder Zeit fehlt");
       must(a.serlo_json && a.serlo_json.plugin === "rows", "serlo_json fehlt");
     });
@@ -162,7 +167,8 @@ async function main() {
       await expectError(() => tool("scobees_patch_arbeitsblatt")({ id: taskId, ersetzungen: [{ alt: "gibt es nicht", neu: "x" }] }), /kommt 0× vor/, "Patch ohne Treffer");
     });
     await step("scobees_update_aufgabe (Abgabeform, Typ, Kachelbild ersetzen)", async () => {
-      await tool("scobees_update_aufgabe")({ id: taskId, art: "abgabe_pflicht_selbstkorrektur", abgabeformen: ["pen", "file"], aufgabentyp: "training", cover_image_path: FILES.bildB });
+      const u = await tool("scobees_update_aufgabe")({ id: taskId, art: "abgabe_pflicht_selbstkorrektur", abgabeformen: ["pen", "file"], aufgabentyp: "training", cover_image_path: FILES.bildB });
+      must(u.hat_titelbild === true, "update_aufgabe meldet hat_titelbild nicht");
       const a = await tool("scobees_get_aufgabe")({ id: taskId });
       must(a.art === "abgabe_pflicht_selbstkorrektur", `art ist ${a.art}`);
       must(a.abgabeformen.includes("pen") && a.abgabeformen.includes("file"), `abgabeformen: ${a.abgabeformen}`);
@@ -190,6 +196,7 @@ async function main() {
     await step("scobees_create_wahlpflicht + Unteraufgabe", async () => {
       const w = await tool("scobees_create_wahlpflicht")({ parent_id: folderId, name: "1.2 Wahlpflicht", mindest_aufgaben: 1 });
       choiceId = w.id;
+      must(w.hat_titelbild === false, "create_wahlpflicht meldet hat_titelbild nicht");
       const c = await tool("scobees_create_aufgabe")({ parent_id: choiceId, name: "1.2.1 Wahl A", arbeitsblatt_markdown: "Text." });
       childId = c.id;
       const cur = await api.lerninput(childId);

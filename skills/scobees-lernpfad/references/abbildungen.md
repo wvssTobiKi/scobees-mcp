@@ -1,11 +1,11 @@
-# Abbildungen herstellen (scobees-mcp 0.1.11)
+# Abbildungen herstellen (scobees-mcp 0.1.12)
 
 Gilt für Fachabbildungen und Situationsillustrationen im Arbeitsblatt. Wann welche Abbildung Pflicht ist, steht in `SKILL.md`, Abschnitt 2a. Kachelbilder sind etwas anderes und stehen in `references/werkzeuge.md`.
 
 ## Der Weg, immer in dieser Reihenfolge
 
 1. **Entscheiden, was die Abbildung zeigen soll.** Ein Satz: „Die Abbildung zeigt, …“. Dieser Satz wird später die Bildunterschrift. Fällt dir der Satz nicht ein, fehlt noch die Idee, nicht die Zeichnung.
-2. **Als SVG zeichnen** (Regeln unten) und im Themenordner der Lehrkraft speichern, Dateiname mit Aufgabennummer: `2-1_messschaltung.svg`.
+2. **Als SVG zeichnen** (Regeln unten) und im Ablageordner aus Schritt 1 speichern, Dateiname mit Aufgabennummer: `2-1_messschaltung.svg`.
 3. **Als PNG rendern**, doppelte Auflösung (1600 px breit bei einer 800er Zeichenfläche).
 4. **Das PNG ansehen** und gegen die Prüfliste halten. Dieser Schritt entfällt nie; ein SVG, das im Quelltext richtig aussieht, ist gerendert oft fehlerhaft.
 5. Fehler im SVG beheben, neu rendern, wieder ansehen.
@@ -119,7 +119,7 @@ Schau dir zuerst an, wo das Messgerät sitzt:
 Der Strommesser wird in den Stromkreis eingeschleift …
 ```
 
-- Der Text in den eckigen Klammern ist Bildunterschrift und Alternativtext zugleich: ein ganzer Satz, der sagt, was zu sehen ist. Nicht „Abbildung 1“ und nicht der Dateiname.
+- Der Text in den eckigen Klammern ist Bildunterschrift und Alternativtext zugleich und steht sichtbar unter der Abbildung: ein kurzer Satz, höchstens etwa zwölf Wörter, der sagt, was zu sehen ist. Nicht „Abbildung 1“ und nicht der Dateiname.
 - Der Text davor oder danach nimmt auf die Abbildung Bezug.
 - Zu jeder Fachabbildung gehört mindestens eine Frage, die sich nur mit ihr beantworten lässt: Wert ablesen (`quiz-input`), Bauteil oder Bereich benennen (`quiz-blanks-dnd`), Fehler finden oder Variante wählen (`quiz-sc`), Anschluss begründen (`quiz-text`).
 - Abbildungen funktionieren auch in `:::box` und `:::spoiler` (z. B. die Lösungsskizze im Aufklapp-Block).

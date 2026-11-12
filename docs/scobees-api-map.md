@@ -316,3 +316,24 @@ Eine hineingeschobene Aufgabe lässt sich danach normal ändern (`POST lerninput
 
 **Bild-Upload ins Arbeitsblatt:** `editor.serlo.org` liefert wieder (presigned URL, Upload, Abruf-URL); der HTTP-402-Ausfall vom selben Tag ist behoben.
 
+## Mitschrift 15 (12.11.2026, v94.6): Vorschau „Ansicht Lernende“, Vergleich bei Eingabefeldern
+
+**Vorschau:** `https://teach.scobees.com/library/editor/<Lernpfad-ID>` → Schaltfläche „Ansicht Lernende“ → Dialog „Lernpfad aus Sicht der Lernenden“ mit Auswahl des Niveaus → Aufgabe anklicken. Banner: „Nur zum Ansehen und Ausprobieren, Eingaben werden nicht gespeichert.“ Das Arbeitsblatt belegt die linke Hälfte, rechts stehen Zeit, Beschreibung und Material.
+
+**Eingabefelder (`inputExercise`)**, ausprobiert mit je einer richtigen und mehreren falschen Eingaben:
+
+| Lösung | Art | Eingabe | Ergebnis |
+|---|---|---|---|
+| 172.16.40.1 | Text (`input-string-normalized-match-challenge`) | 172.16.40.1 | richtig |
+| 172.16.40.1 | Text | 172.16.99.9 | falsch |
+| 0100 | Text | 0100 | richtig |
+| 255.255.255.0 | Text | 255.255.255.0 | richtig |
+| 8,4 und 8.4 | Zahl (`input-number-exact-match-challenge`) | 8,4 | richtig |
+| 8,4 und 8.4 | Zahl | 8.40 | falsch |
+| 172.16.40.1 | Zahl | 172.16.40.1 | richtig |
+| 172.16.40.1 | Zahl | 172.16.99.9 und 172.16.40.10 | falsch |
+| 0100 | Zahl | 0100 | richtig |
+| 0100 | Zahl | 100 und 0100,0 | falsch |
+
+Folgerung: Auch die Zahleneingabe vergleicht zeichengenau, nicht dem Wert nach. Die frühere Notiz „Bitmuster `0100` werden zu 100“ trifft für v94.6 nicht zu. Seit 0.1.12 legt der Umwandler Nicht-Zahlen (mehr als ein Trennzeichen, führende Null) als Texteingabe an. Nicht geprüft: ob bei einer Zahleneingabe `8.4` gegen ein allein hinterlegtes `8,4` als richtig gilt; deshalb weiterhin beide Schreibweisen hinterlegen.
+

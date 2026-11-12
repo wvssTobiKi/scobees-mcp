@@ -296,7 +296,12 @@ function inputExercise(body) {
     return { value, isCorrect, feedback: textP(m[3] || "") };
   });
   if (!parsed.some((a) => a.isCorrect)) throw new Error("quiz-input: keine richtige Lösung im Format „= 42“ gefunden (falsche Antworten mit Rückmeldung: „≠ 41 :: Hinweis“).");
-  const numeric = parsed.every((a) => /^-?[\d.,]+$/.test(a.value));
+  // Zahleneingabe nur für echte Zahlen (höchstens ein Dezimaltrenner, keine führende Null). IP-Adressen und
+  // Netzmasken (172.16.40.1), Versionsnummern (1.2.3) und Bitmuster (0100) sind keine Zahlen und werden als
+  // Texteingabe angelegt. Live geprüft (Vorschau, scobees 94.6): Beide Arten vergleichen zeichengenau, auch
+  // die Zahleneingabe (8.40 ≠ 8,4; 100 ≠ 0100) – die Texteingabe ist für Nicht-Zahlen nur die passende Art.
+  const isNumber = (v) => /^-?\d+([.,]\d+)?$/.test(v) && !/^-?0\d/.test(v);
+  const numeric = parsed.every((a) => isNumber(a.value));
   return P("exercise", {
     content: question,
     interactive: P("inputExercise", { type: numeric ? "input-number-exact-match-challenge" : "input-string-normalized-match-challenge", unit, answers: parsed }),

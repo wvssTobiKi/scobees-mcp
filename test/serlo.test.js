@@ -200,3 +200,19 @@ test("quiz-blanks: $…$ in Lückenantwort und Distraktor wird für den Mathemat
   assert.deepEqual(blank.correctAnswers, [{ answer: "U = R \cdot I" }]);
   assert.deepEqual(st.extraDraggableAnswers, [{ answer: "P = U \cdot I" }]);
 });
+
+test("quiz-input: IP-Adressen, Netzmasken und Bitmuster werden Texteingabe, echte Zahlen Zahleneingabe", () => {
+  const block = (zeilen) => ["```quiz-input", "Frage?", ...zeilen, "```"].join("\n");
+  const typ = (...zeilen) => markdownToSerlo(block(zeilen)).state[0].state.interactive.state.type;
+  const TEXT = "input-string-normalized-match-challenge", ZAHL = "input-number-exact-match-challenge";
+  assert.equal(typ("= 172.16.40.1", "≠ 172.16.40.0 :: Netzadresse"), TEXT);
+  assert.equal(typ("= 255.255.255.0"), TEXT);
+  assert.equal(typ("= 0100"), TEXT);
+  assert.equal(typ("= 1.2.3"), TEXT);
+  assert.equal(typ("= 8,4", "= 8.4"), ZAHL);
+  assert.equal(typ("= 0,5"), ZAHL);
+  assert.equal(typ("= -3.5"), ZAHL);
+  assert.equal(typ("= 254 Hosts"), ZAHL);
+  // Rundreise: die IP-Adresse kommt unverändert zurück
+  assert.ok(serloToMarkdown(markdownToSerlo(block(["= 172.16.40.1"]))).includes("= 172.16.40.1"));
+});

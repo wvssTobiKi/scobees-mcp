@@ -5,9 +5,18 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.11** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.12** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist.
+
+## Zwei Sperren vor dem ersten Schreibaufruf
+
+Bevor irgendetwas in scobees angelegt oder geändert wird, müssen beide Punkte erfüllt sein. Das gilt auch für eine einzelne Aufgabe, einen Einstiegstext oder eine „kurze Ergänzung“.
+
+- [ ] **Rahmen geklärt** (Schritt 1). Die Frage nach den Kachelbildern wurde wirklich gestellt. Die Rückfallregel „keine Kachelbilder“ gilt nur, wenn gefragt wurde und die Antwort ausblieb, nicht, wenn die Frage übersprungen wurde.
+- [ ] **Grobplan gezeigt und danach freigegeben** (Schritt 4). Freigabe ist nur, was die Lehrkraft sagt, nachdem sie den Plan gesehen hat. Ein knappes „mach“, „1“ oder „ja“ davor bezieht sich auf etwas anderes und ersetzt die Freigabe nicht. Bei einer einzelnen neuen Aufgabe genügt als Plan die Aufgabe selbst: Titel, Art, Zeit, Abbildung und der vollständige Text des Arbeitsblatts im Chat.
+
+Ist eine Sperre offen, wird nachgefragt und nichts geschrieben, auch wenn die Lehrkraft es eilig hat.
 
 ## Drei Einstiege
 
@@ -23,14 +32,17 @@ Die Modi mischen sich oft (Unterlagen + Erweiterung eines Pfads). Der Ablauf unt
 
 ### 1. Rahmen klären (eine kurze Nachfrage, nicht ein Fragebogen)
 
-Du brauchst sechs Dinge, bevor du planst. Was die Lehrkraft schon gesagt hat, fragst du nicht noch einmal.
+Du brauchst sieben Dinge, bevor du planst. Was die Lehrkraft schon gesagt hat, fragst du nicht noch einmal.
 
 1. **Bildungsgang** (BFS-dual mit Beruf, Technikerschule mit Fachrichtung, BG Technik mit Schwerpunkt, FOS Technik, BES) und Jahr/Klasse. Daraus folgen Vokabular, Niveau, Sprache und Umfang (`references/bildungsgaenge.md`).
 2. **Curriculare Einheit**: Lernfeld, Modul, Lerngebiet oder Kompetenzbereich. Ist sie nicht genannt, recherchiere die gültige Vorgabe (Fundorte in der Referenz) und schlage die passende Einheit vor. Nenne die Quelle und lass bestätigen; Rahmenlehrpläne ändern sich, und die Lehrkraft kennt die schulinterne Umsetzung.
 3. **Umfang**: Unterrichtsstunden oder Wochen. Fehlt die Angabe, schlage einen Richtwert vor (Referenz).
-4. **Fach in scobees**: Das Fach wird nie geraten und nie aus dem Thema abgeleitet. Immer zuerst `scobees_list_subjects` (bei vielen Fächern vorher `scobees_list_workspaces` und nach dem Lernbereich fragen), dann die in Frage kommenden Fächer mit Namen und ID zeigen und die Lehrkraft wählen lassen. Hat sie ein Fach genannt, den passenden Eintrag aus der Liste nennen und bestätigen lassen; gibt es keinen eindeutigen Treffer, nachfragen statt den ähnlichsten nehmen. Grund: Lernende haben ihr Niveau pro Fach, ein Pfad im falschen Fach lässt sich nicht zuweisen, und Fächer legt nur der Administrator an.
+4. **Fach in scobees**: Das Fach wird nie geraten und nie aus dem Thema abgeleitet. Immer zuerst `scobees_list_subjects` (bei vielen Fächern vorher `scobees_list_workspaces` und nach dem Lernbereich fragen), dann die in Frage kommenden Fächer mit Namen und ID zeigen und die Lehrkraft wählen lassen. Hat sie ein Fach genannt, den passenden Eintrag aus der Liste nennen und bestätigen lassen; gibt es keinen eindeutigen Treffer, nachfragen statt den ähnlichsten nehmen. Grund: Lernende haben ihr Niveau pro Fach, ein Pfad im falschen Fach lässt sich nicht zuweisen, und Fächer legt nur der Administrator an. Den **Jahrgang** (`jahrgaenge`) ebenfalls erfragen und aus `scobees_list_tags` wählen lassen; er wird nie aus dem Klassennamen abgeleitet, weil die Zuordnung von Klassen zu Jahrgängen in der Klassenverwaltung liegt, auf die der Server nicht zugreift.
 5. **Kachelbilder** (optional): Das Titelbild des Lernpfads und die Kachelbilder von Gliederungen und Aufgaben sind Schmuck und Orientierung, kein Lerninhalt, und jedes kostet spürbar Rechenaufwand. Deshalb ausdrücklich fragen, **für welche Ebenen** sie entstehen sollen: Titelbild · Gliederungen · Aufgaben. Die Ebenen einzeln anbieten, nicht „Bilder ja/nein“. Ohne Antwort gilt: keine Kachelbilder.
 6. **Abbildungen der Lehrkraft**: Abbildungen im Arbeitsblatt stehen nicht zur Wahl; sie gehören zum Lerninhalt und entstehen immer (Abschnitt 2a). Gefragt wird nur, ob die Lehrkraft Abbildungen mitbringt und wie sie verwendet werden sollen: **übernehmen** (unverändert einbinden), **als Grundlage** (Inhalt übernehmen, im Stil des Lernpfads neu zeichnen) oder **neu erstellen** (nur das Thema ist vorgegeben). Eine Antwort für alle genügt, Ausnahmen für einzelne Abbildungen nennt die Lehrkraft. Ohne Antwort gilt: Abbildungen, die die Lehrkraft selbst erstellt hat, werden übernommen; alles andere wird neu erstellt. Fremde Abbildungen (Lehrbuch, Hersteller, Internet) werden nie übernommen und nicht abgezeichnet; der Sachverhalt wird eigenständig neu dargestellt.
+7. **Ablageordner**: Alles, was hochgeladen wird (Abbildungen, Kachelbilder, Vorlagen, Musterlösungen), muss als Datei auf dem Rechner der Lehrkraft liegen. Den Themenordner nennen lassen oder einen vorschlagen und bestätigen lassen; er steht im Grobplan (`ablage`).
+
+Nennt die Lehrkraft einen **Termin** („die Klasse soll am Donnerstag damit arbeiten“), sofort sagen, was bis dahin an ihr selbst hängt: Über die Schnittstelle entstehen Inhalte, und der Lernpfad lässt sich in die schuleigene Bib stellen (`in_bib`). Gliederungen und Aufgaben veröffentlichen und den Lernpfad einer Lerngruppe zuweisen kann nur die Lehrkraft in der Weboberfläche. Den Zeitbedarf dafür und für die Vorschau (Schritt 8) einplanen.
 
 Zu Beginn einmal `scobees_me`: prüft Anmeldung und meldet, ob scobees sich seit der Prüfung des Servers geändert hat. Bei einer Warnung weiterarbeiten, aber am Ende darauf hinweisen.
 
@@ -156,7 +168,17 @@ Der Lernpfad: `solve_order` nach Rücksprache (frei lässt Lernende springen; na
 
 ### 8. Zurücklesen und prüfen
 
-Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge und Abbildungen (jede geplante Abbildung steht als `![Bildunterschrift](URL)` im Arbeitsblatt, mit Bildunterschrift und Bezug im Text). Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste. Liefert ein Werkzeug `warnungen[]` mit (z. B. bei `$…$` in einer Lückenantwort), diese im Abschlussbericht nennen, nicht stillschweigend übergehen. Für eine kleine Korrektur an einem schon bestehenden Arbeitsblatt eignet sich `scobees_patch_arbeitsblatt` (gezielte Textersetzung) besser als `scobees_update_aufgabe` mit komplett neu geschriebenem `arbeitsblatt_markdown`.
+Geprüft wird in dieser Reihenfolge; die Zuweisung an die Lerngruppe kommt erst danach.
+
+**1. Zurücklesen über die Schnittstelle.** Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge und Abbildungen (jede geplante Abbildung steht als `![Bildunterschrift](URL)` im Arbeitsblatt, mit Bildunterschrift und Bezug im Text). Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste. Liefert ein Werkzeug `warnungen[]` mit (z. B. bei `$…$` in einer Lückenantwort), diese im Abschlussbericht nennen, nicht stillschweigend übergehen. Für eine kleine Korrektur an einem schon bestehenden Arbeitsblatt eignet sich `scobees_patch_arbeitsblatt` (gezielte Textersetzung) besser als `scobees_update_aufgabe` mit komplett neu geschriebenem `arbeitsblatt_markdown`.
+
+**2. Vorschau in der Weboberfläche.** Was Lernende sehen, zeigt nur die Vorschau: `https://teach.scobees.com/library/editor/<Lernpfad-ID>` öffnen (oder Bib → Lernpfad), dort „Ansicht Lernende“, im Dialog „Lernpfad aus Sicht der Lernenden“ ein Niveau wählen und **jede Aufgabe einmal öffnen**. Quizze lassen sich ausprobieren (Antwort eingeben, „Stimmt's?“); Eingaben werden nicht gespeichert, Abgaben lassen sich hier nicht testen. Achten auf: Abbildungen geladen und lesbar, Tabellen ohne seitliches Scrollen, Nummerierung, Kästen, Quiz-Rückmeldungen, Anhänge. Steht ein Browser-Werkzeug zur Verfügung, die Seite öffnen und die Lehrkraft bitten, sich selbst anzumelden; Zugangsdaten gibst du nie ein, und andere Bereiche der Oberfläche (Lerndoku, Klassen, Konfiguration) öffnest du nicht. Ohne Browser-Werkzeug bekommt die Lehrkraft diese Prüfpunkte als Liste.
+
+**3. Durchgang als Test-Lernende/r (optional, Sache der Lehrkraft).** Sollen Abgaben, die Selbstkorrektur oder die Bearbeitungsreihenfolge geprüft werden, weist die Lehrkraft den veröffentlichten Lernpfad einem Dummy-Konto zu und geht ihn in `https://learn.scobees.com` durch. Du schlägst das vor und nennst, worauf zu achten ist; Zuweisung und Anmeldung macht die Lehrkraft, und du liest dort nur mit, wenn sie ausdrücklich darum bittet und es ein Dummy-Konto ist.
+
+**4. Befundliste.** Was abweicht, was du korrigiert hast, was nur in der Weboberfläche geht. Sie geht in den Abschlussbericht (Schritt 9).
+
+**5. Erst danach** veröffentlicht die Lehrkraft Gliederungen und Aufgaben und weist den Lernpfad der Lerngruppe zu.
 
 ### 9. Abschlussbericht an die Lehrkraft (immer)
 
@@ -165,14 +187,16 @@ Dieselbe Vorlage mit `"modus": "bericht"`: jede Gliederung und Aufgabe mit volls
 Checkliste, immer dabei:
 
 - Lernpfad einer Lerngruppe zuweisen (bis dahin sehen Lernende nichts; Status „inaktiv“ ist normal); vorher prüfen, ob die Gruppe im Fach ein Niveau hat
+- Vorschau „Ansicht Lernende“ durchgehen, falls in Schritt 8 noch nicht geschehen
 - Gliederungen und Aufgaben veröffentlichen (Status „Entwurf“ ist normal)
 - Bearbeitungsreihenfolge und Aufgabenwahl kontrollieren
-- Drag-and-drop-Aufgaben, Stift-Abgaben und Anhänge einmal in der Schüleransicht öffnen
+- Stift-Abgaben und Selbstkorrektur einmal mit einem Dummy-Konto in learn.scobees.com ausprobieren (in der Vorschau nicht testbar)
 - alles, was sich über die Schnittstelle nicht setzen ließ
 
 ## Modus C: Bestehenden Pfad überarbeiten
 
 - Zuerst lesen: `scobees_get_lernpfad` (Baum mit IDs), dann `scobees_get_aufgabe` für alles, was geändert wird. Das Arbeitsblatt kommt als Markdown zurück und wird beim Ändern über `scobees_update_aufgabe` **komplett ersetzt**; also das gelesene Markdown ändern, nicht neu schreiben. Betrifft die Änderung nur wenige Stellen (ein ausgetauschter Satz, eine neue Bild-URL), stattdessen `scobees_patch_arbeitsblatt` mit den betroffenen Textstellen verwenden – spart das Mitschicken des ganzen, oft langen Markdowns und schlägt kontrolliert fehl, wenn eine Stelle nicht eindeutig ist.
+- **Läuft der Lernpfad schon bei einer Lerngruppe?** Vor dem Überschreiben eines Arbeitsblatts fragen. Ob Lernende dabei ihre Quiz-Eingaben verlieren, ist nicht geklärt; bis dahin Arbeitsblätter laufender Lernpfade nur nach ausdrücklicher Zustimmung ändern und möglichst außerhalb der Unterrichtszeit.
 - Den Grobplan auf die Änderung beschränken: Tabelle nur mit betroffenen Zeilen und einer Spalte „vorher / nachher“.
 - Der Mindeststandard für Abbildungen (2a) gilt für jedes Arbeitsblatt, das neu entsteht oder inhaltlich überarbeitet wird. Fehlen Abbildungen in Aufgaben, die nicht angefasst werden, das im Grobplan als Vorschlag nennen und nicht ungefragt nachrüsten.
 - Vor dem Löschen (`scobees_delete`, `confirm: true`) immer ausdrücklich bestätigen lassen; Löschen nimmt Unterelemente mit.
@@ -191,11 +215,13 @@ Checkliste, immer dabei:
 ## Qualitätsregeln für Quizze und Eingaben
 
 - Einheit fest neben dem Feld (`= 254 Hosts`), Lernende tippen nur die Zahl.
-- Dezimalzahlen mit Komma und Punkt hinterlegen (`= 8,4` und `= 8.4`).
+- scobees vergleicht Eingaben zeichengenau (live geprüft, 94.6): `8.40` ist falsch, wenn nur `8,4` hinterlegt ist. Jede zulässige Schreibweise einzeln hinterlegen (`= 8,4` und `= 8.4`), und in der Frage sagen, wie gerundet wird.
 - Typische Fehlerwerte mit Rückmeldung (`≠ 256 :: Netz- und Broadcastadresse abziehen`).
-- Bitmuster wie `0100` werden als Zahl verglichen (führende Nullen verschwinden): per Drag-and-drop oder Einfachauswahl abfragen oder den Dezimalwert verlangen.
+- IP-Adressen, Netzmasken und Bitmuster lassen sich eingeben und prüfen (`= 172.16.40.1`, `= 0100`); führende Nullen bleiben erhalten. Typische Verwechslungen als Fehlerwert hinterlegen (`≠ 172.16.40.0 :: Das ist die Netzadresse.`).
 - Tipp-Lückentexte vermeiden, wenn die Schreibweise scheitern kann; Drag-and-drop mit Distraktoren, Ziffern als Lösung oder Wortspeicher sind robuster.
 - Rückmeldungen je Antwort bei Auswahlfragen: `- [x] Antwort :: Rückmeldung`.
+- Die Antworten von Auswahlfragen werden für Lernende gemischt. Keine Verweise auf „a)“, „die erste Antwort“ oder „alle oben genannten“, weder in der Frage noch in Rückmeldungen.
+- Der Satz vor einem Quiz ist ein Hinweis („Prüfe dein Verständnis:“), keine Frage. Steht dort eine Frage, wirkt es, als fehle die Antwortauswahl; die Frage gehört in den Quiz-Block.
 - Bei Freitext (`quiz-text`) gibt es keine automatische Prüfung; dann Aufklapp-Block „Lösungshinweis“ darunter.
 
 Weitere Syntax und bekannte Fallen: `references/markdown.md`.

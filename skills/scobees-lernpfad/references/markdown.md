@@ -1,4 +1,4 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.11)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.12)
 
 Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
@@ -31,7 +31,7 @@ Jede Zeile wird ein eigener Absatz; Leerzeilen sind nicht nötig. `---` wird aus
 Text
 :::
 ```
-Typen: `note` (Hinweis), `attention` (Achtung), `warning`, `example` (Beispiel), `quote` (Zitat), `definition`, `theorem`, `proof`, `blank`. Gut für „So gehst du vor“, „Beachte“, das Szenario-Zitat der Teamleitung. Bilder funktionieren auch innerhalb einer Box oder eines Spoilers (`![…](URL)`), live geprüft.
+Typen und das Etikett, das Lernende über dem Kasten sehen: `note` „Beachte“, `attention` „Vorsicht“, `example` „Beispiel“, `quote` „Zitat“, `blank` ohne Etikett; außerdem `warning`, `definition`, `theorem`, `proof`. Den Typ nach dem Etikett wählen: Ein Arbeitsauftrag in einem `quote`-Kasten trägt die Überschrift „Zitat“. Aufzählungen im Kasten funktionieren. Gut für „So gehst du vor“, „Beachte“, das Szenario-Zitat der Teamleitung. Bilder funktionieren auch innerhalb einer Box oder eines Spoilers (`![…](URL)`), live geprüft.
 
 ```markdown
 :::spoiler Lösungshinweis
@@ -75,7 +75,7 @@ Wie viele Hosts passen in ein /25-Netz?
 ≠ 127 :: Eine Adresse zu viel – Netz- und Broadcastadresse sind zwei.
 ```
 ````
-`= Wert Einheit` trennt die Einheit ab und zeigt sie neben dem Feld; alternativ `unit: Hosts`. Mehrere `=` für Komma und Punkt (`= 8,4` und `= 8.4`). `≠ Wert :: Hinweis` ist ein typischer Fehler mit Rückmeldung. Ist die Lösung keine Zahl, wird als Text verglichen (normalisiert, Groß/Klein egal). Sind alle Lösungen Zahlen, vergleicht Serlo numerisch: Bitmuster wie `0100` werden zu 100, führende Nullen gehen verloren. Bitmuster deshalb per Drag-and-drop oder Einfachauswahl abfragen oder den Dezimalwert verlangen.
+`= Wert Einheit` trennt die Einheit ab und zeigt sie neben dem Feld; alternativ `unit: Hosts`. Mehrere `=` für Komma und Punkt (`= 8,4` und `= 8.4`). `≠ Wert :: Hinweis` ist ein typischer Fehler mit Rückmeldung. Verglichen wird zeichengenau (live geprüft in der Vorschau, scobees 94.6): `8.40` gilt nicht als `8,4`, `100` nicht als `0100`. Jede zulässige Schreibweise braucht deshalb ein eigenes `=`. Echte Zahlen werden als Zahleneingabe angelegt, alles andere als Texteingabe (Groß/Klein egal): IP-Adressen und Netzmasken (`= 172.16.40.1`), Versionsnummern, Bitmuster mit führender Null (`= 0100`) und Wörter. Beides funktioniert für Lernende gleich.
 
 ````markdown
 ```quiz-blanks
@@ -99,6 +99,18 @@ Begründe, warum das Gäste-WLAN ein eigenes Subnetz bekommt.
 ```
 ````
 Freitext ohne automatische Prüfung; Lösungshinweis als Spoiler darunter oder Abgabe mit Musterlösung.
+
+## So sieht es für Lernende aus (Vorschau, scobees 94.6)
+
+Das Arbeitsblatt belegt nur die linke Hälfte des Bildschirms; rechts stehen Zeit, Beschreibung und Material. Daraus folgt:
+
+- **Tabellen** mit mehr als vier Spalten müssen seitlich gescrollt werden. Höchstens vier Spalten, kurze Zellen; breitere Vergleiche auf zwei Tabellen verteilen oder als Fachabbildung zeichnen.
+- **Codeblöcke** haben Zeilennummern, lange Zeilen werden abgeschnitten. Zeilen bis etwa 60 Zeichen, längere Befehle umbrechen.
+- **Nummerierte Listen** beginnen nach einer Tabelle, einem Kasten, einer Abbildung oder einem Quiz wieder bei 1. Läuft eine Schrittfolge über so ein Element hinweg, die Schritte als Text schreiben: `**Schritt 5:** …`.
+- **Bildunterschrift**: Der Text in `![…](URL)` steht sichtbar unter der Abbildung. Ein kurzer Satz, höchstens etwa zwölf Wörter.
+- **Kästen** tragen ein Etikett je Typ (siehe oben).
+- **Auswahlfragen**: Die Antworten erscheinen in gemischter Reihenfolge.
+- **Quiz prüfen**: Lernende tippen und bestätigen mit „Stimmt's?“; die Rückmeldung erscheint direkt darunter.
 
 ## Rundreise (Modus C)
 

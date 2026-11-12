@@ -406,7 +406,7 @@ const TOOLS = [
         coverImagePath: undefined,
         description: htmlToPlainText(a.description),
       }, { coverImage: a.cover_image_path });
-      return ok("Lernpfad angelegt. Status INACTIVE bedeutet: noch keiner Lerngruppe zugewiesen – die Zuweisung erfolgt in der Weboberfläche.", { id: r.id, name: r.name, state: r.state });
+      return ok("Lernpfad angelegt. Status INACTIVE bedeutet: noch keiner Lerngruppe zugewiesen – die Zuweisung erfolgt in der Weboberfläche.", { id: r.id, name: r.name, state: r.state, hat_titelbild: !!r.coverImage });
     },
   },
   {
@@ -447,7 +447,7 @@ const TOOLS = [
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
         description: a.description != null ? htmlToPlainText(a.description) : (cur.description ?? ""),
       }, { coverImage: a.cover_image_path });
-      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished, faecher: (r.subjects || []).map((s) => s.name) });
+      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished, faecher: (r.subjects || []).map((s) => s.name), hat_titelbild: !!r.coverImage });
     },
   },
   {
@@ -517,7 +517,7 @@ const TOOLS = [
         parentId: a.parent_id, id: undefined, name: a.name, description: a.description_html || "",
         minimumAmountOfTasks: String(a.mindest_aufgaben ?? 1), color: a.color || "#c88503",
       }, { coverImage: a.cover_image_path });
-      return ok("Wahlpflichtaufgabe angelegt.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion });
+      return ok("Wahlpflichtaufgabe angelegt.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion, hat_titelbild: !!r.coverImage });
     },
   },
   {
@@ -544,7 +544,7 @@ const TOOLS = [
       };
       if (!a.cover_image_path) fields.coverImage = null; // ohne neues Bild schickt die Oberfläche coverImage=null
       const r = await api.saveChoice(fields, { coverImage: a.cover_image_path });
-      return ok("Wahlpflichtaufgabe geändert.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion });
+      return ok("Wahlpflichtaufgabe geändert.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion, hat_titelbild: !!r.coverImage });
     },
   },
   {
@@ -627,7 +627,7 @@ const TOOLS = [
       });
       if (a.cover_image_path) form.coverImagePath = (await uploadTaskCover(created.id, a.cover_image_path)).path;
       const r = await api.saveTask(form);
-      const out1 = ok("Aufgabe angelegt.", { id: r.id, name: r.name, kind: r.kind, parentId: r.parentId, bausteine: r.taskDescription ? listPlugins(r.taskDescription) : [] });
+      const out1 = ok("Aufgabe angelegt.", { id: r.id, name: r.name, kind: r.kind, parentId: r.parentId, bausteine: r.taskDescription ? listPlugins(r.taskDescription) : [], hat_titelbild: !!r.coverImage });
       const w1 = arbeitsblattWarnungen(a);
       if (w1) out1.warnungen = w1;
       return out1;
@@ -674,7 +674,7 @@ const TOOLS = [
       if (cover) form.coverImagePath = cover.path;
       const r = await api.saveTask(form);
       if (cover) await cover.cleanup();
-      const out2 = ok("Aufgabe geändert.", { id: r.id, name: r.name, kind: r.kind });
+      const out2 = ok("Aufgabe geändert.", { id: r.id, name: r.name, kind: r.kind, hat_titelbild: !!r.coverImage });
       const w2 = arbeitsblattWarnungen(a);
       if (w2) out2.warnungen = w2;
       return out2;

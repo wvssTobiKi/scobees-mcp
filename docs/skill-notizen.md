@@ -65,3 +65,11 @@ Entscheidungen der Lehrkraft: Kachelbilder sind Schmuck und optional. Fachabbild
 Erfahrung beim Ausprobieren des Herstellungswegs: Eine nach den Regeln gezeichnete Messschaltung sah im SVG-Quelltext richtig aus, im gerenderten PNG war die Beschriftung links der Spannungsquelle am Bildrand abgeschnitten. Deshalb ist „rendern und ansehen“ ein fester Schritt und der 40-px-Rand eine Zeichenregel. `scobees_upload_bild` liefert SVG und PNG korrekt aus; PNG ist der Normalfall, weil es auf jedem Gerät gleich aussieht.
 
 Noch offen: ein vollständiger Praxislauf mit der neuen Fassung (Testfall `neu-bfs-dual-subnetting` oder die nächste echte Lernsituation).
+
+## 12.11.2026: Erkenntnisse aus einem Praxislauf (0.1.12)
+
+Beim Aufbau einer Lernsituation wurden die Bilderfrage und der Grobplan übersprungen; eine Aufgabe und ein Einstiegstext gingen ungesehen nach scobees. Der Grobplan war im Skill zwar als „immer“ markiert, stand aber erst in Schritt 4. Deshalb stehen die beiden Bedingungen jetzt als Sperren vor dem Ablauf, mit dem ausdrücklichen Satz, dass eine knappe Zusage vor dem gezeigten Plan keine Freigabe ist.
+
+Die Darstellungsregeln (Etiketten der Kästen, Nummerierung nach Tabellen, Tabellenbreite, Codezeilen, gemischte Antworten, Satz vor dem Quiz) stammen aus der Vorschau „Ansicht Lernende“ und stehen in `references/markdown.md`. Die Bildunterschrift war in 0.1.11 als „ganzer Satz“ beschrieben; weil sie sichtbar unter der Abbildung steht, ist sie jetzt auf einen kurzen Satz begrenzt.
+
+Bewusst nicht im Skill: konkrete Lernpfade, Klassen, Fächer und Jahrgänge einer Schule. Der Skill fragt danach; was für eine bestimmte Lernsituation gilt, gehört in die Unterlagen der Lehrkraft.
