@@ -137,6 +137,19 @@ function htmlToPlainText(s) {
 }
 const ok = (msg, data) => ({ ok: true, hinweis: msg, ...data });
 
+// Löschregeln von scobees (HTTP 405, live geprüft v94.6) verständlich machen.
+function clarifyDeleteError(e) {
+  if (/open assignments/i.test(e.message)) {
+    throw new Error("scobees löscht keinen Lernpfad, der noch zugewiesen ist (Meldung von scobees: „Deletion of a learning path with open assignments is not allowed“). " +
+      "Die Lehrkraft muss die Zuweisung zuerst in der Weboberfläche aufheben; danach lässt sich der Lernpfad löschen.");
+  }
+  if (/folder with children/i.test(e.message)) {
+    throw new Error("scobees löscht Gliederungen und Wahlpflichtaufgaben nur, wenn sie leer sind (Meldung von scobees: „Deletion of folder with children is not allowed“). " +
+      "Zuerst die Aufgaben darin einzeln löschen oder mit scobees_move herausnehmen. Ein ganzer, nicht zugewiesener Lernpfad lässt sich dagegen samt Inhalt löschen.");
+  }
+  throw e;
+}
+
 // Regeln von scobees rund um Wahlpflichtaufgaben („taskgroup“), jeweils HTTP 405 (live geprüft, zuletzt v94.6):
 //   „Add or edit as child (task) from taskgroup without type choice …“  Unteraufgabe ohne taskType „Wahlpflichtaufgabe“
 //   „Changing the parent of a taskgroup task is not allowed“            Unteraufgabe aus der Wahlpflichtaufgabe heraus
@@ -815,16 +828,28 @@ const TOOLS = [
   },
   {
     name: "scobees_delete",
-    description: "Löscht eine Aufgabe, Gliederung, Wahlpflichtaufgabe oder einen ganzen Lernpfad (inkl. Unterelementen!). Erfordert confirm=true.",
+    description:
+      "Löscht eine Aufgabe, eine leere Gliederung oder Wahlpflichtaufgabe oder einen ganzen Lernpfad. Erfordert confirm=true. Regeln von scobees: " +
+      "Ein ganzer Lernpfad wird mit allen Unterelementen gelöscht, aber nur solange er niemandem zugewiesen ist. Gliederungen und Wahlpflichtaufgaben lassen sich " +
+      "nur leer löschen (erst die Aufgaben darin löschen). Einzelne Aufgaben lassen sich auch in einem zugewiesenen Lernpfad löschen und verschwinden dann sofort " +
+      "bei den Lernenden, auch wenn schon Lernergebnisse abgegeben wurden – deshalb verlangt das Werkzeug dort zusätzlich auch_wenn_zugewiesen=true.",
     inputSchema: {
       type: "object",
-      properties: { id: { type: "string" }, confirm: { type: "boolean", description: "Muss true sein" } },
+      properties: {
+        id: { type: "string" },
+        confirm: { type: "boolean", description: "Muss true sein" },
+        auch_wenn_zugewiesen: { type: "boolean", description: "Nur nach ausdrücklicher Zustimmung der Lehrkraft: Löschen in einem Lernpfad erlauben, mit dem Lernende bereits arbeiten" },
+      },
       required: ["id", "confirm"],
     },
     run: async (a) => {
       if (a.confirm !== true) throw new Error("Löschen abgebrochen: confirm muss true sein.");
       const cur = await api.lerninput(a.id);
-      await api.remove(a.id);
+      if (cur.parentId && a.auch_wenn_zugewiesen !== true && (await isAssigned(a.id))) {
+        throw new Error(`„${cur.name}“ liegt in einem Lernpfad, der Lernenden zugewiesen ist. Löschen entfernt das Element sofort bei den Lernenden, auch wenn schon Lernergebnisse dazu abgegeben wurden. ` +
+          "Nur nach ausdrücklicher Zustimmung der Lehrkraft erneut mit auch_wenn_zugewiesen=true aufrufen.");
+      }
+      try { await api.remove(a.id); } catch (e) { clarifyDeleteError(e); }
       return ok(`„${cur.name}“ gelöscht.`, { id: a.id, typ: nodeType(cur) });
     },
   },
@@ -885,4 +910,4 @@ for (const tool of TOOLS) {
   };
 }
 
-module.exports = { isAssigned, anhangAnsichtHinweis, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches };
+module.exports = { isAssigned, anhangAnsichtHinweis, clarifyDeleteError, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches };

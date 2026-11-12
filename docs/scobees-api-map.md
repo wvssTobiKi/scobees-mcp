@@ -383,3 +383,17 @@ Von der Lehrkraft in der Lerndoku angesehen und als Bildschirmfotos mitgeteilt (
 - **Aufgabenstatus:** LE: Lernergebnis zurücksetzen / ergänzen / Aufgabe komplett zurücksetzen. SK: Selbstkorrektur zurücksetzen / ergänzen.
 - **Dialog „Zuweisen“:** Reiter „Klassen / Gruppe zuweisen“, „Nach Differenzierungen zuweisen“, „Lernenden gezielt zuweisen“; Felder Lernender, Fach, Wochenfrist („dauerhaft offen“). Keine Einstellung zur Reihenfolge.
 
+## Mitschrift 19 (12.11.2026, v94.6): Löschregeln
+
+`DELETE lerninput/{id}`, jeweils live geprüft:
+
+| Ziel | nicht zugewiesen | zugewiesen |
+|---|---|---|
+| Lernpfad (Wurzel) mit Inhalt | wird samt Inhalt gelöscht | HTTP 405 „Deletion of a learning path with open assignments is not allowed“ |
+| Gliederung oder Wahlpflichtaufgabe mit Inhalt | HTTP 405 „Deletion of folder with children is not allowed“ | dieselbe Meldung |
+| leere Gliederung | wird gelöscht | nicht geprüft |
+| einzelne Aufgabe ohne Abgabe | wird gelöscht | wird gelöscht |
+| einzelne Aufgabe mit abgegebenem Lernergebnis | – | wird gelöscht, ohne Rückfrage |
+
+Folge für den Server: `scobees_delete` prüft vor dem Löschen eines Unterelements, ob der Lernpfad zugewiesen ist, und verlangt dann `auch_wenn_zugewiesen: true`. Was mit den abgegebenen Lernergebnissen einer gelöschten Aufgabe in der Lerndoku geschieht, ist nicht geprüft.
+

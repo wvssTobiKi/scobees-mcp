@@ -247,3 +247,11 @@ test("anhangAnsichtHinweis: Material an einer Aufgabe mit Arbeitsblatt verdräng
   assert.equal(anhangAnsichtHinweis({ taskDescription: null }, false), undefined);  // kein Arbeitsblatt
 });
 
+test("clarifyDeleteError erklärt die Löschregeln von scobees", () => {
+  const { clarifyDeleteError } = require("../src/tools");
+  const err = (msg) => new Error(`scobees-API DELETE lerninput/LI-1 → HTTP 405: {"message":"${msg}","statusCode":405}`);
+  assert.throws(() => clarifyDeleteError(err("Deletion of a learning path with open assignments is not allowed")), /Zuweisung zuerst in der Weboberfläche aufheben/);
+  assert.throws(() => clarifyDeleteError(err("Deletion of folder with children is not allowed")), /nur, wenn sie leer sind/);
+  assert.throws(() => clarifyDeleteError(new Error("scobees-API DELETE lerninput/LI-1 → HTTP 404: nicht gefunden")), /HTTP 404/);
+});
+

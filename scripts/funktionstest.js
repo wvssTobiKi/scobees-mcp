@@ -257,6 +257,7 @@ async function main() {
       await tool("scobees_delete")({ id: childId, confirm: true });
       await expectError(() => api.lerninput(childId), /HTTP 404/, "Gelöschte Aufgabe");
       await expectError(() => tool("scobees_delete")({ id: taskId, confirm: false }), /confirm muss true sein/, "Löschen ohne confirm");
+      await expectError(() => tool("scobees_delete")({ id: folderId, confirm: true }), /nur, wenn sie leer sind/, "Gliederung mit Inhalt löschen");
     });
   } catch (e) {
     console.log(`✖ Abbruch: ${e.message}`);
