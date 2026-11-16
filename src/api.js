@@ -201,6 +201,9 @@ const api = {
   saveTask: (fields, files) => request("POST", "lerninput/task", { form: lerninputForm(fields, files) }),
   move: (id, parentId, sortOrder) =>
     request("PUT", `lerninput/changePosition/${id}`, { json: { parentId, sortOrder } }),
+  // Kopiert ein Element samt Arbeitsblatt, Anhängen, Musterlösungen und Kachelbild ans Ende eines Lernpfads.
+  // Ziel muss die Wurzel sein („Copy target must be a root lerninput“); Antwort ist der Ziel-Lernpfad als Baum.
+  copyInto: (id, rootId) => request("POST", `lerninput/${id}/copy-into/${rootId}`),
   remove: (id) => request("DELETE", `lerninput/${id}`),
 
   uploadAttachment: (entityId, filePath, type = "lerninput_attachment") => {

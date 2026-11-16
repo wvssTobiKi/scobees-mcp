@@ -47,7 +47,7 @@ Manuell (Claude Code / andere Clients): Umgebungsvariablen `SCOBEES_USERNAME`, `
 5. Dateien mit `scobees_upload_material` anhängen (PDF, HTML-Simulationen, interaktive Seiten, GeoGebra-Dateien). Bilder, die *im* Arbeitsblatt erscheinen sollen, vorher mit `scobees_upload_bild` hochladen und die URL per `![…](url)` einbinden.
 6. Ergebnis in scobees prüfen, Reihenfolge ggf. mit `scobees_move` anpassen, dann in der Weboberfläche einer Lerngruppe zuweisen.
 
-Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit IDs) → `scobees_get_aufgabe` (Arbeitsblatt als Markdown) → `scobees_update_aufgabe` / `scobees_update_gliederung` / `scobees_move` / `scobees_delete`.
+Bestehende Kurse: `scobees_list_lernpfade` → `scobees_get_lernpfad` (Baum mit IDs) → `scobees_get_aufgabe` (Arbeitsblatt als Markdown) → `scobees_update_aufgabe` / `scobees_update_gliederung` / `scobees_move` / `scobees_copy_aufgabe` / `scobees_delete`.
 
 ## Abgabeformen (`art`) – scobees-Denke
 

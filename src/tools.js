@@ -274,6 +274,14 @@ async function uploadTaskCover(taskId, filePath, previous) {
   return { path: att.path, cleanup };
 }
 
+/** Für scobees_copy_aufgabe: scobees meldet die ID der Kopie nicht, sondern gibt den Ziel-Lernpfad zurück.
+ * Die Kopie ist das eine Kind der Wurzel, das vorher nicht da war; bei keinem oder mehreren neuen Kindern null. */
+function findCopy(vorher, nachher) {
+  const alt = new Set((vorher || []).map((c) => c.id));
+  const neu = (nachher || []).filter((c) => !alt.has(c.id));
+  return neu.length === 1 ? neu[0].id : null;
+}
+
 /** Für scobees_patch_arbeitsblatt: jede Ersetzung muss im Markdown genau einmal passen, alles oder nichts.
  * Wirft bei Bausteinen ohne Markdown-Entsprechung oder bei einer Ersetzung, die nicht genau einmal vorkommt. */
 function applyPatches(md, ersetzungen) {
@@ -829,6 +837,84 @@ const TOOLS = [
     },
   },
   {
+    name: "scobees_copy_aufgabe",
+    description:
+      "Kopiert eine bestehende Aufgabe in eine Gliederung oder direkt in einen Lernpfad – auch in einen anderen Lernpfad oder ein anderes Fach. " +
+      "scobees kopiert dabei Beschreibung, Arbeitsblatt, Anhänge, Musterlösungen, Kachelbild und alle Einstellungen; die Kopie ist danach unabhängig vom Original. " +
+      "Optional gleich anpassen: name, description_html und ersetzungen fürs Arbeitsblatt (wie scobees_patch_arbeitsblatt, alles oder nichts – passt eine Ersetzung " +
+      "nicht genau einmal, wird gar nicht erst kopiert). Für übernommene Aufgaben immer dieses Werkzeug nehmen statt Lesen und Neu-Anlegen: nichts wird abgeschrieben, " +
+      "keine Datei neu hochgeladen. Unteraufgaben einer Wahlpflichtaufgabe lassen sich nicht kopieren, und eine Wahlpflichtaufgabe ist kein Ziel " +
+      "(erst in die Gliederung kopieren, dann mit scobees_move hineinschieben).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "ID der Aufgabe, die kopiert wird (LI-…)" },
+        parent_id: { type: "string", description: "Ziel: Gliederung oder Lernpfad (LI-…)" },
+        sort_order: { type: "number", description: "Position im Ziel, 0-basiert; ohne Angabe ans Ende" },
+        name: { type: "string", description: "Neuer Name der Kopie, optional" },
+        description_html: { type: "string", description: "Neue Beschreibung der Kopie (HTML), optional" },
+        ersetzungen: {
+          type: "array",
+          items: { type: "object", properties: { alt: { type: "string" }, neu: { type: "string" } }, required: ["alt", "neu"] },
+          description: "Ersetzungen im Arbeitsblatt der Kopie; jedes „alt“ muss im Markdown der Quelle genau einmal vorkommen.",
+        },
+      },
+      required: ["id", "parent_id"],
+    },
+    run: async (a) => {
+      const src = await api.lerninput(a.id);
+      if (!src.isLeaf) throw new Error("Kopieren geht nur für einzelne Aufgaben, nicht für Gliederungen, Wahlpflichtaufgaben oder ganze Lernpfade.");
+      if (nodeType(src) === "wahlaufgabe") throw new Error("Unteraufgaben einer Wahlpflichtaufgabe lassen sich nicht kopieren; die Kopie hätte außerhalb der Wahlpflichtaufgabe einen ungültigen Aufgabentyp.");
+      const ziel = await api.lerninput(a.parent_id);
+      const zielTyp = nodeType(ziel);
+      if (zielTyp !== "lernpfad" && zielTyp !== "gliederung") {
+        throw new Error("Ziel muss eine Gliederung oder ein Lernpfad sein. In eine Wahlpflichtaufgabe: erst in die Gliederung kopieren, dann mit scobees_move hineinschieben.");
+      }
+      // Ersetzungen vor dem Kopieren gegen die Quelle prüfen, damit bei einem Fehler nichts angelegt wird.
+      let neuesMd = null;
+      if (a.ersetzungen?.length) {
+        if (a.ersetzungen.some((e) => !e.alt)) throw new Error("„alt“ darf nicht leer sein.");
+        if (!src.taskDescription) throw new Error("Die Quelle hat kein Arbeitsblatt; ersetzungen sind nicht möglich.");
+        neuesMd = applyPatches(serloToMarkdown(src.taskDescription), a.ersetzungen);
+      }
+      let root = ziel;
+      for (let i = 0; i < 8 && root.parentId; i++) root = await api.lerninput(root.parentId);
+      const nachher = await api.copyInto(a.id, root.id);
+      const copyId = findCopy(root.children, nachher?.children ?? (await api.lerninput(root.id)).children);
+      if (!copyId) throw new Error("scobees hat den Kopierauftrag angenommen, die Kopie ließ sich im Ziel-Lernpfad aber nicht eindeutig finden. Bitte mit scobees_get_lernpfad am Ende des Lernpfads nachsehen.");
+      const warnungen = [];
+      try {
+        if (ziel.id !== root.id || a.sort_order != null) {
+          await api.move(copyId, ziel.id, a.sort_order ?? (ziel.children || []).length);
+        }
+        if (a.name || a.description_html != null || neuesMd) {
+          const form = taskToForm(await api.lerninput(copyId));
+          if (a.name) form.name = a.name;
+          if (a.description_html != null) form.description = a.description_html;
+          if (neuesMd) {
+            form.taskDescription = markdownToSerlo(neuesMd);
+            if (markdownToSerlo.warnungen?.length) warnungen.push(...markdownToSerlo.warnungen);
+          }
+          await api.saveTask(form);
+        }
+      } catch (e) {
+        throw new Error(`Die Kopie ${copyId} ist angelegt (am Ende des Ziel-Lernpfads), aber Verschieben oder Anpassen ist gescheitert: ${e.message} ` +
+          "Mit scobees_move und scobees_update_aufgabe nachholen oder die Kopie mit scobees_delete entfernen.");
+      }
+      const r = await api.lerninput(copyId);
+      const out = ok("Aufgabe kopiert. Die Kopie ist unabhängig vom Original.", {
+        id: r.id, name: r.name, kopie_von: a.id, parentId: r.parentId, sortOrder: r.sortOrder,
+        anhaenge: (r.attachments || []).map((x) => x.filename),
+        musterloesungen: (r.sampleSolutions || []).map((x) => x.filename),
+        hat_titelbild: !!r.coverImage, bausteine: listPlugins(r.taskDescription),
+      });
+      if (warnungen.length) out.warnungen = warnungen;
+      const ansicht = (r.attachments || []).length ? anhangAnsichtHinweis(r, false) : null;
+      if (ansicht) out.hinweis_ansicht = ansicht;
+      return out;
+    },
+  },
+  {
     name: "scobees_delete",
     description:
       "Löscht eine Aufgabe, eine leere Gliederung oder Wahlpflichtaufgabe oder einen ganzen Lernpfad. Erfordert confirm=true. Regeln von scobees: " +
@@ -897,6 +983,7 @@ const ZIEL = {
   scobees_upload_material: (a) => a.aufgabe_id,
   scobees_delete_material: (a) => a.aufgabe_id,
   scobees_move: (a) => a.id,
+  scobees_copy_aufgabe: (a) => a.parent_id,
   scobees_delete: (a) => (a.confirm === true ? a.id : null),
 };
 for (const tool of TOOLS) {
@@ -912,4 +999,4 @@ for (const tool of TOOLS) {
   };
 }
 
-module.exports = { isAssigned, anhangAnsichtHinweis, clarifyDeleteError, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches };
+module.exports = { isAssigned, anhangAnsichtHinweis, clarifyDeleteError, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches, findCopy };

@@ -1,4 +1,4 @@
-# Abbildungen herstellen (scobees-mcp 0.1.17)
+# Abbildungen herstellen (scobees-mcp 0.1.18)
 
 Gilt für Fachabbildungen und Situationsillustrationen im Arbeitsblatt. Wann welche Abbildung Pflicht ist, steht in `SKILL.md`, Abschnitt 2a. Kachelbilder sind etwas anderes und stehen in `references/werkzeuge.md`.
 
@@ -9,7 +9,7 @@ Gilt für Fachabbildungen und Situationsillustrationen im Arbeitsblatt. Wann wel
 3. **Als PNG rendern**, doppelte Auflösung (1600 px breit bei einer 800er Zeichenfläche).
 4. **Das PNG ansehen** und gegen die Prüfliste halten. Dieser Schritt entfällt nie; ein SVG, das im Quelltext richtig aussieht, ist gerendert oft fehlerhaft.
 5. Fehler im SVG beheben, neu rendern, wieder ansehen.
-6. **Hochladen** mit `scobees_upload_bild` (PNG) und die URL als `![Bildunterschrift](URL)` ins Arbeitsblatt setzen.
+6. **Hochladen** mit `scobees_upload_bild` (PNG) und die URL als `![Bildunterschrift](URL)` ins Arbeitsblatt setzen. Die URL gilt überall: Dieselbe Abbildung lässt sich in mehreren Aufgaben und Lernpfaden einbinden, ein zweiter Upload ist nicht nötig.
 
 Rendern, je nachdem was die Umgebung bietet:
 

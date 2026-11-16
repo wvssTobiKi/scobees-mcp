@@ -43,7 +43,7 @@ async function handle(req) {
           "Kursaufbau in scobees. Neu: scobees_list_subjects → Lehrkraft wählt das Fach → scobees_create_lernpfad → scobees_create_gliederung → " +
           "scobees_create_aufgabe (Arbeitsblatt als Markdown) → scobees_upload_material. Bestehende Kurse: scobees_list_lernpfade → scobees_get_lernpfad → " +
           "scobees_get_aufgabe, dann gezielt ändern: scobees_patch_arbeitsblatt für einzelne Textstellen, scobees_update_* für Felder, " +
-          "scobees_upload_material mit ersetzt_attachment_id bzw. scobees_delete_material für Dateien. Nach dem Schreiben zurücklesen und warnungen[] beachten. " +
+          "scobees_upload_material mit ersetzt_attachment_id bzw. scobees_delete_material für Dateien. Aufgaben aus einem anderen Lernpfad übernehmen: scobees_copy_aufgabe (kopiert Arbeitsblatt, Anhänge, Musterlösungen und Kachelbild mit) statt Lesen und Neu-Anlegen. Nach dem Schreiben zurücklesen und warnungen[] beachten. " +
           "Kachelbilder (cover_image_path) nur erzeugen, wenn die Lehrkraft sie für die jeweilige Ebene wünscht. " +
           "Ist ein Lernpfad bereits zugewiesen (scobees_get_lernpfad: zugewiesen=true, sonst warnung_zugewiesen im Ergebnis), sehen Lernende jede Änderung sofort – dann nur mit Zustimmung der Lehrkraft schreiben und nie Unfertiges anlegen. Zuweisung an Lerngruppen und Fächerverwaltung bleiben in der Weboberfläche; dieser Server greift nie auf Schüler- oder Personendaten zu.",
       },

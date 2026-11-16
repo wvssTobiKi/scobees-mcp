@@ -443,3 +443,16 @@ Test-Lernpfad mit sechs Aufgaben direkt an der Wurzel, einem Dummy-Konto zugewie
 
 Nicht geprüft: `abgabe_optional` mit Arbeitsblatt und ohne Upload; wie ein ausgefülltes und als Datei hochgeladenes Formular-PDF bei der Lehrkraft erscheint.
 
+## Mitschrift 24 (16.11.2026, v94.6): Aufgabe kopieren, Abstände um Quizfragen
+
+**Kopieren.** `POST lerninput/{id}/copy-into/{zielId}` ohne Rumpf. Das Ziel muss eine Wurzel sein (sonst HTTP 405 „Copy target must be a root lerninput“, siehe oben); die Quelle darf eine einzelne Aufgabe sein. Antwort: der Ziel-Lernpfad als Baum, nicht die Kopie. Die Kopie hängt als letztes Kind an der Wurzel und hat eine neue ID.
+
+- Mitkopiert: Name, Beschreibung, Arbeitsblatt (`taskDescription`), Zeit, Niveaus, Abgabeeinstellungen, Aufgabentyp, interne Notiz, Anhänge und Musterlösungen (jeweils mit neuen ATT-IDs, Pfad unter `…/library/<neue ID>/`), Kachelbild.
+- Geht innerhalb eines Lernpfads, in einen anderen Lernpfad und in ein anderes Fach (Niveaus bleiben, sie sind schulweit).
+- Danach lässt sich die Kopie mit `PUT lerninput/changePosition/{id}` in eine Gliederung des Ziel-Lernpfads schieben.
+- In einem zugewiesenen Ziel-Lernpfad ist die Kopie sofort sichtbar.
+
+Nicht geprüft: Gliederung oder Wahlpflichtaufgabe als Quelle (kopiert vermutlich den ganzen Teilbaum); `library/{id}/lerninput/{lid}/actions/copy` (Kopieren aus der Bib).
+
+**Abstände um Quizfragen** (Dummy-Konto, schmale Spalte, Schrift 18 px): Absatz → Fragetext im Quiz etwa 33 px; Schaltfläche „Stimmt's?“ einer Eingabe → nächster Absatz etwa 31 px; → Überschrift 2 etwa 54 px. Ein Einleitungssatz zwischen zwei Quizfragen steht damit gleich weit von beiden entfernt.
+

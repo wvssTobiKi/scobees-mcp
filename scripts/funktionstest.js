@@ -239,6 +239,28 @@ async function main() {
       await tool("scobees_delete")({ id: g2.id, confirm: true });
       await tool("scobees_delete")({ id: extra.id, confirm: true });
     });
+    await step("scobees_copy_aufgabe (Arbeitsblatt, Anhang, Musterlösung, Kachelbild, Ersetzung)", async () => {
+      const m = await tool("scobees_upload_material")({ aufgabe_id: taskId, file_path: FILES.pdf });
+      const sol = await tool("scobees_upload_material")({ aufgabe_id: taskId, file_path: FILES.pdf, als_musterloesung: true });
+      const c = await tool("scobees_copy_aufgabe")({ id: taskId, parent_id: folderId, sort_order: 0, name: "1.0 Kopie", ersetzungen: [{ alt: "Ersetzt.", neu: "In der Kopie geändert." }] });
+      must(c.id && c.id !== taskId && c.parentId === folderId && c.sortOrder === 0, `Kopie liegt falsch: ${c.parentId}/${c.sortOrder}`);
+      must(c.anhaenge.length === 1 && c.musterloesungen.length === 1, `Anhänge/Musterlösungen der Kopie: ${c.anhaenge.length}/${c.musterloesungen.length}`);
+      must(c.hat_titelbild === true, "Kachelbild nicht mitkopiert");
+      const k = await tool("scobees_get_aufgabe")({ id: c.id });
+      must(k.name === "1.0 Kopie" && k.arbeitsblatt_markdown.includes("In der Kopie geändert."), "Name oder Ersetzung fehlt in der Kopie");
+      must(k.art === "abgabe_pflicht_selbstkorrektur" && k.taskType === "Trainingsaufgabe", `Einstellungen der Kopie: ${k.art}/${k.taskType}`);
+      must(k.anhaenge[0].id !== m.attachment_id, "Kopie teilt sich den Anhang mit dem Original");
+      const o = await tool("scobees_get_aufgabe")({ id: taskId });
+      must(o.arbeitsblatt_markdown.includes("Ersetzt.") && o.anhaenge.length === 1 && o.anhaenge[0].id === m.attachment_id, "Original wurde verändert");
+      const vorher = (await api.lerninput(rootId)).children.length;
+      await expectError(() => tool("scobees_copy_aufgabe")({ id: taskId, parent_id: folderId, ersetzungen: [{ alt: "gibt es nicht", neu: "x" }] }), /kommt 0× vor/, "Kopie mit unpassender Ersetzung");
+      must((await api.lerninput(rootId)).children.length === vorher, "trotz unpassender Ersetzung wurde kopiert");
+      await expectError(() => tool("scobees_copy_aufgabe")({ id: childId, parent_id: folderId }), /Unteraufgaben einer Wahlpflichtaufgabe/, "Unteraufgabe kopieren");
+      await expectError(() => tool("scobees_copy_aufgabe")({ id: taskId, parent_id: choiceId }), /Ziel muss eine Gliederung oder ein Lernpfad sein/, "Kopie in Wahlpflichtaufgabe");
+      await tool("scobees_delete")({ id: c.id, confirm: true });
+      await tool("scobees_delete_material")({ aufgabe_id: taskId, attachment_id: sol.attachment_id, confirm: true });
+      await tool("scobees_delete_material")({ aufgabe_id: taskId, attachment_id: m.attachment_id, confirm: true });
+    });
     await step("scobees_get_lernpfad (Baum)", async () => {
       const t = await tool("scobees_get_lernpfad")({ id: rootId });
       must(t.zugewiesen === false, `zugewiesen ist ${t.zugewiesen}`);

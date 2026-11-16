@@ -108,3 +108,11 @@ Dabei aufgefallen: 2a und der Beispielplan hängten die Simulation an die Theori
 
 Offen: ob die Abgrenzung (Video und PDF-Vorlage zählen nicht) im Unterricht trägt; ob eine Simulationsaufgabe mit `aufgabentyp: info` statt Pflicht sinnvoller ist, wenn sie niemanden aufhalten soll.
 
+## 16.11.2026: Rückmeldungen aus einem Lernpfad mit 14 Aufgaben (0.1.18)
+
+Dreizehn Beobachtungen aus dem Aufbau eines Lernpfads. Einsortiert nach der Frage, ob etwas an scobees liegt oder eine didaktische Entscheidung ist, die auch für ein PDF oder Moodle gälte. Ersteres steht hier vollständig; Letzteres (Auftrag oben, Hinweisniveau je Bildungsgang) steht hier nur als kurze Rückfallregel mit dem Vorrang der Quelle, weil der Skill auch ohne Unterlagen der Lehrkraft arbeitet.
+
+Der Wunsch nach einem Kopierwerkzeug hat einen Endpunkt wieder hervorgeholt, der in einer früheren Mitschrift als „für ganze Lernpfade“ abgelegt war: Die damalige Fehlermeldung bezog sich auf das Ziel, nicht auf die Quelle. Eine einzelne Aufgabe lässt sich sehr wohl kopieren, wenn das Ziel die Wurzel ist. Der Wunsch `cover_image_von` (Kachelbild einer anderen Aufgabe wiederverwenden) ist zurückgestellt, weil die Kopie das Kachelbild mitbringt.
+
+Dass ein Skill nach einer Zusammenfassung des Dialogs nur noch gekürzt im Kontext steht, lässt sich im Skill selbst nur ansprechen, nicht verhindern. Ob der Satz am Anfang von `SKILL.md` etwas bewirkt, zeigt erst der nächste lange Dialog.
+

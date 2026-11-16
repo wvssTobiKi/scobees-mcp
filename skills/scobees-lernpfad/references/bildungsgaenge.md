@@ -17,6 +17,7 @@ Der Skill soll an einer BBS für alle Schulformen taugen. Vokabular, curriculare
 - **Zeitrichtwerte** immer gegen den Lehrplan halten: ein Lernfeld mit 60 h verträgt drei bis fünf Lernsituationen, nicht eine.
 - **Niveaus (Differenzierung in scobees)**: Die Schule definiert sie (z. B. Hauptschulabschluss, Realschulabschluss, Erweiterter Realschulabschluss). Sie meinen den Bildungsstand der Lernenden, nicht den Schwierigkeitsgrad der Aufgabe. Ohne Angabe sieht jeder die Aufgabe; differenziert wird durch eigene Aufgabenvarianten je Niveau. `scobees_list_tags` zeigt die Namen der Schule.
 - **Ansprache**: Fachschule Technik **Sie** (Erwachsene mit Berufsabschluss); BFS-dual und BES **Du**; BG und FOS nach Vorgabe der Lehrkraft. Eine Ansprache, die die Lehrkraft oder ihre Unterlagen vorgeben, geht immer vor.
+- **Hinweise vor Quizfragen**: In BES und BFS-dual darf die Einleitung vor einer Frage die Fundstelle nennen („Achte auf die Zeile …“, „Der Wert steht in der Tabelle oben“). In der Fachschule Technik bleibt sie neutral: Sie nennt höchstens die Quelle („im Datenblatt“), nicht die Stelle darin; die Fundstelle zu finden gehört dort zur Aufgabe. BG und FOS liegen dazwischen: Quelle nennen, die Stelle nur bei einem neuen Verfahren. Gibt die Quelle der Lehrkraft die Einleitungen vor, gilt die Quelle.
 - **Fachsprache**: Begriffe des Bildungsgangs verwenden (Lernfeld, Modul, Lerngebiet, Kompetenzbereich, Qualifizierungsbaustein), nicht „Kapitel“ oder „Lektion“.
 
 ## Recherche der Vorgabe (Modus A)

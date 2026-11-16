@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.18 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `scobees_copy_aufgabe` (24 Schritte: Kopie mit Arbeitsblatt, Anhang, Musterlösung, Kachelbild und Ersetzung; Original unverändert; Fehlerfälle); Kopie in einen Lernpfad eines anderen Fachs von Hand geprüft; Abstände um Quizfragen mit einem Dummy-Konto gemessen |
 | 0.1.17 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.16; mit einem Dummy-Konto geprüft: HTML-Simulation als Aufgabe ohne Arbeitsblatt, Stift-Abgabe auf einem PDF mit Formularfeldern |
 | 0.1.16 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | Abstände im Arbeitsblatt in der Vorschau „Ansicht Lernende“ ausgemessen (49 Messpunkte: Absatz, Aufzählung, Tabelle, Kasten, Überschriften der Ebenen 1 bis 3, jeweils mit und ohne Abstandszeile) |
 | 0.1.15 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `:::abstand` im Arbeitsblatt (Speichern und Zurücklesen); die Darstellung des Abstands in der Ansicht für Lernende hat die Lehrkraft an derselben Absatzform geprüft |
@@ -20,6 +21,15 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.18 – 2026-11-16
+
+- **Neues Werkzeug `scobees_copy_aufgabe`:** kopiert eine Aufgabe in eine Gliederung oder einen Lernpfad, auch über Lernpfade und Fächer hinweg. Es nutzt die Kopierfunktion von scobees (`POST lerninput/{id}/copy-into/{Wurzel}`), die Beschreibung, Arbeitsblatt, Anhänge, Musterlösungen, Kachelbild und Einstellungen mitnimmt, und verschiebt die Kopie danach an die gewünschte Stelle. Optional: neuer Name, neue Beschreibung und Ersetzungen im Arbeitsblatt (alles oder nichts; passt eine Ersetzung nicht, wird nicht kopiert). Vorher ging das nur über Lesen, vollständiges Neu-Senden des Markdown und erneutes Hochladen aller Dateien.
+- Skill: Folgen mehrere Quizfragen aufeinander, beginnt jede Einleitung mit einer fetten Kennung (`**Frage 1:**`). Gemessen: Der Einleitungssatz steht mit 31 px und 33 px genau zwischen zwei Fragen.
+- Skill: Tabellen im Arbeitsblatt sind nicht ausfüllbar (Platzhalter statt leerer Zellen, Ort des Eintragens nennen); ein praktischer Auftrag steht als Kasten oben; Hinweise vor Quizfragen richten sich nach dem Bildungsgang (Fachschule Technik: Quelle ja, Fundstelle nein).
+- Skill: Nach einer Zusammenfassung des Dialogs `SKILL.md` und Referenzen neu lesen; erscheint `warnung_zugewiesen` zum ersten Mal, die Lehrkraft sofort ansprechen; die Oberfläche spricht Lernende immer mit Du an.
+- Referenzen: Patch mit leerem `neu` entfernt Absätze; eine Bild-URL gilt in allen Lernpfaden; Abstände um Quizfragen in der Messtabelle.
+- 2 neue Tests (44 gesamt), Funktionstest 24 Schritte.
 
 ## 0.1.17 – 2026-11-16
 

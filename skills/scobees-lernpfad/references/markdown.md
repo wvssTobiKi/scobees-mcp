@@ -1,4 +1,4 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.17)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.18)
 
 Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
@@ -125,6 +125,9 @@ Gemessen in der Ansicht für Lernende (scobees 94.6, Schrift 18 px, Zeile 24 px)
 | Aufzählung → Überschrift 2 | 59 px darüber |
 | Absatz → Überschrift 3 → Absatz | 12 px darüber, 32 px darunter |
 | Überschrift 1 → Absatz | 36 px darunter |
+| Quiz → Absatz | etwa 31 px ab der Schaltfläche „Stimmt's?“ |
+| Absatz → Frage im Quiz | etwa 33 px |
+| Quiz → Überschrift 2 | etwa 54 px |
 
 Daraus folgt: `:::abstand` wirkt nur nach einem Absatz. Am Anfang, nach einer Aufzählung, Tabelle, Abbildung, einem Kasten, Quiz oder einer Überschrift lässt der Server sie weg und meldet das in `warnungen[]`; sonst stünden dort 54 px und mehr statt 24. Sinnvoll ist sie vor Arbeitsschritten und vor einer Überschrift der Ebene 2, wenn ein Absatz vorausgeht (Regeln in `SKILL.md`). Überschriften der Ebene 3 vermeiden. Der Abstand unter einer Überschrift kommt aus der Formatvorlage von scobees und lässt sich nicht verkleinern.
 

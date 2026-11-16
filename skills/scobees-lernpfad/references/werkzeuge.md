@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.17)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.18)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -27,11 +27,12 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `scobees_update_wahlpflicht` | `id`*, dieselben Felder |
 | `scobees_create_aufgabe` | `parent_id`*, `name`*, `description_html`, `art`, `abgabeformen`, `aufgabentyp`, `arbeitsblatt_markdown` oder `serlo_json`, `estimated_time` (Minuten), `differenzierungen`, `links`, `interne_notiz`, `cover_image_path` (Kachelbild) |
 | `scobees_update_aufgabe` | `id`*, dieselben Felder; nur Übergebenes ändert sich, `arbeitsblatt_markdown`/`serlo_json` ersetzen das Arbeitsblatt komplett |
-| `scobees_patch_arbeitsblatt` | `id`*, `ersetzungen`* (Liste `{alt, neu}`). Ersetzt im aktuellen Arbeitsblatt-Markdown gezielt Zeichenketten statt alles neu zu senden – jede `alt` muss genau einmal vorkommen (alles oder nichts, sonst keine Änderung und Meldung, welche scheiterte). Nur bei verlustfrei als Markdown darstellbarem Arbeitsblatt (sonst Fehler mit Verweis auf `serlo_json`); Werkzeugergebnis kann ebenfalls `warnungen[]` enthalten `alt` und `neu` dürfen mehrzeilig sein (z. B. eine Abbildung nach einer Überschrift einfügen: `alt` = Überschrift, `neu` = Überschrift, Leerzeile, Bildzeile) und in Tabellenzeilen liegen |
+| `scobees_patch_arbeitsblatt` | `id`*, `ersetzungen`* (Liste `{alt, neu}`). Ersetzt im aktuellen Arbeitsblatt-Markdown gezielt Zeichenketten statt alles neu zu senden – jede `alt` muss genau einmal vorkommen (alles oder nichts, sonst keine Änderung und Meldung, welche scheiterte). Nur bei verlustfrei als Markdown darstellbarem Arbeitsblatt (sonst Fehler mit Verweis auf `serlo_json`); Werkzeugergebnis kann ebenfalls `warnungen[]` enthalten `alt` und `neu` dürfen mehrzeilig sein (z. B. eine Abbildung nach einer Überschrift einfügen: `alt` = Überschrift, `neu` = Überschrift, Leerzeile, Bildzeile) und in Tabellenzeilen liegen. Ein mehrzeiliges `alt` mit leerem `neu` entfernt ganze Absätze samt Leerzeilen |
 | `scobees_upload_material` | `aufgabe_id`*, `file_path`* (absoluter lokaler Pfad), `als_musterloesung`, `ersetzt_attachment_id` (alten Anhang nach erfolgreichem Upload löschen) Liefert `hinweis_ansicht`, wenn der Anhang das Arbeitsblatt aus der Startansicht der Lernenden verdrängt |
 | `scobees_delete_material` | `aufgabe_id`*, `attachment_id`* (aus `scobees_get_aufgabe` → `anhaenge[].id`/`musterloesungen[].id`), `confirm`* (muss `true` sein). Löscht genau einen Anhang oder eine Musterlösung; prüft die Zugehörigkeit und warnt, wenn es das letzte PDF einer Stift-Abgabe (`abgabeformen: pen`) ist |
 | `scobees_upload_bild` | `file_path`* (PNG, JPG, GIF, WebP, SVG) → URL für `![Bildunterschrift](URL)` im Arbeitsblatt (öffentlich bei Serlo). Für Fachabbildungen und Situationsillustrationen; Herstellung in `references/abbildungen.md` |
-| `scobees_move` | `id`*, `parent_id`*, `sort_order`* (0-basiert; auch in andere Gliederung desselben Pfads). Einzelne Aufgabe in eine Wahlpflichtaufgabe: geht, sie wird Unteraufgabe und verliert ihren Aufgabentyp (`warnung` im Ergebnis). Nicht möglich: Unteraufgabe aus der Wahlpflichtaufgabe heraus, Gliederung oder Wahlpflichtaufgabe in eine Wahlpflichtaufgabe |
+| `scobees_move` | `id`*, `parent_id`*, `sort_order`* (0-basiert; auch in andere Gliederung desselben Pfads; Arbeitsblatt, Kachelbild und Anhänge gehen mit). Einzelne Aufgabe in eine Wahlpflichtaufgabe: geht, sie wird Unteraufgabe und verliert ihren Aufgabentyp (`warnung` im Ergebnis). Nicht möglich: Unteraufgabe aus der Wahlpflichtaufgabe heraus, Gliederung oder Wahlpflichtaufgabe in eine Wahlpflichtaufgabe |
+| `scobees_copy_aufgabe` | `id`* (Quelle), `parent_id`* (Gliederung oder Lernpfad, auch in einem anderen Lernpfad oder Fach), `sort_order` (ohne Angabe ans Ende), `name`, `description_html`, `ersetzungen` (wie bei `scobees_patch_arbeitsblatt`; passt eine nicht genau einmal, wird gar nicht kopiert). scobees kopiert Beschreibung, Arbeitsblatt, Anhänge, Musterlösungen, Kachelbild und alle Einstellungen; die Kopie ist unabhängig vom Original. Nicht für Unteraufgaben einer Wahlpflichtaufgabe; das Ziel ist nie eine Wahlpflichtaufgabe (erst kopieren, dann `scobees_move`) |
 | `scobees_delete` | `id`*, `confirm: true`*, `auch_wenn_zugewiesen`. Ganzer Lernpfad: samt Inhalt, aber nur wenn nicht zugewiesen. Gliederung und Wahlpflichtaufgabe: nur leer. Einzelne Aufgabe: immer; in einem zugewiesenen Lernpfad nur mit `auch_wenn_zugewiesen: true` (verschwindet sofort bei den Lernenden, auch mit Abgaben) |
 
 ## Aufgabenart `art` (richtet sich nach der Abgabe)
@@ -81,6 +82,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Videolink-Abgabe: Eingabefeld „Link zu deinem Ergebnis (Video)“ rechts neben dem Arbeitsblatt.
 - Datei-Abgabe: Nach dem Hochladen zeigt nur ein Zähler an der Schaltfläche „Datei hochladen“, dass eine Datei bereitliegt; eine Vorschau gibt es vor der Abgabe nicht. Nach der Abgabe zeigt der Reiter „Aufgabe“ die eigenen Ergebnisse (Bild des Arbeitsblatts und die Datei); erneut abgeben können Lernende nicht.
 - Eine vollständig erledigte Gliederung zeigt statt ihres Kachelbilds einen Haken.
+- Die Texte der Oberfläche stehen immer in der Du-Form („Hier kannst du dir die Datei herunterladen“), auch wenn der Lernpfad in der Sie-Form geschrieben ist.
 
 ## Was die Lehrkraft von einer Abgabe sieht (Lerndoku, scobees 94.6)
 

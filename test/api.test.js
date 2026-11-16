@@ -255,3 +255,23 @@ test("clarifyDeleteError erklärt die Löschregeln von scobees", () => {
   assert.throws(() => clarifyDeleteError(new Error("scobees-API DELETE lerninput/LI-1 → HTTP 404: nicht gefunden")), /HTTP 404/);
 });
 
+
+test("findCopy: die Kopie ist das eine neue Kind des Ziel-Lernpfads", () => {
+  const { findCopy } = require("../src/tools");
+  const vorher = [{ id: "LI-A" }, { id: "LI-B" }];
+  assert.equal(findCopy(vorher, [...vorher, { id: "LI-NEU" }]), "LI-NEU");
+  assert.equal(findCopy([], [{ id: "LI-NEU" }]), "LI-NEU");
+  assert.equal(findCopy(undefined, [{ id: "LI-NEU" }]), "LI-NEU");
+  // kein oder mehrere neue Kinder: nicht raten
+  assert.equal(findCopy(vorher, vorher), null);
+  assert.equal(findCopy(vorher, [...vorher, { id: "LI-X" }, { id: "LI-Y" }]), null);
+  assert.equal(findCopy(vorher, undefined), null);
+});
+
+test("scobees_copy_aufgabe ist angemeldet und meldet zugewiesene Ziele", () => {
+  const { TOOLS } = require("../src/tools");
+  const t = TOOLS.find((x) => x.name === "scobees_copy_aufgabe");
+  assert.ok(t, "Werkzeug fehlt");
+  assert.deepEqual(t.inputSchema.required, ["id", "parent_id"]);
+  for (const p of ["sort_order", "name", "description_html", "ersetzungen"]) assert.ok(t.inputSchema.properties[p], `Parameter ${p} fehlt`);
+});
