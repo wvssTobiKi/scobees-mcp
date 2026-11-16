@@ -431,3 +431,15 @@ Test-Arbeitsblatt mit 49 markierten Zeilen, Vorschau „Ansicht Lernende“ bei 
 
 Folge für den Server (0.1.16): Ein Abstandsabsatz wird nur nach einem Absatz erzeugt.
 
+## Mitschrift 23 (16.11.2026, v94.6): Simulation ohne Arbeitsblatt, PDF mit Formularfeldern
+
+Test-Lernpfad mit sechs Aufgaben direkt an der Wurzel, einem Dummy-Konto zugewiesen, angesehen in learn.scobees.com.
+
+- **Aufgabe ohne Arbeitsblatt, `art: info`, HTML-Datei als Anhang:** links die Simulation im Rahmen (`sandbox="allow-scripts allow-modals"`), darüber „Hier kannst du dir die Datei herunterladen“; rechts „Worum geht's“ und „Materialien mit Vorschaufunktion (1)“. Keine Kachel „Serlo-Inhalt“. „Lernergebnis abgeben“ ist sofort aktiv. Regler, Eingabefeld und Schaltfläche in der Simulation reagieren.
+- **Aufgabe ohne Arbeitsblatt, `abgabe_optional` mit `file`:** Darstellung wie oben, aber „Lernergebnis abgeben“ ist gesperrt, Hinweis „Zum Abgeben musst du eine Datei hochladen.“
+- **Aufgabe mit Arbeitsblatt (ohne Quiz), `art: info`, HTML-Anhang:** Simulation links, Arbeitsblatt als zweite Kachel „Serlo-Inhalt“, „Lernergebnis abgeben“ aktiv.
+- **PDF mit Formularfeldern (AcroForm, drei Textfelder, ein Kontrollkästchen), `abgabe_pflicht`:** Mit `[pen, file]`, mit `[pen]` und zum Vergleich ein PDF ohne Formularfelder mit `[pen, file]`: in allen drei Fällen Stiftwerkzeuge über dem PDF. Hinweis bei `[pen, file]`: „Zum Abgeben musst du auf dem PDF schreiben oder eine Datei hochladen.“, bei `[pen]`: „Zum Abgeben musst du auf dem PDF schreiben.“ Das PDF wird als Bild dargestellt; die Formularfelder sind farbige Kästchen ohne Eingabemöglichkeit (Klick und Tippen bewirken nichts). Mit dem Stift lässt sich über die Felder schreiben (von der Lehrkraft am Dummy-Konto ausprobiert).
+- **Vorschau der Lehrkraft („Ansicht Lernende“):** zeigt bei einer Stift-Abgabe keine Stiftwerkzeuge (Beobachtung der Lehrkraft); das liegt an der Vorschau, nicht an der Aufgabe.
+
+Nicht geprüft: `abgabe_optional` mit Arbeitsblatt und ohne Upload; wie ein ausgefülltes und als Datei hochgeladenes Formular-PDF bei der Lehrkraft erscheint.
+

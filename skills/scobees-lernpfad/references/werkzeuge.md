@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.16)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.17)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -40,7 +40,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 |---|---|---|
 | `info` | keine Abgabe; abgeschlossen mit „Lernergebnis abgeben“ (bei `aufgabentyp: info` mit „Infoinput erledigt“) | Situation, Auftrag, reine Lesebausteine |
 | `selbstkontrolle` | „Lernergebnis abgeben – bist du fertig?“ ohne Upload; Quiz prüft sich im Arbeitsblatt | Theorie mit Quiz (Standard) |
-| `abgabe_optional` | Abgabe möglich (Datei, Stift-PDF oder Link), nicht erzwungen | Ergebnis erwünscht, aber nicht nötig |
+| `abgabe_optional` | Abgabe möglich (Datei, Stift-PDF oder Link), nicht erzwungen | Ergebnis erwünscht, aber nicht nötig. Nicht für Aufgaben ohne Arbeitsblatt: Dort bleibt „Lernergebnis abgeben“ gesperrt, bis etwas hochgeladen ist |
 | `abgabe_pflicht` | „Zum Abgeben musst du eine Datei hochladen“ bzw. „auf dem PDF schreiben“ | Handlungsergebnis |
 | `abgabe_selbstkorrektur` | nach Abgabe Reiter „Selbstkorrektur“: eigene Abgabe neben der Musterlösung | Rechnung oder Skizze mit Musterlösung, Abgabe freiwillig |
 | `abgabe_pflicht_selbstkorrektur` | wie oben, Abgabe erzwungen | Standard für Rechnungen und Entwürfe mit Musterlösung |
@@ -63,7 +63,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 
 - Lehrkräfte: `https://teach.scobees.com`, Lernende: `https://learn.scobees.com`.
 - Ein Lernpfad öffnet sich direkt unter `https://teach.scobees.com/library/editor/<Lernpfad-ID>`.
-- Vorschau: dort „Ansicht Lernende“ → Niveau wählen → Aufgabe anklicken. Quizze lassen sich ausprobieren, Eingaben werden nicht gespeichert, Abgaben lassen sich nicht testen.
+- Vorschau: dort „Ansicht Lernende“ → Niveau wählen → Aufgabe anklicken. Quizze lassen sich ausprobieren, Eingaben werden nicht gespeichert, Abgaben lassen sich nicht testen; die Stiftwerkzeuge einer Stift-Abgabe erscheinen in der Vorschau nicht.
 - Anmelden muss sich die Lehrkraft selbst.
 
 ## Was Lernende sehen (Dummy-Konto, scobees 94.6)
@@ -75,7 +75,8 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 - Aufgabe: links das Arbeitsblatt (bei Stift-Abgabe das PDF), rechts Zeit, „Worum geht's“ (Beschreibung) und Materialien; unten „Lernergebnis abgeben“.
 - Abgabe mit Selbstkorrektur: Nach dem Abgeben öffnet sich der Reiter „Selbstkorrektur“ mit dem eigenen Ergebnis links (mit Stift kommentierbar) und der Musterlösung rechts; „Ich habe alles kontrolliert“ schließt ab, danach folgt die Reflexion.
 - Bearbeitungsreihenfolge: Steht „nach Reihenfolge“ an der Gliederung, sind alle Aufgaben nach der ersten offenen gesperrt (graue Kachel mit Schloss, ein Klick bewirkt nichts); mit jeder Abgabe wird die nächste frei. Dieselbe Einstellung nur am Lernpfad hat keine Aufgabe in einer Gliederung gesperrt.
-- Material: Der erste Anhang steht links statt des Arbeitsblatts; das Arbeitsblatt ist die letzte Kachel („Serlo-Inhalt“). Ein Wechsel zwischen den Kacheln leert die Quizfelder. Bilder öffnen sich in einem Betrachter mit Zoom, HTML-Dateien laufen eingebettet (Skripte ja; Speichern, Formulare, neue Fenster nein), Links zeigen „Hier weiter zum Link“.
+- Material: Der erste Anhang steht links statt des Arbeitsblatts; das Arbeitsblatt ist die letzte Kachel („Serlo-Inhalt“). Ein Wechsel zwischen den Kacheln leert die Quizfelder. Bilder öffnen sich in einem Betrachter mit Zoom, HTML-Dateien laufen eingebettet (Skripte ja; Speichern, Formulare, neue Fenster nein), Links zeigen „Hier weiter zum Link“. Eine Aufgabe ohne Arbeitsblatt zeigt nur ihren Anhang; die Kachel „Serlo-Inhalt“ fehlt dann.
+- Stift-Abgabe: Stiftwerkzeuge über dem PDF, Hinweis „Zum Abgeben musst du auf dem PDF schreiben“ (mit Datei als zweiter Form: „… oder eine Datei hochladen“). Formularfelder im PDF werden nur als Kästchen dargestellt; tippen lässt sich darin nicht, mit dem Stift hineinschreiben schon.
 - Niveaus: Aufgaben mit einem anderen Niveau als dem des Lernenden fehlen in seiner Ansicht.
 - Videolink-Abgabe: Eingabefeld „Link zu deinem Ergebnis (Video)“ rechts neben dem Arbeitsblatt.
 - Datei-Abgabe: Nach dem Hochladen zeigt nur ein Zähler an der Schaltfläche „Datei hochladen“, dass eine Datei bereitliegt; eine Vorschau gibt es vor der Abgabe nicht. Nach der Abgabe zeigt der Reiter „Aufgabe“ die eigenen Ergebnisse (Bild des Arbeitsblatts und die Datei); erneut abgeben können Lernende nicht.

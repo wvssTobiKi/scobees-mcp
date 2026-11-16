@@ -9,10 +9,10 @@
  "szenario": "Erstprüfung einer neuen Werkstattinstallation bei Elektro Brandt",
  "ergebnis": "bewertetes Prüfprotokoll mit Freigabe",
  "material": [
-  "fehlerstromkreis.html → 3.1",
+  "fehlerstromkreis.html → 3.2 (eigene Aufgabe ohne Arbeitsblatt)",
   "Messprotokoll_Vorlage.pdf → 5.1",
   "Pruefprotokoll_Loesung.pdf → 5.2 (Musterlösung)",
-  "2-1_pruefablauf.svg, 2-2_messkategorien.svg, 5-1_messschaltung_rpe.svg, 6-2_isolationsmessung.svg → Quelldateien der Abbildungen"
+  "2-1_pruefablauf.svg, 2-2_messkategorien.svg, 3-1_fehlerschleife.svg, 5-1_messschaltung_rpe.svg, 6-2_isolationsmessung.svg → Quelldateien der Abbildungen"
  ],
  "ablage": "…\\Schutzmaßnahmen\\scobees\\",
  "fragen": [
@@ -42,7 +42,8 @@
      "id": "",
      "abbildungen": [
       "Fachabbildung: Prüfablauf Besichtigen → Erproben → Messen mit je einem Beispiel aus der Werkstatt"
-     ]
+     ],
+     "ohne_interaktiv": "Begriffe und Reihenfolge; die Fachabbildung zeigt den Ablauf, einzustellen gibt es nichts"
     },
     {
      "nr": "2.2",
@@ -61,7 +62,50 @@
      "id": "",
      "abbildungen": [
       "Fachabbildung: Messkategorien CAT I bis IV am Weg vom Hausanschluss bis zum Gerät"
-     ]
+     ],
+     "ohne_interaktiv": "Regeln und Kategorien zum Nachschlagen; geübt wird an der Übungswand in 5.1"
+    }
+   ],
+   "reihenfolge": "nach Reihenfolge"
+  },
+  {
+   "nr": "3",
+   "name": "Fehlerschutz verstehen",
+   "id": "",
+   "aufgaben": [
+    {
+     "nr": "3.1",
+     "name": "Fehlerschleife und Abschaltung",
+     "min": 30,
+     "pflicht": true,
+     "marken": [
+      [
+       "p",
+       "Theorie + Zahleneingabe"
+      ]
+     ],
+     "tech": "art=selbstkontrolle · aufgabentyp=pflicht · quiz-input",
+     "id": "",
+     "abbildungen": [
+      "Fachabbildung: Fehlerschleife im TN-System mit den Widerständen der Werkstatt"
+     ],
+     "interaktiv": "HTML-Simulation in 3.2: Schleifenwiderstand und Sicherung einstellen, Abschaltung ablesen"
+    },
+    {
+     "nr": "3.2",
+     "name": "Abschaltung prüfen",
+     "min": 15,
+     "pflicht": true,
+     "marken": [
+      [
+       "p",
+       "Simulation"
+      ]
+     ],
+     "inhalt": "Den in 3.1 berechneten Wert einstellen und vergleichen; die Kontrollfrage steht in der Simulation",
+     "tech": "art=info · aufgabentyp=pflicht · Anhang fehlerstromkreis.html, kein Arbeitsblatt",
+     "id": "",
+     "ohne_abbildung": "Die Simulation zeigt den Stromkreis selbst"
     }
    ],
    "reihenfolge": "nach Reihenfolge"

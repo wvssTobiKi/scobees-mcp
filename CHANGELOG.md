@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.17 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.16; mit einem Dummy-Konto geprüft: HTML-Simulation als Aufgabe ohne Arbeitsblatt, Stift-Abgabe auf einem PDF mit Formularfeldern |
 | 0.1.16 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | Abstände im Arbeitsblatt in der Vorschau „Ansicht Lernende“ ausgemessen (49 Messpunkte: Absatz, Aufzählung, Tabelle, Kasten, Überschriften der Ebenen 1 bis 3, jeweils mit und ohne Abstandszeile) |
 | 0.1.15 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `:::abstand` im Arbeitsblatt (Speichern und Zurücklesen); die Darstellung des Abstands in der Ansicht für Lernende hat die Lehrkraft an derselben Absatzform geprüft |
 | 0.1.14 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.13 |
@@ -19,6 +20,15 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.17 – 2026-11-16
+
+- **Skill: Die Prüfung auf interaktive Elemente wird im Grobplan sichtbar.** Jede Theorie-Aufgabe trägt entweder `interaktiv` (Art, Ort und Inhalt des Elements) oder `ohne_interaktiv` (Grund). Die Karten-Ansicht zeigt das Element als eigene Zeile, den Verzicht grau und eine fehlende Angabe rot mit dem Vermerk „nicht freigabefähig“; dazu eine Kennzahl „Interaktive Elemente“. Anlass: In einem Praxislauf entstanden zu drei Theorie-Aufgaben nur Abbildungen, weil das Ergebnis der Prüfung nirgends stehen musste.
+- Skill: Als interaktives Element zählen HTML-Simulation, HTML-Schrittfolge und GeoGebra-Applet. Video, PDF-Vorlage zum Beschriften, Drag-and-drop und Auswahlfragen stehen in einer eigenen Tabelle und ersetzen die Prüfung nicht.
+- Skill: **Eine HTML-Simulation bekommt eine eigene Aufgabe ohne Arbeitsblatt** (`art: info`) direkt nach ihrer Theorie-Aufgabe. Abschnitt 2a und der Beispielplan hängten sie bisher an die Theorie-Aufgabe, im Widerspruch zu Schritt 6. Mit einem Dummy-Konto geprüft: Lernende sehen links nur die Simulation, keine leere Kachel „Serlo-Inhalt“, und können abschließen. Bei `abgabe_optional` ohne Arbeitsblatt bleibt „Lernergebnis abgeben“ dagegen gesperrt, bis eine Datei hochgeladen ist.
+- Skill: PDF mit Formularfeldern bei Stift-Abgabe: Die Stiftwerkzeuge erscheinen bei Lernenden, auch neben der Datei-Abgabe; die Felder lassen sich in scobees nicht mit der Tastatur ausfüllen. Die Vorschau der Lehrkraft zeigt die Stiftwerkzeuge nicht.
+- Skill: Steht das Prüfergebnis schon in den Unterlagen der Lehrkraft, wird es übernommen (Modus B).
+- 3 neue Tests für die Vorlage des Grobplans (42 gesamt).
 
 ## 0.1.16 – 2026-11-16
 

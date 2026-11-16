@@ -97,3 +97,14 @@ Zwei Korrekturen an eigenen Festlegungen: Die Du-Form war als allgemeine Regel z
 ## 16.11.2026: Abstand und ein Hänger im Umwandler (0.1.15)
 
 Die Lehrkraft hatte für Arbeitsschritte eine Form gefunden, die in der Ansicht für Lernende gut aussieht, aber ein unsichtbares Zeichen im Quelltext braucht. Der Wunsch nach einer lesbaren Schreibweise hat nebenbei einen alten Fehler aufgedeckt: Hätte ein Dialog `:::abstand` oder `:::schritt` mit dem Server 0.1.14 ausprobiert, wäre die Umwandlung in einer Endlosschleife hängen geblieben. Der Fehler steckte seit der ersten Fassung in der Absatz-Erkennung und fiel nie auf, weil alle Tests gültiges Markdown verwendeten. Die neuen Tests füttern die Umwandlung deshalb gezielt mit Zeilen, die nur wie ein Blockanfang aussehen.
+
+## 16.11.2026: Prüfung auf interaktive Elemente sichtbar gemacht (0.1.17)
+
+In einem Praxislauf entstanden zu drei Theorie-Aufgaben nur Abbildungen. Der Wortlaut in 2a war eindeutig („Lässt sich das Prinzip ausprobieren, beobachten oder vergleichen?“), aber das Ergebnis der Prüfung musste nirgends stehen. Bei den Abbildungen gibt es diese Stelle (`ohne_abbildung`), bei den interaktiven Elementen fehlte sie.
+
+Entschieden: keine dritte Sperre, sondern eine Pflichtangabe im Grobplan (`interaktiv` / `ohne_interaktiv`), die die Vorlage selbst einfordert. Eine fehlende Angabe ist für die Lehrkraft rot sichtbar; die zweite Sperre nennt sie als Bedingung für die Freigabe. Die Vorlage erkennt Theorie-Aufgaben an der Marke „Theorie …“; das ist eine Konvention, kein Feld, und hängt daran, dass die Marke gesetzt wird.
+
+Dabei aufgefallen: 2a und der Beispielplan hängten die Simulation an die Theorie-Aufgabe, Schritt 6 verbot genau das. Jetzt steht die Regel einmal in Schritt 6, 2a verweist darauf. Die Reihenfolge ist Theorie, dann Simulation, passend zu „erst rechnen, dann prüfen“. Die Tabelle der Mittel ist geteilt, weil sie Kontrollformen (Drag-and-drop, Auswahl) als interaktive Elemente führte.
+
+Offen: ob die Abgrenzung (Video und PDF-Vorlage zählen nicht) im Unterricht trägt; ob eine Simulationsaufgabe mit `aufgabentyp: info` statt Pflicht sinnvoller ist, wenn sie niemanden aufhalten soll.
+
