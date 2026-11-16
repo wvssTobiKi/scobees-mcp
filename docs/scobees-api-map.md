@@ -415,3 +415,19 @@ Aus dem Unterricht einer Lehrkraft (Ansicht für Lernende): Ein Absatz `{"type":
 
 Beobachtet, aber nicht ausgemessen: Nach einer Aufzählung ist der Abstand mit Abstandsabsatz sichtbar größer als nach Fließtext (vermutlich bringt die Liste eigenen Abstand mit). Der Abstand unter einer Überschrift der Ebene 2 kommt aus der Formatvorlage und lässt sich über den Inhalt nicht verkleinern; über der Überschrift lässt er sich mit einem Abstandsabsatz vergrößern.
 
+## Mitschrift 22 (16.11.2026, v94.6): Abstände im Arbeitsblatt ausgemessen
+
+Test-Arbeitsblatt mit 49 markierten Zeilen, Vorschau „Ansicht Lernende“ bei 1400 px Fensterbreite; gemessen als Differenz zwischen Unterkante des vorherigen und Oberkante des nächsten Textelements (`getBoundingClientRect`).
+
+- Absatz: Schrift 18 px, Zeilenhöhe 23,94 px, kein Außenabstand. Absatz auf Absatz: 0 px.
+- Abstandsabsatz (U+200E): eine Zeile, 24 px. Zwei hintereinander: 48 px.
+- Aufzählung: 16 px darüber, 8 px zwischen den Punkten, 30 px darunter. Mit Abstandsabsatz danach: 54 px.
+- Tabelle (eigener Baustein): 39 px vom Absatz bis zum Text der Kopfzeile, 71 px vom Text der letzten Zeile bis zum nächsten Absatz. Mit Abstandsabsatz: 95 px.
+- Kasten: 35 px bis zum Kastentitel, 55 px vom Kastentext bis zum nächsten Absatz. Mit Abstandsabsatz: 79 px.
+- Überschrift 1: Schrift 32 px, 16 px Außenabstand oben, 36 px unten.
+- Überschrift 2: Schrift 27,2 px, kein Außenabstand oben, aber etwa 29 px Innenabstand oben; 24 px unten. Nach einem Absatz also 29 px darüber, 24 px darunter.
+- Überschrift 3: Schrift 21 px, etwa 12 px Innenabstand oben, 32 px unten.
+- Fette Zeile: wie ein Absatz, 0 px darüber und darunter.
+
+Folge für den Server (0.1.16): Ein Abstandsabsatz wird nur nach einem Absatz erzeugt.
+

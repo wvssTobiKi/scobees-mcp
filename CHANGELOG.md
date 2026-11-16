@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.16 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | Abstände im Arbeitsblatt in der Vorschau „Ansicht Lernende“ ausgemessen (49 Messpunkte: Absatz, Aufzählung, Tabelle, Kasten, Überschriften der Ebenen 1 bis 3, jeweils mit und ohne Abstandszeile) |
 | 0.1.15 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `:::abstand` im Arbeitsblatt (Speichern und Zurücklesen); die Darstellung des Abstands in der Ansicht für Lernende hat die Lehrkraft an derselben Absatzform geprüft |
 | 0.1.14 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.13 |
 | 0.1.13 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Bearbeitungsreihenfolge an der Gliederung mit einem Dummy-Konto geprüft (Sperre, Freischalten nach Abgabe, freie Gliederung daneben); `scripts/funktionstest.js` prüft das Setzen und Erhalten der Einstellung |
@@ -18,6 +19,13 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.16 – 2026-11-16
+
+- **`:::abstand` wirkt nur noch nach einem Absatz.** Messung in scobees: Absätze folgen ohne Abstand aufeinander, eine Abstandszeile setzt 24 px. Nach einer Aufzählung stehen von selbst 30 px, nach Tabelle und Kasten mehr; mit Abstandszeile wurden daraus 54 px und mehr. Der Server lässt die Abstandszeile deshalb am Anfang, nach Aufzählung, Tabelle, Abbildung, Kasten, Quiz und Überschrift weg und meldet das in `warnungen[]`. Der Abstand vor einem Arbeitsschritt ist damit nach Fließtext (24 px) und nach einer Aufzählung (30 px) praktisch gleich. Bestehende Arbeitsblätter mit überzähligen Abstandszeilen werden beim nächsten Speichern über Markdown von selbst bereinigt.
+- Skill: Vor einer Überschrift der Ebene 2 eine Abstandszeile, wenn ein Absatz vorausgeht (29 px darüber gegen 24 px darunter wirken, als hinge die Überschrift zwischen zwei Abschnitten). Überschriften der Ebene 3 vermeiden (12 px darüber, 32 px darunter). Messwerte als Tabelle in `references/markdown.md`.
+- Nicht änderbar: der Abstand unter Überschriften; er kommt aus der Formatvorlage von scobees.
+- 1 neuer Test (39 gesamt).
 
 ## 0.1.15 – 2026-11-16
 

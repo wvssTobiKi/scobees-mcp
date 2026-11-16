@@ -139,7 +139,13 @@ function parseBlocks(lines) {
     // Inhalt hat in scobees keine Höhe; erprobt ist ein Absatz mit dem unsichtbaren Zeichen U+200E (LEFT-TO-RIGHT MARK).
     if (/^:::\s*abstand\s*$/i.test(t) || t === SPACER) {
       if (t === SPACER) warn("Abstandszeile mit dem unsichtbaren Zeichen U+200E: funktioniert, geht beim Kopieren aber leicht verloren. Lesbar und gleichwertig ist eine Zeile „:::abstand“; beim Zurücklesen erscheint sie in dieser Form.");
-      slate.push({ type: "p", children: [{ text: SPACER }] });
+      // Gemessen in der Ansicht für Lernende (scobees 94.6, Schrift 18 px): Absätze folgen ohne Abstand aufeinander,
+      // eine Abstandszeile setzt 24 px. Nach einer Aufzählung stehen von selbst 30 px, nach Tabelle, Kasten und
+      // anderen Bausteinen noch mehr, unter einer Überschrift 24 bis 36 px. Dort käme die Abstandszeile obendrauf
+      // (nach einer Aufzählung 54 statt 24 px). Damit der Abstand überall gleich wirkt, zählt sie nur nach einem Absatz.
+      const davor = slate[slate.length - 1];
+      if (davor && davor.type === "p") slate.push({ type: "p", children: [{ text: SPACER }] });
+      else warn("„:::abstand“ wurde an einer Stelle weggelassen, an der schon Abstand steht (am Anfang, nach einer Aufzählung, Tabelle, Abbildung, einem Kasten, Quiz oder einer Überschrift). Die Abstandszeile wirkt nur nach einem Absatz; so bleibt der Abstand vor jedem Schritt gleich.");
       i++;
       continue;
     }

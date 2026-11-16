@@ -262,3 +262,24 @@ test("Zeilen, die wie ein Blockanfang aussehen, lassen die Umwandlung nicht hän
   assert.match(markdownToSerlo.warnungen.join(" "), /Unbekannter Block/);
 });
 
+test(":::abstand zählt nur nach einem Absatz – nach Aufzählung, Überschrift, Tabelle, Kasten und am Anfang fällt sie weg", () => {
+  const LRM = String.fromCharCode(0x200e);
+  const spacer = (md) => JSON.stringify(markdownToSerlo(md.join("\n"))).split(LRM).length - 1;
+  // nach einem Absatz: bleibt
+  assert.equal(spacer(["Text.", ":::abstand", "**Schritt 2**"]), 1);
+  assert.equal(markdownToSerlo.warnungen.length, 0);
+  // zwei hintereinander nach einem Absatz: beide bleiben
+  assert.equal(spacer(["Text.", ":::abstand", ":::abstand", "Mehr."]), 2);
+  // nach einer Aufzählung: fällt weg, mit Warnung
+  assert.equal(spacer(["Text:", "- eins", "- zwei", ":::abstand", "**Schritt 2**"]), 0);
+  assert.match(markdownToSerlo.warnungen.join(" "), /weggelassen/);
+  // nach Überschrift, Tabelle, Kasten, Abbildung und am Anfang
+  assert.equal(spacer(["## Titel", ":::abstand", "Text."]), 0);
+  assert.equal(spacer(["| A | B |", "|---|---|", "| 1 | 2 |", ":::abstand", "Text."]), 0);
+  assert.equal(spacer([":::box note Titel", "Inhalt.", ":::", ":::abstand", "Text."]), 0);
+  assert.equal(spacer(["![Bild](https://example.org/b.png)", ":::abstand", "Text."]), 0);
+  assert.equal(spacer([":::abstand", "Text."]), 0);
+  // vor einer Überschrift nach einem Absatz: bleibt (mehr Luft über der Überschrift)
+  assert.equal(spacer(["Text.", ":::abstand", "## Titel"]), 1);
+});
+

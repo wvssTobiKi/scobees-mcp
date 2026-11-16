@@ -1,4 +1,4 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.15)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.16)
 
 Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
@@ -110,7 +110,23 @@ Text zum ersten Schritt.
 
 Leerzeilen und Zeilen nur mit Leerzeichen erzeugen **keinen** Abstand; die Umwandlung verwirft sie. Eine Zeile `:::abstand` erzeugt eine Zeile Abstand. Technisch ist das ein Absatz mit dem unsichtbaren Zeichen U+200E; ein Absatz ganz ohne Inhalt hat in scobees keine Höhe. Beim Zurücklesen erscheint er wieder als `:::abstand`, auch wenn er früher als Zeile mit dem unsichtbaren Zeichen geschrieben wurde. Bei `scobees_patch_arbeitsblatt` deshalb `:::abstand` in `alt` und `neu` verwenden, nicht das Zeichen.
 
-Sparsam einsetzen: vor Arbeitsschritten (Regel in `SKILL.md`), nicht um Überschriften herum; die bringen ihren Abstand mit. Der Abstand unter einer Überschrift kommt aus der Formatvorlage von scobees und lässt sich nicht verkleinern.
+Gemessen in der Ansicht für Lernende (scobees 94.6, Schrift 18 px, Zeile 24 px):
+
+| Übergang | Abstand |
+|---|---|
+| Absatz → Absatz | 0 px |
+| Absatz → `:::abstand` → Absatz | 24 px |
+| Absatz → Aufzählung | 16 px, zwischen den Punkten 8 px |
+| Aufzählung → Absatz | 30 px |
+| Tabelle → Absatz | etwa 70 px ab der letzten Zeile |
+| Kasten → Absatz | etwa 55 px ab dem Kastentext |
+| Absatz → Überschrift 2 → Absatz | 29 px darüber, 24 px darunter |
+| Absatz → `:::abstand` → Überschrift 2 | 53 px darüber |
+| Aufzählung → Überschrift 2 | 59 px darüber |
+| Absatz → Überschrift 3 → Absatz | 12 px darüber, 32 px darunter |
+| Überschrift 1 → Absatz | 36 px darunter |
+
+Daraus folgt: `:::abstand` wirkt nur nach einem Absatz. Am Anfang, nach einer Aufzählung, Tabelle, Abbildung, einem Kasten, Quiz oder einer Überschrift lässt der Server sie weg und meldet das in `warnungen[]`; sonst stünden dort 54 px und mehr statt 24. Sinnvoll ist sie vor Arbeitsschritten und vor einer Überschrift der Ebene 2, wenn ein Absatz vorausgeht (Regeln in `SKILL.md`). Überschriften der Ebene 3 vermeiden. Der Abstand unter einer Überschrift kommt aus der Formatvorlage von scobees und lässt sich nicht verkleinern.
 
 Unbekannte Blöcke wie `:::schritt` gibt es nicht; die Umwandlung übernimmt sie als Text und meldet das in `warnungen[]`. Bekannt sind `:::box`, `:::spoiler` und `:::abstand`.
 
