@@ -89,6 +89,7 @@ const MARKDOWN = [
   "```quiz-blanks", "Strom in [[Ampere|A]].", "```", "",
   "```quiz-blanks-dnd", "Spannung in [[Volt]].", "Zweite Zeile ohne Lücke.", "+ Ohm", "```", "",
   "```quiz-text", "Begründe.", "```", "",
+  "**Schritt 1: Titel**", "Text zum ersten Schritt.", ":::abstand", "**Schritt 2: Titel**", "Text zum zweiten Schritt.", "",
   "Einmaliger Platzhalter XYZ.",
 ].join("\n");
 
@@ -158,6 +159,8 @@ async function main() {
       must(md.includes("unit: V") && md.includes("≠ 41 :: knapp daneben"), "quiz-input nicht verlustfrei");
       must(md.includes("Zeile eins\n\nZeile zwei"), "Zeilen im Spoiler zusammengezogen");
       must(md.includes("[[Ampere|A]]") && md.includes("+ Ohm"), "Lückentexte nicht verlustfrei");
+      must(/Text zum ersten Schritt\.\n\n:::abstand\n\n\*\*Schritt 2: Titel\*\*/.test(md), "Abstand nicht als :::abstand zurückgelesen");
+      must(JSON.stringify(a.serlo_json).includes(String.fromCharCode(0x200e)), "Abstandsabsatz fehlt im gespeicherten Dokument");
       must(md.includes("= 172.16.40.1") && JSON.stringify(a.serlo_json).includes("input-string-normalized-match-challenge"), "IP-Adresse nicht als Texteingabe angelegt");
       must(a.titelbild && a.interne_notiz === "Erwartungshorizont" && a.estimatedTime === 10, "Titelbild, Notiz oder Zeit fehlt");
       must(a.serlo_json && a.serlo_json.plugin === "rows", "serlo_json fehlt");

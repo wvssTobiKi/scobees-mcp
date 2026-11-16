@@ -216,3 +216,49 @@ test("quiz-input: IP-Adressen, Netzmasken und Bitmuster werden Texteingabe, echt
   // Rundreise: die IP-Adresse kommt unverändert zurück
   assert.ok(serloToMarkdown(markdownToSerlo(block(["= 172.16.40.1"]))).includes("= 172.16.40.1"));
 });
+
+test(":::abstand wird ein Absatz mit U+200E und kommt beim Zurücklesen lesbar zurück", () => {
+  const LRM = String.fromCharCode(0x200e);
+  const md = ["**Schritt 1: Titel**", "Text eins.", ":::abstand", "**Schritt 2: Titel**", "Text zwei."].join("\n");
+  const doc = markdownToSerlo(md);
+  const paras = doc.state[0].state;
+  assert.equal(paras.length, 5);
+  assert.deepEqual(paras[2], { type: "p", children: [{ text: LRM }] });
+  assert.equal(markdownToSerlo.warnungen.length, 0);
+  const back = serloToMarkdown(doc);
+  assert.ok(back.includes(":::abstand"));
+  assert.ok(!back.includes(LRM), "das unsichtbare Zeichen darf im zurückgelesenen Markdown nicht stehen");
+  // Rundreise bleibt stabil
+  assert.equal(serloToMarkdown(markdownToSerlo(back)), back);
+});
+
+test("Abstandszeile mit rohem U+200E wird weiter verstanden, erzeugt aber eine Warnung", () => {
+  const LRM = String.fromCharCode(0x200e);
+  const doc = markdownToSerlo(["Text eins.", LRM, "Text zwei."].join("\n"));
+  assert.deepEqual(doc.state[0].state[1], { type: "p", children: [{ text: LRM }] });
+  assert.match(markdownToSerlo.warnungen.join(" "), /:::abstand/);
+  assert.ok(serloToMarkdown(doc).includes(":::abstand"));
+});
+
+test(":::abstand funktioniert auch in einem Kasten", () => {
+  const doc = markdownToSerlo([":::box note Titel", "Zeile eins.", ":::abstand", "Zeile zwei.", ":::"].join("\n"));
+  const back = serloToMarkdown(doc);
+  assert.match(back, /Zeile eins\.\n\n:::abstand\n\nZeile zwei\./);
+});
+
+test("Zeilen, die wie ein Blockanfang aussehen, lassen die Umwandlung nicht hängen", () => {
+  // Jede dieser Eingaben hat die Umwandlung bis 0.1.14 in eine Endlosschleife geschickt.
+  const faelle = [
+    ["Text", ":::schritt Titel", "Inhalt", ":::", "Ende"],
+    ["Text", ":::", "Ende"],
+    ["Text", "| nur eine Pipe-Zeile", "Ende"],
+    ["Text", "![Bild](https://example.org/b.png) und Text dahinter", "Ende"],
+  ];
+  for (const f of faelle) {
+    const back = serloToMarkdown(markdownToSerlo(f.join("\n")));
+    assert.ok(back.startsWith("Text") && back.endsWith("Ende"), back);
+  }
+  markdownToSerlo(faelle[0].join("\n"));
+  assert.match(markdownToSerlo.warnungen.join(" "), /Unbekannter Block/);
+});
+

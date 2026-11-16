@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.15 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `:::abstand` im Arbeitsblatt (Speichern und Zurücklesen); die Darstellung des Abstands in der Ansicht für Lernende hat die Lehrkraft an derselben Absatzform geprüft |
 | 0.1.14 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.13 |
 | 0.1.13 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Bearbeitungsreihenfolge an der Gliederung mit einem Dummy-Konto geprüft (Sperre, Freischalten nach Abgabe, freie Gliederung daneben); `scripts/funktionstest.js` prüft das Setzen und Erhalten der Einstellung |
 | 0.1.12 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Eingabefelder in der Vorschau „Ansicht Lernende“ ausprobiert (IP-Adresse, Netzmaske, Bitmuster, Kommazahl; richtige und falsche Eingaben, als Zahlen- und als Texteingabe); `hat_titelbild` in allen Ergebnissen mit `scripts/funktionstest.js` geprüft |
@@ -17,6 +18,14 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.15 – 2026-11-16
+
+- **Fehler behoben: Die Umwandlung blieb in einer Endlosschleife hängen**, wenn eine Zeile wie ein Blockanfang aussah, aber keiner war: ein unbekannter Block (`:::schritt`, auch `:::abstand` vor dieser Version), ein einzelnes `:::`, eine Zeile mit `|` ohne Tabelle oder ein Bild mit Text dahinter. Betroffen waren alle Werkzeuge, die Markdown umwandeln (`scobees_create_aufgabe`, `scobees_update_aufgabe`, `scobees_patch_arbeitsblatt`, `scobees_markdown_vorschau`); der Server antwortete dann nicht mehr. Solche Zeilen werden jetzt als Text übernommen; ein unbekannter `:::`-Block wird in `warnungen[]` gemeldet.
+- **Neu: `:::abstand`** erzeugt im Arbeitsblatt eine Zeile Abstand. Leerzeilen im Markdown erzeugen keinen. Technisch entsteht ein Absatz mit dem unsichtbaren Zeichen U+200E, der bisher von Hand als Behelf gesetzt wurde. Beim Zurücklesen erscheint er als `:::abstand`; bestehende Arbeitsblätter mit dem Zeichen zeigen also beim nächsten Lesen von selbst die lesbare Form. Eine Zeile nur mit dem Zeichen wird weiter verstanden, erzeugt aber eine Warnung.
+- Skill: Regel für Arbeitsschritte (fette Titelzeile, Text darunter, `:::abstand` davor; keine Überschriften der Ebene 3, keine nummerierten Listen). Neuer Abschnitt „Abstand“ in `references/markdown.md`.
+- Offen: Der Abstand vor einem Schritt ist nach einer Aufzählung größer als nach Fließtext; das ist noch nicht ausgemessen.
+- 4 neue Tests (38 gesamt).
 
 ## 0.1.14 – 2026-11-16
 

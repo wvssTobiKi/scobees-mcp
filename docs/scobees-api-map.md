@@ -409,3 +409,9 @@ Test mit einem Dummy-Konto: Lernpfad `order: none`; Gliederung 1 per `POST lerni
 
 Nicht geprüft: was `order` an der Wurzel für Aufgaben bewirkt, die direkt im Lernpfad liegen; ob Training- und Extra-Aufgaben in einer Gliederung mit Reihenfolge die folgenden Aufgaben sperren; die Varianten `after_selfcorrection` und `after_teacher_correction` an einer Gliederung.
 
+## Mitschrift 21 (16.11.2026, v94.6): Abstand im Arbeitsblatt
+
+Aus dem Unterricht einer Lehrkraft (Ansicht für Lernende): Ein Absatz `{"type":"p","children":[{"text":"\u200e"}]}` im `text`-Baustein erzeugt eine Zeile Abstand. Leerzeilen im Markdown werden von der Umwandlung verworfen, ein Absatz ohne Inhalt hat keine Höhe. Der Server bildet das seit 0.1.15 als Zeile `:::abstand` ab (hin und zurück).
+
+Beobachtet, aber nicht ausgemessen: Nach einer Aufzählung ist der Abstand mit Abstandsabsatz sichtbar größer als nach Fließtext (vermutlich bringt die Liste eigenen Abstand mit). Der Abstand unter einer Überschrift der Ebene 2 kommt aus der Formatvorlage und lässt sich über den Inhalt nicht verkleinern; über der Überschrift lässt er sich mit einem Abstandsabsatz vergrößern.
+

@@ -1,4 +1,4 @@
-# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.14)
+# Markdown für interaktive Arbeitsblätter (scobees-mcp 0.1.15)
 
 Der Server übersetzt Markdown in das Dokumentformat des Serlo-Editors. Was hier steht, ist live geprüft. Unsicheres vorher mit `scobees_markdown_vorschau` testen – das Werkzeug meldet in `warnungen[]`, wenn eine Umwandlung zwar gelingt, aber nicht ganz das zeigt, was der Quelltext nahelegt (siehe unten bei Betonung und bei `quiz-blanks`).
 
@@ -99,6 +99,20 @@ Begründe, warum das Gäste-WLAN ein eigenes Subnetz bekommt.
 ```
 ````
 Freitext ohne automatische Prüfung; Lösungshinweis als Spoiler darunter oder Abgabe mit Musterlösung.
+
+## Abstand
+
+```markdown
+Text zum ersten Schritt.
+:::abstand
+**Schritt 2: Titel**
+```
+
+Leerzeilen und Zeilen nur mit Leerzeichen erzeugen **keinen** Abstand; die Umwandlung verwirft sie. Eine Zeile `:::abstand` erzeugt eine Zeile Abstand. Technisch ist das ein Absatz mit dem unsichtbaren Zeichen U+200E; ein Absatz ganz ohne Inhalt hat in scobees keine Höhe. Beim Zurücklesen erscheint er wieder als `:::abstand`, auch wenn er früher als Zeile mit dem unsichtbaren Zeichen geschrieben wurde. Bei `scobees_patch_arbeitsblatt` deshalb `:::abstand` in `alt` und `neu` verwenden, nicht das Zeichen.
+
+Sparsam einsetzen: vor Arbeitsschritten (Regel in `SKILL.md`), nicht um Überschriften herum; die bringen ihren Abstand mit. Der Abstand unter einer Überschrift kommt aus der Formatvorlage von scobees und lässt sich nicht verkleinern.
+
+Unbekannte Blöcke wie `:::schritt` gibt es nicht; die Umwandlung übernimmt sie als Text und meldet das in `warnungen[]`. Bekannt sind `:::box`, `:::spoiler` und `:::abstand`.
 
 ## So sieht es für Lernende aus (Vorschau und Dummy-Konto, scobees 94.6)
 

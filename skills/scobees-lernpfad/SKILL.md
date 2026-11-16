@@ -5,7 +5,7 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.14** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.15** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist. **Danach gilt das Gegenteil:** In einem zugewiesenen Lernpfad ist alles, was du anlegst, änderst oder löschst, für die Lernenden sofort sichtbar, ohne Veröffentlichen und ohne weiteren Schritt der Lehrkraft. `scobees_get_lernpfad` zeigt das an der Wurzel als `zugewiesen: true`, und jedes schreibende Werkzeug meldet es als `warnung_zugewiesen`.
 
@@ -233,6 +233,18 @@ Checkliste, immer dabei:
 - Formelzeichen mit Index immer als Formel schreiben (`$u_e$`, `$R_1$`), nicht als Text. In Drag-and-drop-Lücken und im Wortspeicher stehen Wörter, keine Formelzeichen; Formeln werden dort nicht dargestellt.
 - Mehrfachauswahl mit mindestens drei, besser vier Antworten. Keine Ja/Nein-Fragen und keine Auswahl aus zwei Möglichkeiten, die sich erraten lässt.
 - Bei Auswahlfragen unterscheiden sich die Antworten in genau einem sichtbaren Merkmal (ein Wert, ein Begriff, eine Einheit). Die Vorgaben, auf die sich die Frage bezieht, stehen direkt über der Frage, nicht einige Absätze weiter oben.
+- **Arbeitsschritte** stehen als fette Titelzeile mit dem Text direkt darunter, getrennt durch eine Abstandszeile `:::abstand`:
+
+  ```markdown
+  ## So gehst du vor
+  **Schritt 1: Pin-Tabelle aktualisieren**
+  Bring deine Pin-Tabelle auf den aktuellen Stand …
+  :::abstand
+  **Schritt 2: Verdrahtungsplan zeichnen**
+  Zeichne den Verdrahtungsplan …
+  ```
+
+  Der Titel ist ein kurzes Stichwort, der Auftrag steht im Text darunter. Die Abstandszeile steht vor jedem Schritt außer dem ersten nach einer Überschrift; vor einem Kasten und vor einer Überschrift ist sie nicht nötig. Keine Überschriften der Ebene 3 für Schritte (sie setzen einen großen Abstand zwischen Titel und Text) und keine nummerierten Listen (sie beginnen nach einer Tabelle wieder bei 1). Nach einer Aufzählung fällt der Abstand mit Abstandszeile größer aus als nach Fließtext; dort in der Vorschau prüfen, ob es ohne sie gleichmäßiger wirkt.
 - Ein Lückentext ist ein vollständiger Satz in einer Zeile; mehrere Sätze sind mehrere Zeilen. In allen Texten und Antworten echte Umlaute und ß, keine Umschreibungen (ae, oe, ue, ss).
 - Bei Freitext (`quiz-text`) gibt es keine automatische Prüfung; dann Aufklapp-Block „Lösungshinweis“ darunter.
 

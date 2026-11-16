@@ -16,6 +16,7 @@
  *   Zeile nur mit URL:  geogebra.org → GeoGebra-Applet, youtube/vimeo/.mp4 → Video
  *   :::spoiler Titel … :::        aufklappbarer Bereich
  *   :::box typ Titel … :::        Box (typ: blank|example|quote|warning|attention|note|definition|theorem|proof)
+ *   :::abstand                    eine Zeile Abstand (Leerzeilen im Markdown erzeugen keinen)
  *   ```quiz-sc / ```quiz-mc       Single/Multiple Choice:  Frage, dann „- [x] richtig :: Feedback“ / „- [ ] falsch“
  *   ```quiz-input                 Zahleneingabe: Frage, dann „= 42“ (mehrere erlaubt), optional „unit: V“ – oder „= 42 V“ (Einheit wird abgetrennt);
  *                                 „≠ 41 :: Rückmeldung“ = typischer Fehler mit Hinweis (zählt als falsch)
@@ -27,6 +28,9 @@
 
 const crypto = require("crypto");
 const uid = () => crypto.randomUUID();
+
+// Inhalt eines Abstandsabsatzes (Schreibweise „:::abstand“): das unsichtbare Zeichen LEFT-TO-RIGHT MARK (U+200E).
+const SPACER = String.fromCharCode(0x200e);
 
 // ── Bausteine ────────────────────────────────────────────────────────────────
 const P = (plugin, state) => ({ plugin, state, id: uid() });
@@ -131,6 +135,15 @@ function parseBlocks(lines) {
       continue;
     }
 
+    // Abstand: lesbare Schreibweise für einen leeren Absatz. Leerzeilen verwirft die Umwandlung, ein Absatz ohne
+    // Inhalt hat in scobees keine Höhe; erprobt ist ein Absatz mit dem unsichtbaren Zeichen U+200E (LEFT-TO-RIGHT MARK).
+    if (/^:::\s*abstand\s*$/i.test(t) || t === SPACER) {
+      if (t === SPACER) warn("Abstandszeile mit dem unsichtbaren Zeichen U+200E: funktioniert, geht beim Kopieren aber leicht verloren. Lesbar und gleichwertig ist eine Zeile „:::abstand“; beim Zurücklesen erscheint sie in dieser Form.");
+      slate.push({ type: "p", children: [{ text: SPACER }] });
+      i++;
+      continue;
+    }
+
     // Container :::spoiler / :::box
     m = t.match(/^:::\s*(spoiler|box)\s*(\S+)?\s*(.*)$/i); // \S statt \w: Umlaute im Titel
     if (m) {
@@ -225,8 +238,16 @@ function parseBlocks(lines) {
     const para = [];
     while (i < lines.length) {
       const l = lines[i].trim();
-      if (!l || /^(```|:::|#{1,6}\s|!\[|>|\|)/.test(l) || isList(l)) break;
+      if (!l || l === SPACER || /^(```|:::|#{1,6}\s|!\[|>|\|)/.test(l) || isList(l)) break;
       para.push(l);
+      i++;
+    }
+    // Die Zeile sieht wie ein Blockanfang aus, ist aber keiner (unbekanntes „:::…“, einzelnes „:::“, „|“ ohne
+    // Tabelle, Bild mit Text dahinter). Ohne diesen Schritt bliebe die Schleife auf der Zeile stehen: als Text
+    // übernehmen und weitergehen.
+    if (!para.length) {
+      if (/^:::/.test(t)) warn(`Unbekannter Block „${t.slice(0, 40)}“ wurde als Text übernommen. Bekannt sind :::box, :::spoiler und :::abstand; ein Block endet mit einer Zeile „:::“.`);
+      para.push(t);
       i++;
     }
     for (const l of para) slate.push({ type: "p", children: inline(l) }); // jede Zeile ein Absatz
@@ -361,7 +382,8 @@ function slateToMd(nodes) {
     if (b.type === "h") return `${"#".repeat(b.level || 2)} ${inl(b.children)}`;
     if (b.type === "ordered-list" || b.type === "unordered-list")
       return (b.children || []).map((li, k) => `${b.type === "ordered-list" ? `${k + 1}.` : "-"} ${inl(li.children?.[0]?.children || li.children)}`).join("\n");
-    return inl(b.children);
+    const s = inl(b.children);
+    return s === SPACER ? ":::abstand" : s; // Abstandsabsatz in lesbarer Form zurückgeben
   }).filter((s) => s !== "").join("\n\n");
 }
 
