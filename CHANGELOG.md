@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.14 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.13 |
 | 0.1.13 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Bearbeitungsreihenfolge an der Gliederung mit einem Dummy-Konto geprüft (Sperre, Freischalten nach Abgabe, freie Gliederung daneben); `scripts/funktionstest.js` prüft das Setzen und Erhalten der Einstellung |
 | 0.1.12 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | Eingabefelder in der Vorschau „Ansicht Lernende“ ausprobiert (IP-Adresse, Netzmaske, Bitmuster, Kommazahl; richtige und falsche Eingaben, als Zahlen- und als Texteingabe); `hat_titelbild` in allen Ergebnissen mit `scripts/funktionstest.js` geprüft |
 | 0.1.11 | v94.6 | main-FWSHPEPF.js | 2026-11-12 | nur Skill geändert, Server unverändert gegenüber 0.1.10; Bild-Upload ins Arbeitsblatt mit SVG und PNG live geprüft (beide werden mit richtigem Inhaltstyp ausgeliefert) |
@@ -16,6 +17,16 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.14 – 2026-11-16
+
+Nur der Skill `scobees-lernpfad` ändert sich; die Werkzeuge des Servers sind dieselben wie in 0.1.13. Anlass: Abgleich mit den Regeln, die eine Lehrkraft in ihrem Unterrichts-Repository aus eigenen Durchsichten gesammelt hat.
+
+- **Ansprache nach Bildungsgang** statt „Du-Form in allen Texten“: Fachschule Technik Sie, BFS-dual und BES Du, BG und FOS nach Vorgabe. Eine Ansprache, die die Lehrkraft oder ihre Unterlagen vorgeben, geht vor.
+- **Regeln für Quizze ergänzt:** eigene Überschrift und Einleitungssatz je Frage (sagt, wo die Antwort zu finden ist); nie zwei Quiz-Blöcke unmittelbar hintereinander; „ablesen statt raten“ bei Quellen; „erst rechnen, dann prüfen“ bei Simulationen; Formelzeichen mit Index als Formel, in Drag-and-drop Wörter; Mehrfachauswahl mit drei bis vier Antworten, keine erratbaren Ja/Nein-Fragen; Antworten unterscheiden sich in genau einem Merkmal, Vorgaben direkt über der Frage; Lückentext als ein Satz in einer Zeile, echte Umlaute.
+- **Beschreibung des Lernpfads** sagt, worum es insgesamt geht, und zählt keine einzelnen Gliederungen oder Kapitel auf.
+- **Zuweisung ist Sache der Lehrkraft:** Die Prüffolge bleibt für den Skill verbindlich, die Zuweisung ist aber keine Sperre mehr, sondern eine Empfehlung („erst nach der Durchsicht“). Hat die Lehrkraft früher zugewiesen, gelten die Regeln für laufende Lernpfade.
+- Noch nicht enthalten: eine Schreibweise für Abstände vor Arbeitsschritten (bisheriger Behelf: Zeile mit dem unsichtbaren Zeichen U+200E). Sie braucht eine Änderung am Server und eine Messung in der Vorschau.
 
 ## 0.1.13 – 2026-11-12
 

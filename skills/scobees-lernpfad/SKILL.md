@@ -5,7 +5,7 @@ description: "Baut Lernsituationen als Lernpfade in der Lernplattform scobees au
 
 # Lernpfad mit scobees aufbauen
 
-Geschrieben für den MCP-Server **scobees-mcp 0.1.13** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
+Geschrieben für den MCP-Server **scobees-mcp 0.1.14** (Werkzeuge `scobees_*`). Was der Server kann und wie das Markdown der Arbeitsblätter aussieht, steht in `references/werkzeuge.md` und `references/markdown.md`; lies beide, bevor du die erste Aufgabe anlegst. Wie Abbildungen entstehen, steht in `references/abbildungen.md`. Die Schulformen und ihre curricularen Grundlagen stehen in `references/bildungsgaenge.md`.
 
 Grundsätze, die der Server erzwingt und die du nicht umgehen sollst: keine Schüler- oder Personendaten; Lernbereiche und Fächer werden nur gelesen; nichts erreicht Lernende, bevor die Lehrkraft den Pfad in der Weboberfläche zuweist. **Danach gilt das Gegenteil:** In einem zugewiesenen Lernpfad ist alles, was du anlegst, änderst oder löschst, für die Lernenden sofort sichtbar, ohne Veröffentlichen und ohne weiteren Schritt der Lehrkraft. `scobees_get_lernpfad` zeigt das an der Wurzel als `zugewiesen: true`, und jedes schreibende Werkzeug meldet es als `warnung_zugewiesen`.
 
@@ -56,7 +56,7 @@ Eine Lernsituation ist eine vollständige berufliche Handlung, kein Kapitel aus 
 - **Kurze Theorie, sofort Kontrolle**: ein Arbeitsblatt hat höchstens ein bis zwei Bildschirmseiten Text, danach ein Quiz, das den Inhalt wirklich abbildet (Begriffe → Lückentext per Drag-and-drop, Entscheidung → Einfachauswahl, Eigenschaften → Mehrfachauswahl, Rechnung → Zahleneingabe mit Einheit, Begründung → Freitext oder Abgabe). Konstruierte Quizfragen sind schlechter als keine.
 - **Entscheidungsaufgaben mit mehreren vertretbaren Lösungen** bevorzugen; bewertet wird die Begründung. Erwartungshorizont in `interne_notiz`, Musterlösung als Datei (`als_musterloesung: true`).
 - **Praktische Festigung nach großer Theorie**: Folgen mehr als zwei Theorie-Aufgaben aufeinander, schlage der Lehrkraft eine praktische Anwendungs- oder Festigungseinheit vor (Laboraufgabe, Konfiguration, Messung, Bau, Simulation). Passt sie nicht für alle (Lernort, Zeit, Material), lege sie als Wahlpflichtaufgabe oder `aufgabentyp: training` an. Den Vorschlag im Grobplan ausweisen, nicht stillschweigend weglassen.
-- **Du-Form** in allen Texten für Lernende.
+- **Ansprache** nach Bildungsgang und im ganzen Lernpfad einheitlich: in der Fachschule Technik **Sie**, in BFS-dual und BES **Du**; für BG und FOS die Lehrkraft fragen. Gibt die Quelle (Unterlagen, Vorlage, Repository der Lehrkraft) oder die Lehrkraft selbst eine Ansprache vor, gilt diese. Die Beispiele in diesem Skill stehen in der Du-Form und werden bei „Sie“ entsprechend umformuliert, auch in Rückmeldungen der Quizfragen und in Bildunterschriften.
 
 ### 2a. Abbildungen (Pflicht) und interaktive Elemente (wo sie tragen)
 
@@ -102,7 +102,7 @@ Tabellen, Zahlenbeispiele und Vergleichslisten bleiben sinnvoll, zählen aber ni
 
 Regeln für interaktive Elemente und Kontrollen:
 
-- **Ein interaktives Element pro Abschnitt** reicht; es muss direkt mit einer Aufgabe verbunden sein („Stelle im Rechner … ein und trage ab, was passiert“). Ein Element, zu dem keine Frage gehört, wird übersprungen.
+- **Ein interaktives Element pro Abschnitt** reicht; es muss direkt mit einer Aufgabe verbunden sein („Berechne zuerst …, stelle es dann im Rechner ein und vergleiche“). Bei Simulationen gilt: erst rechnen, dann prüfen. Ein Element, zu dem keine Frage gehört, wird übersprungen.
 - **HTML-Simulationen** sind eine einzige Datei ohne Netzbibliotheken, laufen offline im Browser, haben eine Überschrift, eine Zeile Anleitung und sinnvolle Startwerte. Nicht mehr als drei Stellgrößen; sichtbares Ergebnis innerhalb von zwei Sekunden Bedienung. Vor dem Hochladen im Browser testen. Sie sind als Material an der Aufgabe erreichbar; das Arbeitsblatt verweist mit Namen darauf.
 - **Videos** nur mit Zeitangabe („Minute 2:10 bis 4:30“) und einer Beobachtungsfrage; keine Videos als Ersatz für den Theorietext.
 - **Kontrollform zum Inhalt**: Zahl → Eingabe mit Einheit; Begriff → Drag-and-drop; Entscheidung → Einfachauswahl; Eigenschaften → Mehrfachauswahl; Begründung → Freitext oder Abgabe. Eine Frage, die man ohne den Abschnitt beantworten kann, ist überflüssig; eine, die Wortlaut abfragt statt Verständnis, wirkt konstruiert.
@@ -168,11 +168,11 @@ Jede Aufgabe hat:
 
 **Bearbeitungsreihenfolge** nach Rücksprache, und zwar **an jeder Gliederung** (`solve_order` bei `scobees_create_gliederung`): `after_solving` sperrt jede Aufgabe der Gliederung, bis die davor abgegeben ist; Lernende sehen die gesperrten Aufgaben mit Schloss. Ohne Angabe ist die Gliederung frei. Die Einstellung am Lernpfad selbst sperrt Aufgaben in Gliederungen nicht (beides mit einem Dummy-Konto geprüft, scobees 94.6). Soll der ganze Lernpfad in Reihenfolge laufen, bekommt jede Gliederung `after_solving`; freiwillige Aufgaben (Training, Extra) stehen dann am Ende ihrer Gliederung oder in einer freien Gliederung, damit sie niemanden aufhalten. Im Grobplan steht die Einstellung je Gliederung.
 
-Der Lernpfad: `jahrgaenge` und `stichwoerter` setzen. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
+Der Lernpfad: `jahrgaenge` und `stichwoerter` setzen. Die **Beschreibung des Lernpfads** ist reiner Text (kein HTML) und sagt in zwei bis drei Sätzen, worum es insgesamt geht und was am Ende entsteht; sie zählt keine einzelnen Gliederungen oder Kapitel auf, denn die stehen für Lernende direkt darunter. Beschreibungen von Gliederungen und Aufgaben sind HTML. Kachelbilder (`cover_image_path`) nur für die Ebenen, die in Schritt 1 vereinbart wurden; quadratisch anlegen, weil scobees die Kachel quadratisch beschneidet, und ein Motiv wählen, das auch klein erkennbar bleibt.
 
 ### 8. Zurücklesen und prüfen
 
-Geprüft wird in dieser Reihenfolge; die Zuweisung an die Lerngruppe kommt erst danach.
+Geprüft wird in dieser Reihenfolge. Die Prüffolge ist für dich verbindlich und wird nicht abgekürzt. Wann zugewiesen wird, entscheidet dagegen allein die Lehrkraft, auch vor der Durchsicht; das ist keine Sperre für sie, sondern eine Empfehlung an sie.
 
 **1. Zurücklesen über die Schnittstelle.** Nach dem Anlegen `scobees_get_lernpfad` und für jede Aufgabe mit Abgabe oder Quiz `scobees_get_aufgabe`. Prüfe gegen den Grobplan: Art (`art`, `abgabeformen`), Typ (`taskType`), Anhänge und Musterlösungen, Quiz-Typen, Reihenfolge und Abbildungen (jede geplante Abbildung steht als `![Bildunterschrift](URL)` im Arbeitsblatt, mit Bildunterschrift und Bezug im Text). Was nicht stimmt, mit `scobees_update_aufgabe` oder `scobees_move` korrigieren; was sich über die Schnittstelle nicht setzen lässt, kommt in die Checkliste. Liefert ein Werkzeug `warnungen[]` mit (z. B. bei `$…$` in einer Lückenantwort), diese im Abschlussbericht nennen, nicht stillschweigend übergehen. Für eine kleine Korrektur an einem schon bestehenden Arbeitsblatt eignet sich `scobees_patch_arbeitsblatt` (gezielte Textersetzung) besser als `scobees_update_aufgabe` mit komplett neu geschriebenem `arbeitsblatt_markdown`.
 
@@ -182,7 +182,7 @@ Geprüft wird in dieser Reihenfolge; die Zuweisung an die Lerngruppe kommt erst 
 
 **4. Befundliste.** Was abweicht, was du korrigiert hast, was nur in der Weboberfläche geht. Sie geht in den Abschlussbericht (Schritt 9).
 
-**5. Erst danach** weist die Lehrkraft den Lernpfad der Lerngruppe zu. Mit der Zuweisung ist der ganze Inhalt für die Lernenden sichtbar; ein gesondertes Veröffentlichen der Aufgaben braucht es nicht.
+**5. Zuweisung.** Empfiehl der Lehrkraft, erst nach der Durchsicht zuzuweisen; die Entscheidung liegt bei ihr. Mit der Zuweisung ist der ganze Inhalt für die Lernenden sichtbar; ein gesondertes Veröffentlichen der Aufgaben braucht es nicht. Hat sie schon vorher zugewiesen, sag einmal, dass ab jetzt jede Korrektur sofort bei den Lernenden ankommt, und arbeite nach den Regeln für laufende Lernpfade (Modus C).
 
 ### 9. Abschlussbericht an die Lehrkraft (immer)
 
@@ -226,7 +226,14 @@ Checkliste, immer dabei:
 - Rückmeldungen je Antwort bei Auswahlfragen: `- [x] Antwort :: Rückmeldung`.
 - Quiz-Eingaben werden nicht gespeichert: Verlassen Lernende die Aufgabe oder laden sie neu, sind alle Felder leer. Erst beim Abgeben legt scobees ein Bild des Arbeitsblatts zum Lernergebnis; nur dieses Bild sieht die Lehrkraft später, eine Auswertung der Quiz-Antworten gibt es nicht. Antworten, auf die es ankommt, gehören deshalb in eine Abgabe (Datei, Stift) oder in eine Freitext-Frage, die beim Abgeben ausgefüllt ist. Ein Arbeitsblatt muss deshalb in einem Zug zu schaffen sein (Richtwert 20 bis 30 Minuten), und die Beschreibung sagt es: „Bearbeite die Fragen und klicke dann auf Lernergebnis abgeben.“
 - Die Antworten von Auswahlfragen werden für Lernende gemischt, bei jedem Öffnen neu. Keine Verweise auf „a)“, „die erste Antwort“ oder „alle oben genannten“, weder in der Frage noch in Rückmeldungen.
-- Der Satz vor einem Quiz ist ein Hinweis („Prüfe dein Verständnis:“), keine Frage. Steht dort eine Frage, wirkt es, als fehle die Antwortauswahl; die Frage gehört in den Quiz-Block.
+- Jede Frage oder Fragengruppe im Arbeitsblatt hat eine eigene Überschrift und davor einen Einleitungssatz, der sagt, wo die Antwort zu finden ist („Die Werte stehen in der Tabelle oben.“). Der Einleitungssatz ist ein Hinweis, nie selbst eine Frage. Steht dort eine Frage, wirkt es, als fehle die Antwortauswahl; die Frage gehört in den Quiz-Block.
+- Zwei Quiz-Blöcke stehen nie unmittelbar hintereinander. Dazwischen steht mindestens ein Satz: Überleitung, Hinweis oder die nächste Überschrift.
+- Kommen die Antworten aus einer Quelle (Datenblatt, Tabelle, Abbildung, Messprotokoll), steht der Arbeitshinweis dabei: ablesen statt raten („Lies den Wert im Datenblatt ab.“).
+- Zu einer Simulation gehört der Auftrag „erst rechnen, dann prüfen“: Lernende berechnen oder schätzen zuerst und kontrollieren ihr Ergebnis danach in der Simulation.
+- Formelzeichen mit Index immer als Formel schreiben (`$u_e$`, `$R_1$`), nicht als Text. In Drag-and-drop-Lücken und im Wortspeicher stehen Wörter, keine Formelzeichen; Formeln werden dort nicht dargestellt.
+- Mehrfachauswahl mit mindestens drei, besser vier Antworten. Keine Ja/Nein-Fragen und keine Auswahl aus zwei Möglichkeiten, die sich erraten lässt.
+- Bei Auswahlfragen unterscheiden sich die Antworten in genau einem sichtbaren Merkmal (ein Wert, ein Begriff, eine Einheit). Die Vorgaben, auf die sich die Frage bezieht, stehen direkt über der Frage, nicht einige Absätze weiter oben.
+- Ein Lückentext ist ein vollständiger Satz in einer Zeile; mehrere Sätze sind mehrere Zeilen. In allen Texten und Antworten echte Umlaute und ß, keine Umschreibungen (ae, oe, ue, ss).
 - Bei Freitext (`quiz-text`) gibt es keine automatische Prüfung; dann Aufklapp-Block „Lösungshinweis“ darunter.
 
 Weitere Syntax und bekannte Fallen: `references/markdown.md`.

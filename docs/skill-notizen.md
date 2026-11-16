@@ -87,3 +87,9 @@ Zwei Befunde mit Folgen für den Aufbau jeder Lernsituation: (1) Ein Anhang verd
 ## 12.11.2026: Reihenfolge – eine falsche Schlussfolgerung korrigiert (0.1.13)
 
 In 0.1.12 stand im Skill, „nach Reihenfolge“ sperre nicht, und der rote Faden müsse allein aus dem Aufbau kommen. Der Befund war richtig beobachtet, die Erklärung falsch: Die Einstellung saß am falschen Element. Aufgefallen ist das erst beim Zurücklesen eines Lernpfads, den die Lehrkraft in der Weboberfläche gebaut hatte. Lehre für künftige Tests: Wenn sich die Plattform anders verhält als ihre Oberfläche verspricht, zuerst einen in der Oberfläche gebauten Lernpfad über die Schnittstelle lesen und mit dem eigenen vergleichen.
+
+## 16.11.2026: Abgleich mit einem Unterrichts-Repository (0.1.14)
+
+Die Lehrkraft pflegt ihre Lernsituationen in einem eigenen Repository mit einem Ausgabeprofil für scobees. Dort hatten sich allgemeine Regeln angesammelt, die eigentlich in den Skill gehören. Nach dem Abgleich führt das Profil allgemeine Regeln nicht mehr doppelt; was im Skill fehlte, ist mit 0.1.14 übernommen. Aufgefallen ist dabei auch, dass in Claude Desktop tagelang noch der Skill 0.1.9 eingebunden war, während der Server schon 0.1.13 war: Der Skill wird nicht mit der Erweiterung aktualisiert, sondern muss von Hand ersetzt werden, und eine laufende Unterhaltung behält die Fassung, mit der sie begonnen hat.
+
+Zwei Korrekturen an eigenen Festlegungen: Die Du-Form war als allgemeine Regel zu eng (Fachschule Technik: Sie). Und „erst danach weist die Lehrkraft zu“ las sich wie eine Sperre für die Lehrkraft; gemeint ist eine Empfehlung, verbindlich ist die Prüffolge nur für den Skill selbst.

@@ -12,10 +12,11 @@ Der Skill soll an einer BBS für alle Schulformen taugen. Vokabular, curriculare
 
 ## Was aus dem Bildungsgang folgt
 
-- **Szenario**: BFS-dual und BES spielen im Ausbildungsbetrieb oder in der Werkstatt mit einfacher Rolle („du bist im ersten Lehrjahr bei …“); Technikerschule und FOS in Planung und Projektierung („du bist als Techniker/in zuständig für …“); BG Technik darf ein Entwicklungs- oder Forschungsszenario nutzen.
+- **Szenario**: BFS-dual und BES spielen im Ausbildungsbetrieb oder in der Werkstatt mit einfacher Rolle („du bist im ersten Lehrjahr bei …“); Technikerschule und FOS in Planung und Projektierung („Sie sind als Techniker/in zuständig für …“); BG Technik darf ein Entwicklungs- oder Forschungsszenario nutzen.
 - **Handlungsergebnis**: BES eine ausgefüllte Vorlage oder ein Foto des Werkstücks; BFS-dual eine Konfiguration, Messung, Rechnung mit Dokumentation; Technikerschule ein Konzept oder Pflichtenheft; BG eine Analyse mit Modell; FOS ein Praxisbericht mit Berechnung.
 - **Zeitrichtwerte** immer gegen den Lehrplan halten: ein Lernfeld mit 60 h verträgt drei bis fünf Lernsituationen, nicht eine.
 - **Niveaus (Differenzierung in scobees)**: Die Schule definiert sie (z. B. Hauptschulabschluss, Realschulabschluss, Erweiterter Realschulabschluss). Sie meinen den Bildungsstand der Lernenden, nicht den Schwierigkeitsgrad der Aufgabe. Ohne Angabe sieht jeder die Aufgabe; differenziert wird durch eigene Aufgabenvarianten je Niveau. `scobees_list_tags` zeigt die Namen der Schule.
+- **Ansprache**: Fachschule Technik **Sie** (Erwachsene mit Berufsabschluss); BFS-dual und BES **Du**; BG und FOS nach Vorgabe der Lehrkraft. Eine Ansprache, die die Lehrkraft oder ihre Unterlagen vorgeben, geht immer vor.
 - **Fachsprache**: Begriffe des Bildungsgangs verwenden (Lernfeld, Modul, Lerngebiet, Kompetenzbereich, Qualifizierungsbaustein), nicht „Kapitel“ oder „Lektion“.
 
 ## Recherche der Vorgabe (Modus A)
