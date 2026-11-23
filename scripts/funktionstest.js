@@ -19,7 +19,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const zlib = require("zlib");
-const { TOOLS } = require("../src/tools");
+const { TOOLS, taskToForm } = require("../src/tools");
 const { api } = require("../src/api");
 
 const tool = (name) => {
@@ -260,6 +260,63 @@ async function main() {
       await tool("scobees_delete")({ id: c.id, confirm: true });
       await tool("scobees_delete_material")({ aufgabe_id: taskId, attachment_id: sol.attachment_id, confirm: true });
       await tool("scobees_delete_material")({ aufgabe_id: taskId, attachment_id: m.attachment_id, confirm: true });
+    });
+    await step("beschreibung_ersetzungen (alle vier Ebenen), ungekürzte Lernpfad-Beschreibung", async () => {
+      const lang = "Test & Text\nZweite Zeile" + " Füllwort".repeat(60);
+      await tool("scobees_update_lernpfad")({ id: rootId, description: lang });
+      let t = await tool("scobees_get_lernpfad")({ id: rootId });
+      must(t.beschreibung === lang && t.beschreibung.length > 500, `Beschreibung der Wurzel gekürzt oder verändert (${(t.beschreibung || "").length} Zeichen)`);
+      const l = await tool("scobees_update_lernpfad")({ id: rootId, beschreibung_ersetzungen: [{ alt: " Füllwort".repeat(60), neu: "" }] });
+      must(l.beschreibung === "Test & Text\nZweite Zeile", `Lernpfad-Beschreibung nach dem Ersetzen: ${JSON.stringify(l.beschreibung)}`);
+      const g = await tool("scobees_update_gliederung")({ id: folderId, beschreibung_ersetzungen: [{ alt: "Phase", neu: "Phase eins" }] });
+      must(g.beschreibung_html === "<p>Phase eins</p>", `Gliederung: ${g.beschreibung_html}`);
+      const gl = await api.lerninput(folderId);
+      must(gl.color === "#b71c1c" && gl.coverImage, "Farbe oder Kachelbild der Gliederung ging beim Ersetzen verloren");
+      await tool("scobees_update_wahlpflicht")({ id: choiceId, description_html: "<p>Wähle <strong>eine</strong> Aufgabe.</p><ul><li></li></ul>" });
+      const w = await tool("scobees_update_wahlpflicht")({ id: choiceId, beschreibung_ersetzungen: [{ alt: "<ul><li></li></ul>", neu: "" }] });
+      must(w.beschreibung_html === "<p>Wähle <strong>eine</strong> Aufgabe.</p>", `Wahlpflicht: ${w.beschreibung_html}`);
+      const a = await tool("scobees_update_aufgabe")({ id: taskId, beschreibung_ersetzungen: [{ alt: "Keine Abgabe.", neu: "Stift-PDF oder Datei." }] });
+      must(a.beschreibung_html === "<p><strong>Ergebnis:</strong> Stift-PDF oder Datei.</p>", `Aufgabe: ${a.beschreibung_html}`);
+      const cur = await tool("scobees_get_aufgabe")({ id: taskId });
+      must(cur.arbeitsblatt_markdown.includes("Ersetzt.") && cur.titelbild && cur.art === "abgabe_pflicht_selbstkorrektur", "Arbeitsblatt, Kachelbild oder Abgabeform ging beim Ersetzen verloren");
+      await expectError(() => tool("scobees_update_aufgabe")({ id: taskId, beschreibung_ersetzungen: [{ alt: "gibt es nicht", neu: "x" }] }), /kommt 0× vor[\s\S]*Gespeicherte Beschreibung/, "Ersetzung ohne Treffer");
+      await expectError(() => tool("scobees_update_aufgabe")({ id: taskId, description_html: "<p>x</p>", beschreibung_ersetzungen: [{ alt: "Ergebnis", neu: "x" }] }), /nicht beides/, "Beschreibung und Ersetzungen zusammen");
+    });
+    await step("Status nur an der Wurzel, eigener, Niveau-Warnung, abgeleitete Abgabeformen", async () => {
+      const liste = await tool("scobees_list_lernpfade")({ subject_id: subjectId, title: "FUNKTIONSTEST" });
+      const eintrag = liste.find((x) => x.id === rootId);
+      must(eintrag.eigener === true && eintrag.mitbearbeiter === true && eintrag.zugewiesen === false, `Listeneintrag: ${JSON.stringify({ e: eintrag.eigener, m: eintrag.mitbearbeiter, z: eintrag.zugewiesen })}`);
+      let t = await tool("scobees_get_lernpfad")({ id: rootId });
+      must(t.eigener === true && t.mitbearbeiter === true, "eigener/mitbearbeiter fehlt an der Wurzel");
+      must(t.state === "INACTIVE" && "isPublished" in t, "Status fehlt an der Wurzel");
+      const g = t.children.find((c) => c.id === folderId), blatt = g.children.find((c) => c.id === taskId);
+      for (const n of [g, blatt]) must(!("state" in n) && !("isPublished" in n), `${n.name}: state/isPublished gehören nur an die Wurzel`);
+      must(!t.warnung_niveaus, `unerwartete Niveau-Warnung: ${t.warnung_niveaus}`);
+      const niveaus = (await tool("scobees_list_tags")({})).differenzierungen.map((d) => d.name);
+      if (niveaus.length > 1) {
+        await tool("scobees_update_aufgabe")({ id: taskId, differenzierungen: [niveaus[0]] });
+        t = await tool("scobees_get_lernpfad")({ id: rootId });
+        const l = (t.aufgaben_ohne_alle_niveaus || []).find((x) => x.id === taskId);
+        must(t.warnung_niveaus && l && l.fehlt.length === niveaus.length - 1, `Niveau-Warnung fehlt oder falsch: ${JSON.stringify(t.aufgaben_ohne_alle_niveaus)}`);
+        await tool("scobees_update_aufgabe")({ id: taskId, differenzierungen: [] });
+        t = await tool("scobees_get_lernpfad")({ id: rootId });
+        must(!t.warnung_niveaus, "Niveau-Warnung bleibt nach dem Wiederherstellen stehen");
+      }
+      // Pflichtabgabe ohne gespeicherte Liste, wie sie die Weboberfläche anlegt
+      const roh = await api.lerninput(taskId);
+      const form = taskToForm(roh);
+      delete form.requiredSubmissions;
+      Object.assign(form, { kind: "task+upload-required", isUploadRequired: true, solutionMustBeUploaded: true, isSelfCorrectionNecessary: false, isPenEnabled: false, isLinkSubmissionEnabled: false, submissionRule: "all" });
+      await api.saveTask(form);
+      let a = await tool("scobees_get_aufgabe")({ id: taskId });
+      must(a.art === "abgabe_pflicht" && a.abgabeformen.join() === "file" && /abgeleitet/.test(a.abgabeformen_hinweis || ""), `ohne Liste: ${a.art}, ${a.abgabeformen}, Hinweis ${a.abgabeformen_hinweis ? "da" : "fehlt"}`);
+      must(a.lernpfad_zugewiesen === false && !("state" in a) && /FUNKTIONSTEST/.test(a.lernpfad || ""), "lernpfad_zugewiesen/lernpfad fehlt oder state noch in der Ausgabe");
+      await tool("scobees_update_aufgabe")({ id: taskId, art: "abgabe_pflicht_selbstkorrektur", abgabeformen: ["pen", "file"] });
+      a = await tool("scobees_get_aufgabe")({ id: taskId });
+      must(a.abgabeformen.length === 2 && !a.abgabeformen_hinweis, "gespeicherte Liste wird nicht unverändert ausgegeben");
+      const me = await tool("scobees_me")({});
+      must(me.server && /^\d+\.\d+\.\d+$/.test(me.server.version), "scobees_me nennt die Serverversion nicht");
+      return `Server ${me.server.version}`;
     });
     await step("scobees_get_lernpfad (Baum)", async () => {
       const t = await tool("scobees_get_lernpfad")({ id: rootId });

@@ -456,3 +456,25 @@ Nicht geprüft: Gliederung oder Wahlpflichtaufgabe als Quelle (kopiert vermutlic
 
 **Abstände um Quizfragen** (Dummy-Konto, schmale Spalte, Schrift 18 px): Absatz → Fragetext im Quiz etwa 33 px; Schaltfläche „Stimmt's?“ einer Eingabe → nächster Absatz etwa 31 px; → Überschrift 2 etwa 54 px. Ein Einleitungssatz zwischen zwei Quizfragen steht damit gleich weit von beiden entfernt.
 
+## Mitschrift 25 (23.11.2026, v95.4): Status-Felder, Abgabe ohne Liste, Wirkung von Änderungen
+
+scobees steht auf v95.4 (Bundle `main-OOYA2V42.js`); der Funktionstest läuft unverändert durch.
+
+**`state` und `isPublished` unterhalb der Wurzel.** `GET lerninput/{Wurzel}` liefert im Baum an jedem Kind den `state` der Wurzel (`ACTIVE` bei einem zugewiesenen Lernpfad). `GET lerninput/{Aufgabe}` liefert für dieselbe Aufgabe `DRAFT`. `isPublished` ist bei Kindern immer `false`. Alle übrigen einfachen Felder stimmen zwischen Baum und Einzelabruf überein. Aussagekraft haben beide Felder nur an der Wurzel: `state` für die Zuweisung, `isPublished` für den Schalter „in der schuleigenen Bib“.
+
+**Abgabe ohne `requiredSubmissions`.** Aufgaben aus der Weboberfläche können `kind: task+upload-required`, `isUploadRequired: true`, `solutionMustBeUploaded: true` tragen, ohne dass das Feld `requiredSubmissions` überhaupt vorhanden ist. Nachgestellt (Speichern ohne das Feld) und mit einem Dummy-Konto geöffnet: „Zum Abgeben musst du eine Datei hochladen.“, Schaltfläche „Datei hochladen“, „Lernergebnis abgeben“ gesperrt.
+
+**Felder für „eigener Lernpfad“.** Lerninputs tragen `author` (eine Konto-ID) und `editors` (Liste von Konto-IDs), auch in der Listenantwort von `GET lerninput`. Der Server vergleicht sie mit der ID aus `users/me` und gibt nur das Ergebnis aus. Ein weiteres Feld, `assignedClassGroupNames`, steht an Wurzel und Aufgaben; der Server gibt es nicht aus (an wen zugewiesen ist, bleibt in der Weboberfläche).
+
+**Ein Feld für vorhandene Abgaben gibt es am Lerninput nicht.** Abgaben liegen hinter den gesperrten Pfaden; sie bleiben gesperrt.
+
+**Wirkung von Änderungen auf laufende Bearbeitung** (Dummy-Konto, zugewiesener Testpfad mit sechs Aufgaben):
+
+- Quiz-Eingaben werden nicht gespeichert: Ein Neuladen leert alle Felder. Erhalten bleibt die Startzeit.
+- Eine geöffnete Aufgabe ändert sich nicht von selbst; der neue Stand kommt mit dem nächsten Laden.
+- Abgegeben bleibt abgegeben bei: `taskDescription` teilweise oder ganz ersetzt, `description`, `name`, `estimatedTime`, `changePosition` innerhalb der Gliederung und in eine neue Gliederung, `requiredSubmissions` von `link` auf `file`, `kind` von `task` auf `task+upload-required` (eine zuvor als Info erledigte Aufgabe gilt danach weiter als erledigt).
+- Die Abgabe ist ein Bild (`Serlo-Arbeitsblatt-ausgefüllt.png`) im Zustand der Abgabe; es zeigt den alten Wortlaut. „Worum geht's“ zeigt die neue Beschreibung. Nach dem Wechsel von Link- auf Datei-Abgabe zeigt die Aufgabe das Linkfeld nicht mehr.
+- Niveau der Aufgabe so gesetzt, dass das Niveau des Dummy-Kontos fehlt: Die Aufgabe verschwindet aus seiner Ansicht, auch die abgegebene; der Fortschritt der Gliederung wird ohne sie berechnet. Niveau wieder eingetragen: Aufgabe und Abgabe sind zurück.
+- Fortschritt zählt nach jeder Änderung neu (Info zu Pflicht: eine erledigte Pflichtaufgabe mehr; Umzug in eine neue Gliederung: dort 100 %).
+
+Nicht geprüft: Sicht der Lehrkraft auf diese Abgaben; Wirkung auf Selbstkorrektur und Stift-Abgaben; Wechsel von Pflicht- zu Wahlpflichtaufgabe bei abgegebenen Aufgaben.

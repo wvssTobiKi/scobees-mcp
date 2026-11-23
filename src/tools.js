@@ -12,6 +12,11 @@
 
 const { api } = require("./api");
 const { markdownToSerlo, serloToMarkdown, listPlugins } = require("./serlo");
+const pkg = require("../package.json");
+
+// Ein lange laufender Dialog trägt den Skill-Text mit, den er einmal geladen hat – auch nach einem Skill-Update.
+// Der Server ist die Stelle, die jeder Dialog bei jedem Start neu liest; deshalb nennt er seinen Stand selbst.
+const SKILL_STAND = `Der Skill scobees-lernpfad nennt in seinem ersten Absatz, für welche Version von scobees-mcp er geschrieben ist. Steht dort eine ältere Version als ${pkg.version}, arbeitet der Dialog mit einem veralteten Skill-Text: den Skill neu aufrufen und SKILL.md samt references/ neu lesen, bevor etwas geschrieben wird.`;
 
 // ── Hilfen ───────────────────────────────────────────────────────────────────
 // taskType laut Frontend-Enum (main-Bundle v93.3): Pflichtaufgabe, Extraaufgabe, Trainingsaufgabe, Wahlpflichtaufgabe (Container),
@@ -52,13 +57,16 @@ function submissionFields(art, abgabeformen) {
 function compact(node, depth = 0) {
   const out = {
     id: node.id, name: node.name, typ: nodeType(node), sortOrder: node.sortOrder,
-    state: node.state, isPublished: node.isPublished,
     hat_titelbild: !!node.coverImage,
   };
+  // state und isPublished sagen nur an der Wurzel etwas aus (ACTIVE = zugewiesen, isPublished = Schalter „in der
+  // schuleigenen Bib“). Bei Gliederungen und Aufgaben liefert scobees im Baum den Wert der Wurzel und beim
+  // Einzelabruf „DRAFT“ – beides hat schon zu der falschen Meldung geführt, Aufgaben seien nicht sichtbar.
+  if (out.typ === "lernpfad") { out.state = node.state; out.isPublished = node.isPublished; }
   if (node.description) {
-    // Die Lernpfad-Wurzel speichert reinen Text (siehe htmlToPlainText); hier unverändert zeigen, damit ein
-    // versehentlich doch gespeichertes „<p>…</p>“ beim Zurücklesen auffällt, statt von stripHtml verdeckt zu werden.
-    out.beschreibung = out.typ === "lernpfad" ? node.description.slice(0, 300) : stripHtml(node.description).slice(0, 200);
+    // Die Lernpfad-Wurzel speichert reinen Text (siehe htmlToPlainText); hier vollständig und unverändert zeigen,
+    // damit sie sich zurücklesen lässt und ein versehentlich gespeichertes „<p>…</p>“ auffällt.
+    out.beschreibung = out.typ === "lernpfad" ? node.description : stripHtml(node.description).slice(0, 200);
   }
   if (node.isLeaf) {
     out.kind = node.kind; out.taskType = node.taskType; out.estimatedTime = node.estimatedTime;
@@ -73,6 +81,85 @@ function compact(node, depth = 0) {
   }
   return out;
 }
+
+/**
+ * Niveau-Prüfung für get_lernpfad: Lernende sehen nur Aufgaben, die ihr Niveau tragen. Trägt eine Aufgabe nicht alle
+ * Niveaus der Schule, fehlt sie einem Teil der Lerngruppe – in der Weboberfläche fällt das kaum auf.
+ */
+function niveauLuecken(root, schulNiveaus) {
+  const blaetter = [];
+  (function walk(n) { if (n.isLeaf) blaetter.push(n); else (n.children || []).forEach(walk); })(root);
+  const luecken = blaetter
+    .map((b) => {
+      const hat = (b.tags?.differentiations || []).map((d) => d.name);
+      return { id: b.id, name: b.name, fehlt: schulNiveaus.filter((n) => !hat.includes(n)) };
+    })
+    .filter((x) => x.fehlt.length);
+  if (!luecken.length) return null;
+  return {
+    warnung_niveaus: `${luecken.length} von ${blaetter.length} Aufgaben tragen nicht alle Niveaus der Schule (${schulNiveaus.join(", ")}). Lernende sehen nur Aufgaben, die ihr Niveau tragen. Ist das nicht gewollt: scobees_update_aufgabe mit differenzierungen: [] trägt alle Niveaus ein.`,
+    aufgaben_ohne_alle_niveaus: luecken,
+  };
+}
+
+/**
+ * Abgabeformen einer Aufgabe. Aufgaben aus der Weboberfläche speichern oft keine Liste requiredSubmissions, obwohl
+ * eine Abgabe verlangt ist; dann leitet scobees die Abgabe aus den Schaltern ab (mit einem Dummy-Konto geprüft, scobees 95.4:
+ * „Zum Abgeben musst du eine Datei hochladen“). Dasselbe tut diese Funktion und
+ * kennzeichnet das Ergebnis, statt eine leere Liste auszugeben, die wie „keine Abgabe“ aussieht.
+ */
+function abgabeformenOf(t) {
+  const liste = t.requiredSubmissions || [];
+  if (liste.length || !t.isUploadRequired) return { abgabeformen: liste };
+  const abgeleitet = ["file"];
+  if (t.isPenEnabled) abgeleitet.push("pen");
+  if (t.isLinkSubmissionEnabled) abgeleitet.push("link");
+  return { abgabeformen: abgeleitet, abgabeformen_hinweis: ABGABEFORMEN_ABGELEITET };
+}
+const ABGABEFORMEN_ABGELEITET = "scobees hat für diese Aufgabe keine Liste der Abgabeformen gespeichert (so legt die Weboberfläche Aufgaben an). Die Angabe ist aus den Schaltern der Aufgabe abgeleitet; mit einem Dummy-Konto geprüft: Lernende müssen in diesem Fall eine Datei hochladen.";
+
+// Eigener oder fremder Lernpfad: scobees nennt je Lernpfad das anlegende Konto und die Mitbearbeitenden als IDs.
+// Ausgegeben wird nur der Vergleich mit dem eigenen Konto, nie eine Person.
+const personId = (x) => (typeof x === "string" ? x : x?.id);
+function besitz(l, meId) {
+  return { eigener: personId(l.author) === meId, mitbearbeiter: (l.editors || []).map(personId).includes(meId) };
+}
+let _meId;
+async function myId() {
+  if (!_meId) _meId = (await api.me()).id;
+  return _meId;
+}
+
+/** Ersetzt in einem Text jede „alt“-Zeichenkette durch „neu“; jede muss genau einmal vorkommen, sonst passiert nichts. */
+function applyReplacements(text, ersetzungen, wo) {
+  if (!Array.isArray(ersetzungen) || !ersetzungen.length) throw new Error("Die Liste der Ersetzungen darf nicht leer sein.");
+  if (ersetzungen.some((e) => !e || !e.alt || typeof e.neu !== "string")) throw new Error("Jede Ersetzung braucht „alt“ (nicht leer) und „neu“ (darf leer sein).");
+  const fehler = [];
+  for (const { alt } of ersetzungen) {
+    const count = text.split(alt).length - 1;
+    if (count !== 1) fehler.push(`„${alt.length > 60 ? alt.slice(0, 60) + "…" : alt}“ kommt ${count}× vor (erwartet: genau 1×)`);
+  }
+  if (fehler.length) throw new Error(`Keine Änderung vorgenommen – jede Ersetzung muss ${wo} genau einmal passen:\n- ` + fehler.join("\n- "));
+  let neu = text;
+  for (const { alt, neu: ersatz } of ersetzungen) neu = neu.replace(alt, () => ersatz);
+  return neu;
+}
+
+/** Beschreibung gezielt ändern (beschreibung_ersetzungen); undefined, wenn der Parameter fehlt. */
+function patchedDescription(a, feld, aktuell) {
+  if (a.beschreibung_ersetzungen == null) return undefined;
+  if (a[feld] != null) throw new Error(`Entweder ${feld} oder beschreibung_ersetzungen angeben, nicht beides.`);
+  try {
+    return applyReplacements(aktuell || "", a.beschreibung_ersetzungen, "in der gespeicherten Beschreibung");
+  } catch (e) {
+    throw new Error(`${e.message}\nGespeicherte Beschreibung (genau so muss „alt“ darin stehen):\n${aktuell || "(leer)"}`);
+  }
+}
+const BESCHREIBUNG_ERSETZUNGEN = {
+  type: "array",
+  items: { type: "object", properties: { alt: { type: "string" }, neu: { type: "string" } }, required: ["alt", "neu"] },
+  description: "Ändert die Beschreibung gezielt, statt sie neu zu senden: je ein Paar alt/neu. „alt“ muss in der gespeicherten Beschreibung genau einmal vorkommen (alles oder nichts); passt eine Stelle nicht, nennt die Fehlermeldung die gespeicherte Beschreibung im Wortlaut. Leeres „neu“ löscht die Stelle. Nicht zusammen mit dem Feld für die ganze Beschreibung.",
+};
 
 function nodeType(n) {
   if (n.parentId == null && !n.isLeaf) return "lernpfad";
@@ -288,15 +375,7 @@ function applyPatches(md, ersetzungen) {
   if (/\(Baustein |\(interaktiver Baustein: /.test(md)) {
     throw new Error("Dieses Arbeitsblatt enthält Bausteine ohne Markdown-Entsprechung (z. B. Bild-Zuordnung) – nicht verlustfrei patchbar. Stattdessen scobees_get_aufgabe(mit_serlo_json: true) lesen und gezielt im Serlo-JSON ändern, dann scobees_update_aufgabe(serlo_json) schreiben.");
   }
-  const fehler = [];
-  for (const { alt } of ersetzungen) {
-    const count = md.split(alt).length - 1;
-    if (count !== 1) fehler.push(`„${alt.length > 60 ? alt.slice(0, 60) + "…" : alt}“ kommt ${count}× vor (erwartet: genau 1×)`);
-  }
-  if (fehler.length) throw new Error("Keine Änderung vorgenommen – jede Ersetzung muss genau einmal passen:\n- " + fehler.join("\n- "));
-  let neu = md;
-  for (const { alt, neu: ersatz } of ersetzungen) neu = neu.replace(alt, ersatz);
-  return neu;
+  return applyReplacements(md, ersetzungen, "im Arbeitsblatt");
 }
 
 /** Warnungen aus der letzten markdownToSerlo-Umwandlung, aber nur wenn args tatsächlich über arbeitsblatt_markdown
@@ -313,6 +392,7 @@ const TOOLS = [
     run: async () => {
       const [me, fe] = await Promise.all([api.me(), api.frontendInfo()]);
       const out = { id: me.id, role: me.role, schoolId: me.schoolId, schoolName: me.schoolName,
+        server: { version: pkg.version, hinweis: SKILL_STAND },
         scobees: { version: fe.version, bundle: fe.bundle, geprueft_mit: `${fe.known.version} (${fe.known.bundle}, ${fe.known.checked})` } };
       if (fe.error) out.scobees.hinweis = `Version nicht ermittelbar: ${fe.error}`;
       else if (fe.unveraendert) out.scobees.hinweis = "scobees-Oberfläche unverändert seit der letzten Prüfung.";
@@ -352,7 +432,7 @@ const TOOLS = [
   },
   {
     name: "scobees_list_lernpfade",
-    description: "Listet Lernpfade eines Fachs (oder alle) mit ID, Name, Status, Jahrgängen. Zum Finden bestehender Kurse, die erweitert werden sollen.",
+    description: "Listet Lernpfade eines Fachs (oder alle) mit ID, Name, Status, Jahrgängen. Zum Finden bestehender Kurse, die erweitert werden sollen. Die Liste enthält auch Lernpfade anderer Lehrkräfte: eigener = von diesem Konto angelegt, mitbearbeiter = dieses Konto darf ihn bearbeiten; zugewiesen = Lernende arbeiten damit.",
     inputSchema: {
       type: "object",
       properties: {
@@ -363,9 +443,9 @@ const TOOLS = [
       },
     },
     run: async ({ subject_id, title, page = 0, page_size = 16 }) => {
-      const r = await api.lerninputs({ subjectId: subject_id, title, page, pageSize: page_size });
+      const [r, me] = await Promise.all([api.lerninputs({ subjectId: subject_id, title, page, pageSize: page_size }), myId()]);
       return (r.lerninputs || []).map((l) => ({
-        id: l.id, name: l.name, state: l.state, isPublished: l.isPublished,
+        id: l.id, name: l.name, state: l.state, zugewiesen: l.state === "ACTIVE", isPublished: l.isPublished, ...besitz(l, me),
         faecher: (l.subjects || []).map((s) => s.name),
         jahrgaenge: (l.tags?.grades || []).map((g) => g.name),
         stichwoerter: l.tags?.other || [],
@@ -375,19 +455,23 @@ const TOOLS = [
   },
   {
     name: "scobees_get_lernpfad",
-    description: "Lädt einen Lernpfad mit vollständigem Aufbau (Gliederungen → Aufgaben) als kompakten Baum. IDs daraus werden für Änderungen benötigt. An der Wurzel steht zugewiesen (true = Lernende arbeiten bereits damit, jede Änderung ist für sie sofort sichtbar). Je Element: typ, Status, hat_titelbild (eigenes Kachelbild gesetzt?), bei Aufgaben zusätzlich Art-Kennung, Anhänge und Arbeitsblatt-Bausteine. Die Beschreibung der Lernpfad-Wurzel kommt unverändert zurück.",
+    description: "Lädt einen Lernpfad mit vollständigem Aufbau (Gliederungen → Aufgaben) als kompakten Baum. IDs daraus werden für Änderungen benötigt. An der Wurzel steht zugewiesen (true = Lernende arbeiten bereits damit, jede Änderung ist für sie sofort sichtbar). An der Wurzel außerdem eigener/mitbearbeiter (von diesem Konto angelegt bzw. bearbeitbar) und warnung_niveaus mit aufgaben_ohne_alle_niveaus, wenn Aufgaben nicht alle Niveaus der Schule tragen (Lernende sehen nur Aufgaben ihres Niveaus). Je Element: typ, hat_titelbild (eigenes Kachelbild gesetzt?), bei Aufgaben zusätzlich Art-Kennung, Niveaus, Anhänge und Arbeitsblatt-Bausteine. state und isPublished (Schalter „in der schuleigenen Bib“) stehen nur an der Wurzel; für einzelne Aufgaben kennt scobees keinen eigenen Status. Die Beschreibung der Lernpfad-Wurzel kommt vollständig und unverändert zurück.",
     inputSchema: { type: "object", properties: { id: { type: "string", description: "Lernpfad-ID (LI-…)" } }, required: ["id"] },
     run: async ({ id }) => {
       const node = await api.lerninput(id);
       const out = compact(node);
       // Nur die Wurzel trägt den Zustand der Zuweisung (state ACTIVE); bei Unterelementen sagt er nichts aus.
-      if (!node.parentId) out.zugewiesen = node.state === "ACTIVE";
+      if (!node.parentId) {
+        out.zugewiesen = node.state === "ACTIVE";
+        try { Object.assign(out, besitz(node, await myId())); } catch { /* Zusatzangabe, darf das Lesen nie verhindern */ }
+        try { Object.assign(out, niveauLuecken(node, (await api.schoolDiffs()).map((d) => d.name)) || {}); } catch { /* dito */ }
+      }
       return out;
     },
   },
   {
     name: "scobees_get_aufgabe",
-    description: "Lädt eine einzelne Aufgabe: Arbeitsblatt als Markdown, Abgabeform (art, abgabeformen), Links, Anhänge und Musterlösungen mit ihren ATT-IDs (für scobees_delete_material / ersetzt_attachment_id), Kachelbild. Vor jeder Änderung an einer bestehenden Aufgabe aufrufen.",
+    description: "Lädt eine einzelne Aufgabe: Arbeitsblatt als Markdown, Abgabeform (art, abgabeformen), Links, Anhänge und Musterlösungen mit ihren ATT-IDs (für scobees_delete_material / ersetzt_attachment_id), Kachelbild. lernpfad_zugewiesen sagt, ob Lernende mit dem Lernpfad arbeiten; einen eigenen Status hat eine Aufgabe nicht. Ob Lernende sie sehen, hängt an der Zuweisung und an den Niveaus (differenzierungen). Steht abgabeformen_hinweis dabei, hat scobees keine Liste gespeichert und die Abgabeformen sind abgeleitet. Vor jeder Änderung an einer bestehenden Aufgabe aufrufen.",
     inputSchema: {
       type: "object",
       properties: { id: { type: "string", description: "Aufgaben-ID (LI-…)" }, mit_serlo_json: { type: "boolean", default: false, description: "zusätzlich das rohe Serlo-JSON ausgeben" } },
@@ -396,8 +480,8 @@ const TOOLS = [
     run: async ({ id, mit_serlo_json }) => {
       const t = await api.lerninput(id);
       const out = {
-        id: t.id, name: t.name, parentId: t.parentId, kind: t.kind, taskType: t.taskType, state: t.state,
-        art: artOf(t), abgabeformen: t.requiredSubmissions || [], abgabe_regel: t.submissionRule || "all",
+        id: t.id, name: t.name, parentId: t.parentId, lernpfad: t.rootName, kind: t.kind, taskType: t.taskType,
+        art: artOf(t), ...abgabeformenOf(t), abgabe_regel: t.submissionRule || "all",
         beschreibung_html: t.description, interne_notiz: t.internalTeacherNote, estimatedTime: t.estimatedTime,
         differenzierungen: (t.tags?.differentiations || []).map((d) => d.name),
         links: t.links || [],
@@ -407,6 +491,7 @@ const TOOLS = [
         arbeitsblatt_markdown: t.taskDescription ? serloToMarkdown(t.taskDescription) : null,
         arbeitsblatt_bausteine: t.taskDescription ? listPlugins(t.taskDescription) : [],
       };
+      try { out.lernpfad_zugewiesen = await isAssigned(t.id); } catch { /* Zusatzangabe, darf das Lesen nie verhindern */ }
       if (mit_serlo_json) out.serlo_json = t.taskDescription;
       return out;
     },
@@ -459,6 +544,7 @@ const TOOLS = [
         subject_id: { type: "string", description: "Lernpfad in ein anderes Fach verschieben (Fach-ID aus scobees_list_subjects). Achtung: Lernende brauchen im Fach des Pfads ein Niveau, sonst ist keine Zuweisung möglich." },
         name: { type: "string" },
         description: { type: "string", description: "Beschreibung als reiner Text – scobees zeigt sie hier nicht als HTML gerendert, mitgeschicktes HTML würde als sichtbarer Tag-Text erscheinen und wird deshalb automatisch entfernt." },
+        beschreibung_ersetzungen: BESCHREIBUNG_ERSETZUNGEN,
         jahrgaenge: { type: "array", items: { type: "string" } },
         stichwoerter: { type: "array", items: { type: "string" } },
         cover_image_path: { type: "string", description: "Neues Titelbild (lokaler Pfad), optional" },
@@ -470,6 +556,7 @@ const TOOLS = [
     run: async (a) => {
       const cur = await api.lerninput(a.id);
       if (cur.parentId) throw new Error(`${a.id} ist kein Lernpfad (Wurzel), sondern hat parentId ${cur.parentId}.`);
+      const gepatcht = patchedDescription(a, "description", cur.description);
       const me = await api.me();
       const grades = a.jahrgaenge ? await resolveGradeTags(a.jahrgaenge) : (cur.tags?.grades || []).map((g) => ({ id: g.id }));
       const editors = Array.isArray(cur.editors) && cur.editors.length ? cur.editors : [me.id];
@@ -485,9 +572,11 @@ const TOOLS = [
         tags: a.stichwoerter ?? (cur.tags?.other || []).map((t) => (typeof t === "string" ? t : { id: t.id })),
         id: a.id,
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
-        description: a.description != null ? htmlToPlainText(a.description) : (cur.description ?? ""),
+        description: gepatcht ?? (a.description != null ? htmlToPlainText(a.description) : (cur.description ?? "")),
       }, { coverImage: a.cover_image_path });
-      return ok("Lernpfad geändert.", { id: r.id, name: r.name, state: r.state, inBib: r.isPublished, faecher: (r.subjects || []).map((s) => s.name), hat_titelbild: !!r.coverImage });
+      const out = { id: r.id, name: r.name, state: r.state, inBib: r.isPublished, faecher: (r.subjects || []).map((s) => s.name), hat_titelbild: !!r.coverImage };
+      if (gepatcht !== undefined) out.beschreibung = r.description;
+      return ok("Lernpfad geändert.", out);
     },
   },
   {
@@ -520,6 +609,7 @@ const TOOLS = [
       type: "object",
       properties: {
         id: { type: "string" }, name: { type: "string" }, description_html: { type: "string" },
+        beschreibung_ersetzungen: BESCHREIBUNG_ERSETZUNGEN,
         cover_image_path: { type: "string", description: COVER_HINT },
         color: { type: "string", description: "Hex-Farbe der Gliederung" },
         solve_order: { type: "string", enum: ["none", "after_solving", "after_selfcorrection", "after_teacher_correction"], description: "Bearbeitungsreihenfolge der Aufgaben in dieser Gliederung: none = frei (Standard); after_solving = nach Reihenfolge; after_selfcorrection = nach Selbstkorrektur; after_teacher_correction = nach Korrektur durch die Lehrkraft" },
@@ -530,13 +620,16 @@ const TOOLS = [
       const cur = await api.lerninput(a.id);
       if (cur.isLeaf) throw new Error("Das ist eine Aufgabe, keine Gliederung (→ scobees_update_aufgabe).");
       if (a.cover_image_path) assertCoverImage(a.cover_image_path);
+      const gepatcht = patchedDescription(a, "description_html", cur.description);
       // color/order/coverImagePath mitschicken wie die Weboberfläche – ohne sie verliert die Gliederung beim Speichern ihre Farbe.
       const r = await api.saveFolder({
-        id: a.id, parentId: cur.parentId, name: a.name ?? cur.name, description: a.description_html ?? cur.description ?? "",
+        id: a.id, parentId: cur.parentId, name: a.name ?? cur.name, description: gepatcht ?? a.description_html ?? cur.description ?? "",
         color: a.color ?? cur.color ?? "#00838F", order: a.solve_order ?? cur.solveOrder ?? "none",
         coverImagePath: a.cover_image_path ? undefined : cur.coverImage?.path,
       }, { coverImage: a.cover_image_path });
-      return ok("Gliederung geändert.", { id: r.id, name: r.name, hat_titelbild: !!r.coverImage, solveOrder: r.solveOrder });
+      const out = { id: r.id, name: r.name, hat_titelbild: !!r.coverImage, solveOrder: r.solveOrder };
+      if (gepatcht !== undefined) out.beschreibung_html = r.description;
+      return ok("Gliederung geändert.", out);
     },
   },
   {
@@ -571,6 +664,7 @@ const TOOLS = [
         id: { type: "string" },
         name: { type: "string" },
         description_html: { type: "string" },
+        beschreibung_ersetzungen: BESCHREIBUNG_ERSETZUNGEN,
         mindest_aufgaben: { type: "number" },
         color: { type: "string" },
         cover_image_path: { type: "string" },
@@ -580,13 +674,16 @@ const TOOLS = [
     run: async (a) => {
       const cur = await api.lerninput(a.id);
       if (nodeType(cur) !== "wahlpflicht") throw new Error(`${a.id} ist keine Wahlpflichtaufgabe.`);
+      const gepatcht = patchedDescription(a, "description_html", cur.description);
       const fields = {
-        parentId: cur.parentId, id: a.id, name: a.name ?? cur.name, description: a.description_html ?? cur.description ?? "",
+        parentId: cur.parentId, id: a.id, name: a.name ?? cur.name, description: gepatcht ?? a.description_html ?? cur.description ?? "",
         minimumAmountOfTasks: String(a.mindest_aufgaben ?? cur.tasksRequiredForCompletion ?? 1), color: a.color ?? cur.color ?? "#c88503",
       };
       if (!a.cover_image_path) fields.coverImage = null; // ohne neues Bild schickt die Oberfläche coverImage=null
       const r = await api.saveChoice(fields, { coverImage: a.cover_image_path });
-      return ok("Wahlpflichtaufgabe geändert.", { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion, hat_titelbild: !!r.coverImage });
+      const out = { id: r.id, name: r.name, mindestAufgaben: r.tasksRequiredForCompletion, hat_titelbild: !!r.coverImage };
+      if (gepatcht !== undefined) out.beschreibung_html = r.description;
+      return ok("Wahlpflichtaufgabe geändert.", out);
     },
   },
   {
@@ -684,6 +781,7 @@ const TOOLS = [
         id: { type: "string" },
         name: { type: "string" },
         description_html: { type: "string" },
+        beschreibung_ersetzungen: BESCHREIBUNG_ERSETZUNGEN,
         art: { type: "string", enum: Object.keys(KIND) },
         abgabeformen: { type: "array", items: { type: "string", enum: ABGABEFORM } },
         aufgabentyp: { type: "string", enum: Object.keys(AUFGABENTYP) },
@@ -701,9 +799,11 @@ const TOOLS = [
       if (a.abgabeform && !a.abgabeformen) a.abgabeformen = [].concat(a.abgabeform);
       const cur = await api.lerninput(a.id);
       if (!cur.isLeaf) throw new Error("Das ist keine Aufgabe (Gliederung/Wahlpflicht → scobees_update_gliederung).");
+      const gepatcht = patchedDescription(a, "description_html", cur.description);
       const form = taskToForm(cur);
       if (a.name != null) form.name = a.name;
       if (a.description_html != null) form.description = a.description_html;
+      if (gepatcht !== undefined) form.description = gepatcht;
       if (a.interne_notiz != null) form.internalTeacherNote = a.interne_notiz;
       if (a.estimated_time != null) form.estimatedTime = a.estimated_time;
       if (a.art) Object.assign(form, KIND[a.art], submissionFields(a.art, a.abgabeformen));
@@ -717,6 +817,7 @@ const TOOLS = [
       const r = await api.saveTask(form);
       if (cover) await cover.cleanup();
       const out2 = ok("Aufgabe geändert.", { id: r.id, name: r.name, kind: r.kind, hat_titelbild: !!r.coverImage });
+      if (gepatcht !== undefined) out2.beschreibung_html = r.description;
       const w2 = arbeitsblattWarnungen(a);
       if (w2) out2.warnungen = w2;
       return out2;
@@ -999,4 +1100,4 @@ for (const tool of TOOLS) {
   };
 }
 
-module.exports = { isAssigned, anhangAnsichtHinweis, clarifyDeleteError, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches, findCopy };
+module.exports = { isAssigned, anhangAnsichtHinweis, clarifyDeleteError, TOOLS, KIND, compact, taskToForm, clarifyTaskgroupError, htmlToPlainText, findAttachment, letztesPenPdfWarnung, applyPatches, findCopy, applyReplacements, patchedDescription, niveauLuecken, abgabeformenOf, besitz };

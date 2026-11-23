@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.19 | v95.4 | main-OOYA2V42.js | 2026-11-23 | scobees hat von v94.6 auf v95.4 gewechselt; `scripts/funktionstest.js` läuft unverändert durch (26 Schritte, zwei davon neu: gezieltes Ersetzen in Beschreibungen auf allen vier Ebenen; Status, `eigener`, Niveau-Warnung und abgeleitete Abgabeformen). Mit einem Dummy-Konto geprüft: Wirkung von Änderungen auf abgegebene, erledigte und angefangene Aufgaben; Pflichtabgabe ohne gespeicherte Abgabeformen-Liste |
 | 0.1.18 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `scobees_copy_aufgabe` (24 Schritte: Kopie mit Arbeitsblatt, Anhang, Musterlösung, Kachelbild und Ersetzung; Original unverändert; Fehlerfälle); Kopie in einen Lernpfad eines anderen Fachs von Hand geprüft; Abstände um Quizfragen mit einem Dummy-Konto gemessen |
 | 0.1.17 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.16; mit einem Dummy-Konto geprüft: HTML-Simulation als Aufgabe ohne Arbeitsblatt, Stift-Abgabe auf einem PDF mit Formularfeldern |
 | 0.1.16 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | Abstände im Arbeitsblatt in der Vorschau „Ansicht Lernende“ ausgemessen (49 Messpunkte: Absatz, Aufzählung, Tabelle, Kasten, Überschriften der Ebenen 1 bis 3, jeweils mit und ohne Abstandszeile) |
@@ -21,6 +22,24 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.19 – 2026-11-23
+
+Anlass: Rückmeldungen aus dem Gegenlesen eines zugewiesenen Lernpfads, der in der Weboberfläche entstanden war.
+
+- **Behoben: widersprüchlicher Status an Aufgaben.** `scobees_get_lernpfad` zeigte an jeder Aufgabe `state: ACTIVE` (den Wert der Wurzel), `scobees_get_aufgabe` für dieselbe Aufgabe `DRAFT`; `isPublished` stand bei Aufgaben immer auf `false`. Keines der Felder sagt bei Gliederungen und Aufgaben etwas aus. Der Server gibt `state` und `isPublished` jetzt nur noch an der Lernpfad-Wurzel aus; `scobees_get_aufgabe` meldet stattdessen `lernpfad_zugewiesen` und den Namen des Lernpfads.
+- **Behoben: Beschreibung der Lernpfad-Wurzel wurde bei 300 Zeichen abgeschnitten**, obwohl die Werkzeugbeschreibung „unverändert“ zusagte. Sie kommt jetzt vollständig zurück.
+- **Behoben: `abgabeformen: []` bei Pflichtabgaben aus der Weboberfläche.** Solche Aufgaben tragen oft keine gespeicherte Liste; scobees verlangt dann eine Datei (mit einem Dummy-Konto geprüft). `scobees_get_aufgabe` leitet die Formen aus den Schaltern ab und kennzeichnet das mit `abgabeformen_hinweis`.
+- **Behoben: `$` im Ersatztext einer Ersetzung.** `scobees_patch_arbeitsblatt` und die Ersetzungen von `scobees_copy_aufgabe` deuteten `$&`, `$1` oder `$$` im neuen Text als Platzhalter; bei Formeln (`$$…$$`) ging dabei ein Zeichen verloren. Der Ersatztext wird jetzt wörtlich übernommen.
+- **Neu: `beschreibung_ersetzungen`** in `scobees_update_lernpfad`, `scobees_update_gliederung`, `scobees_update_wahlpflicht` und `scobees_update_aufgabe`. Ändert einzelne Stellen einer Beschreibung nach den Regeln von `scobees_patch_arbeitsblatt` (jede Stelle genau einmal, alles oder nichts, leerer Ersatz löscht). Passt eine Stelle nicht, nennt die Fehlermeldung die gespeicherte Beschreibung im Wortlaut; das Ergebnis enthält die neue Beschreibung.
+- **Neu: Niveau-Warnung.** `scobees_get_lernpfad` meldet `warnung_niveaus` und `aufgaben_ohne_alle_niveaus`, wenn Aufgaben nicht alle Niveaus der Schule tragen. Lernende sehen nur Aufgaben ihres Niveaus; in der Weboberfläche fällt eine solche Lücke kaum auf.
+- **Neu: `eigener` und `mitbearbeiter`** in `scobees_list_lernpfade` und an der Wurzel von `scobees_get_lernpfad`. Die Liste eines Fachs enthält auch Lernpfade anderer Lehrkräfte. Ausgegeben wird nur der Vergleich mit dem eigenen Konto, keine Person. `scobees_list_lernpfade` zeigt außerdem `zugewiesen`.
+- **Neu: Der Server nennt seine Version** in den Startanweisungen und in `scobees_me` (`server.version`). Anlass: Ein Dialog arbeitete mit dem Skill-Text einer deutlich älteren Fassung, ohne dass es auffiel. Der Server ist die Stelle, die jeder Dialog beim Start neu liest.
+- **Nicht umgesetzt: ein Feld „hat Abgaben“.** Ob zu einer Aufgabe Lernergebnisse vorliegen, steht nur hinter den Schnittstellen für Schülerdaten, die dieser Server nicht aufruft. Der Skill fragt stattdessen die Lehrkraft.
+- Skill, Modus C: Gegenlesen als eigener Schritt mit fester Prüfliste; für Korrekturen ohne Änderung am Aufbau genügt eine Befundtabelle im Chat; in zugewiesenen Lernpfaden zwei Klassen von Änderungen (unkritisch mit einer Freigabe, kritisch mit Freigabe je Punkt); fremde Lernpfade (`eigener: false`) nur nach ausdrücklicher Nennung ändern.
+- Skill: beim Ablageordner gleich prüfen, ob er beschreibbar ist (in einer Cloud-Sitzung: verbundener Ordner); Stand des Skills gegen `server.version` prüfen.
+- Referenzen: neuer Abschnitt „Was eine Änderung an einer laufenden Aufgabe bewirkt“ (abgegebene Aufgaben bleiben abgegeben und zeigen den alten Wortlaut; ein entferntes Niveau blendet auch abgegebene Aufgaben aus); Status und Sichtbarkeit neu gefasst; Datei-Pfade aus einer Cloud-Sitzung.
+- 6 neue Tests (50 gesamt), Funktionstest 26 Schritte.
 
 ## 0.1.18 – 2026-11-16
 

@@ -275,3 +275,82 @@ test("scobees_copy_aufgabe ist angemeldet und meldet zugewiesene Ziele", () => {
   assert.deepEqual(t.inputSchema.required, ["id", "parent_id"]);
   for (const p of ["sort_order", "name", "description_html", "ersetzungen"]) assert.ok(t.inputSchema.properties[p], `Parameter ${p} fehlt`);
 });
+
+// ── 0.1.19 ───────────────────────────────────────────────────────────────────
+test("compact(): Status nur an der Wurzel, Lernpfad-Beschreibung ungekürzt", () => {
+  const { compact } = require("../src/tools");
+  const lang = "Erster Absatz. ".repeat(40); // 600 Zeichen
+  const out = compact({
+    id: "LI-R", name: "Pfad", parentId: null, isLeaf: false, state: "ACTIVE", isPublished: true, description: lang,
+    children: [
+      { id: "LI-G", name: "1 Gliederung", parentId: "LI-R", isLeaf: false, state: "ACTIVE", isPublished: false,
+        children: [{ id: "LI-A", name: "1.1", parentId: "LI-G", isLeaf: true, state: "ACTIVE", isPublished: false, taskType: "Pflichtaufgabe" }] },
+    ],
+  });
+  assert.equal(out.state, "ACTIVE");
+  assert.equal(out.isPublished, true);
+  assert.equal(out.beschreibung, lang, "Beschreibung der Wurzel darf nicht gekürzt werden");
+  const g = out.children[0], a = g.children[0];
+  for (const n of [g, a]) {
+    assert.ok(!("state" in n), `${n.id}: state gehört nur an die Wurzel`);
+    assert.ok(!("isPublished" in n), `${n.id}: isPublished gehört nur an die Wurzel`);
+  }
+});
+
+test("niveauLuecken: meldet Aufgaben, die nicht alle Niveaus der Schule tragen", () => {
+  const { niveauLuecken } = require("../src/tools");
+  const blatt = (id, niveaus) => ({ id, name: id, isLeaf: true, tags: { differentiations: niveaus.map((name) => ({ name })) } });
+  const schule = ["HSA", "RSA", "FHR"];
+  const voll = { isLeaf: false, children: [{ isLeaf: false, children: [blatt("LI-1", schule)] }, blatt("LI-2", [...schule].reverse())] };
+  assert.equal(niveauLuecken(voll, schule), null);
+  const luecke = { isLeaf: false, children: [{ isLeaf: false, children: [blatt("LI-1", ["HSA"])] }, blatt("LI-2", schule), blatt("LI-3", [])] };
+  const r = niveauLuecken(luecke, schule);
+  assert.match(r.warnung_niveaus, /^2 von 3 Aufgaben/);
+  assert.deepEqual(r.aufgaben_ohne_alle_niveaus, [
+    { id: "LI-1", name: "LI-1", fehlt: ["RSA", "FHR"] },
+    { id: "LI-3", name: "LI-3", fehlt: ["HSA", "RSA", "FHR"] },
+  ]);
+  assert.equal(niveauLuecken({ isLeaf: false, children: [] }, schule), null);
+});
+
+test("abgabeformenOf: ohne gespeicherte Liste aus den Schaltern abgeleitet und gekennzeichnet", () => {
+  const { abgabeformenOf } = require("../src/tools");
+  assert.deepEqual(abgabeformenOf({ isUploadRequired: true, requiredSubmissions: ["pen", "file"] }), { abgabeformen: ["pen", "file"] });
+  assert.deepEqual(abgabeformenOf({ isUploadRequired: false }), { abgabeformen: [] });
+  const web = abgabeformenOf({ isUploadRequired: true, solutionMustBeUploaded: true });
+  assert.deepEqual(web.abgabeformen, ["file"]);
+  assert.match(web.abgabeformen_hinweis, /keine Liste der Abgabeformen gespeichert/);
+  assert.deepEqual(abgabeformenOf({ isUploadRequired: true, requiredSubmissions: [], isPenEnabled: true, isLinkSubmissionEnabled: true }).abgabeformen, ["file", "pen", "link"]);
+});
+
+test("besitz: eigener und mitbearbeiter nur als Ja/Nein", () => {
+  const { besitz } = require("../src/tools");
+  assert.deepEqual(besitz({ author: "USER-1", editors: ["USER-1", "USER-2"] }, "USER-1"), { eigener: true, mitbearbeiter: true });
+  assert.deepEqual(besitz({ author: "USER-2", editors: ["USER-2", { id: "USER-1" }] }, "USER-1"), { eigener: false, mitbearbeiter: true });
+  assert.deepEqual(besitz({ author: { id: "USER-2" } }, "USER-1"), { eigener: false, mitbearbeiter: false });
+  assert.deepEqual(Object.keys(besitz({ author: "USER-2", editors: ["USER-3"] }, "USER-1")), ["eigener", "mitbearbeiter"]);
+});
+
+test("applyReplacements / patchedDescription: alles oder nichts, Fehlermeldung nennt den gespeicherten Text", () => {
+  const { applyReplacements, patchedDescription } = require("../src/tools");
+  assert.equal(applyReplacements("<p>Ergebnis: ALT.</p><ul><li></li></ul>", [{ alt: "ALT", neu: "NEU" }, { alt: "<ul><li></li></ul>", neu: "" }], "hier"), "<p>Ergebnis: NEU.</p>");
+  // „$“ im Ersatztext ist Text, kein Platzhalter (Formeln)
+  assert.equal(applyReplacements("Preis: X", [{ alt: "X", neu: "$$a$& $1" }], "hier"), "Preis: $$a$& $1");
+  assert.throws(() => applyReplacements("A A", [{ alt: "A", neu: "B" }], "hier"), /muss hier genau einmal passen[\s\S]*kommt 2× vor/);
+  assert.throws(() => applyReplacements("A", [], "hier"), /darf nicht leer sein/);
+  assert.throws(() => applyReplacements("A", [{ alt: "", neu: "B" }], "hier"), /„alt“ \(nicht leer\)/);
+  assert.equal(patchedDescription({}, "description_html", "<p>x</p>"), undefined);
+  assert.equal(patchedDescription({ beschreibung_ersetzungen: [{ alt: "x", neu: "y" }] }, "description_html", "<p>x</p>"), "<p>y</p>");
+  assert.throws(() => patchedDescription({ description_html: "<p>z</p>", beschreibung_ersetzungen: [{ alt: "x", neu: "y" }] }, "description_html", "<p>x</p>"), /nicht beides/);
+  assert.throws(() => patchedDescription({ beschreibung_ersetzungen: [{ alt: "fehlt", neu: "y" }] }, "description_html", "<p>x</p>"), /kommt 0× vor[\s\S]*Gespeicherte Beschreibung[\s\S]*<p>x<\/p>/);
+});
+
+test("beschreibung_ersetzungen ist in allen vier update-Werkzeugen angemeldet; scobees_me nennt die Serverversion", async () => {
+  const { TOOLS } = require("../src/tools");
+  for (const n of ["scobees_update_lernpfad", "scobees_update_gliederung", "scobees_update_wahlpflicht", "scobees_update_aufgabe"]) {
+    const t = TOOLS.find((x) => x.name === n);
+    assert.ok(t.inputSchema.properties.beschreibung_ersetzungen, `${n}: Parameter fehlt`);
+  }
+  const src = require("fs").readFileSync(require("path").join(__dirname, "../src/tools.js"), "utf8");
+  assert.match(src, /server: \{ version: pkg\.version/);
+});

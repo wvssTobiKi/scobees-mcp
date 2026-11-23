@@ -40,6 +40,7 @@ async function handle(req) {
         capabilities: { tools: {} },
         serverInfo: { name: "scobees-mcp", version: pkg.version },
         instructions:
+          `scobees-mcp ${pkg.version}. Der Skill scobees-lernpfad nennt in seinem ersten Absatz, für welche Version dieses Servers er geschrieben ist; steht dort eine ältere, den Skill neu aufrufen und SKILL.md samt references/ neu lesen, bevor etwas geschrieben wird. ` +
           "Kursaufbau in scobees. Neu: scobees_list_subjects → Lehrkraft wählt das Fach → scobees_create_lernpfad → scobees_create_gliederung → " +
           "scobees_create_aufgabe (Arbeitsblatt als Markdown) → scobees_upload_material. Bestehende Kurse: scobees_list_lernpfade → scobees_get_lernpfad → " +
           "scobees_get_aufgabe, dann gezielt ändern: scobees_patch_arbeitsblatt für einzelne Textstellen, scobees_update_* für Felder, " +

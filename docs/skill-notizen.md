@@ -116,3 +116,14 @@ Der Wunsch nach einem Kopierwerkzeug hat einen Endpunkt wieder hervorgeholt, der
 
 Dass ein Skill nach einer Zusammenfassung des Dialogs nur noch gekürzt im Kontext steht, lässt sich im Skill selbst nur ansprechen, nicht verhindern. Ob der Satz am Anfang von `SKILL.md` etwas bewirkt, zeigt erst der nächste lange Dialog.
 
+## 23.11.2026: Gegenlesen eines Lernpfads aus der Weboberfläche (0.1.19)
+
+Siebzehn Rückmeldungen aus einem Dialog, der einen zugewiesenen Lernpfad gegengelesen und korrigiert hat. Drei davon waren Fehler des Servers (widersprüchlicher Status, gekürzte Beschreibung, leere Abgabeformen); sie hatten zur Folge, dass der Lehrkraft gemeldet wurde, Aufgaben seien womöglich nicht sichtbar. Der Status ist jetzt unterhalb der Wurzel ganz entfallen, weil kein Wert dort etwas bedeutet; ein Feld „für Lernende sichtbar“ gibt es bewusst nicht, weil die Sichtbarkeit am Niveau der einzelnen Lernenden hängt und das Schülerdaten sind. Was sich prüfen lässt, prüft die neue Niveau-Warnung.
+
+Der wichtigste Befund des Dialogs kam aus einem Hinweistext (`scobees_list_tags`: Lernende sehen nur Aufgaben ihres Niveaus): Alle Aufgaben trugen nur eines von drei Niveaus. Solche Hinweise im Werkzeugergebnis wirken besser als dieselbe Aussage in einer Referenzdatei; die Niveau-Warnung steht deshalb im Ergebnis von `scobees_get_lernpfad` und nicht nur im Skill.
+
+Der vierte gemeldete Punkt war kein Fehler, aber der lehrreichste: Der Dialog arbeitete mit dem Skill-Text einer deutlich älteren Fassung, vermutlich, weil ein Dialog den Text behält, den er einmal geladen hat (nachprüfen ließ sich das von außen nicht). Der Satz „nach einer Zusammenfassung neu lesen“ aus 0.1.18 konnte dort nicht wirken, weil er im alten Text nicht steht. Abhilfe an der einzigen Stelle, die auch ein solcher Dialog neu liest: Der Server nennt seine Version in den Startanweisungen und in `scobees_me`.
+
+Ein Feld „hat Abgaben“ wurde gewünscht und nicht gebaut; die Daten liegen hinter der Sperrliste. Der Skill behandelt deshalb in einem zugewiesenen Lernpfad jede Aufgabe als bearbeitet, bis die Lehrkraft etwas anderes sagt, und trennt unkritische von kritischen Änderungen. Was kritisch heißt, hat ein Test mit einem Dummy-Konto geklärt: Abgegeben bleibt abgegeben, die Abgabe zeigt aber den alten Wortlaut, und ein entferntes Niveau blendet auch abgegebene Aufgaben aus.
+
+Offen: Wie die Lehrkraft eine Abgabe zu einer nachträglich geänderten Aufgabe in der Lerndoku sieht.
