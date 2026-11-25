@@ -128,10 +128,10 @@
       ],
       [
        "a",
-       "Abgabe: Stift auf PDF"
+       "Abgabe: Stift oder Datei"
       ]
      ],
-     "tech": "art=abgabe_optional · aufgabentyp=training · abgabeformen=[pen]",
+     "tech": "art=abgabe_optional · aufgabentyp=training · abgabeformen=[file,pen]",
      "id": "",
      "abbildungen": [
       "Fachabbildung: Messschaltung Schutzleiterwiderstand an der Übungswand (übernommen aus der Vorlage der Lehrkraft)"

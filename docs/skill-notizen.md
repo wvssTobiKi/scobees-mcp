@@ -127,3 +127,11 @@ Der vierte gemeldete Punkt war kein Fehler, aber der lehrreichste: Der Dialog ar
 Ein Feld „hat Abgaben“ wurde gewünscht und nicht gebaut; die Daten liegen hinter der Sperrliste. Der Skill behandelt deshalb in einem zugewiesenen Lernpfad jede Aufgabe als bearbeitet, bis die Lehrkraft etwas anderes sagt, und trennt unkritische von kritischen Änderungen. Was kritisch heißt, hat ein Test mit einem Dummy-Konto geklärt: Abgegeben bleibt abgegeben, die Abgabe zeigt aber den alten Wortlaut, und ein entferntes Niveau blendet auch abgegebene Aufgaben aus.
 
 Offen: Wie die Lehrkraft eine Abgabe zu einer nachträglich geänderten Aufgabe in der Lerndoku sieht.
+
+## 25.11.2026: Stift-Abgabe allein sperrt hochgeladene Dateien aus (0.1.20)
+
+Aus dem Unterricht: Eine Aufgabe mit PDF-Vorlage hatte nur „Stift auf PDF“ als Abgabeform, so wie es der Skill bis dahin vorsah. Lernende, die die Vorlage heruntergeladen, in einer Notiz-App ausgefüllt und wieder hochgeladen hatten, konnten nicht abgeben. Sie fanden selbst heraus, dass ein Strich mit den Stiftwerkzeugen von scobees die Abgabe freischaltet. Die Schülerseite prüft je Abgabeform getrennt: Datei = mindestens eine hochgeladene Datei, Stift = mindestens ein Strich, Link = ein Link; bei mehreren Formen mit der Regel „eine reicht“ genügt eine davon.
+
+Folge für den Skill: Eine PDF-Vorlage bekommt immer Datei und Stift zusammen, und die Beschreibung nennt beide Wege. Die alte Regel stammte aus der Sicht der Lehrkraft („hier soll gezeichnet werden“) und übersah, dass Lernende auf Tablets ihre gewohnte App benutzen.
+
+Offen aus demselben Tag (nicht in 0.1.20): Bei umfangreichen Arbeitsblättern lädt die Seite auf dem iPad beim Abgeben neu; gemessen ist, dass das Bild der Abgabe je Element rund 80 KB Zwischendaten braucht. Eine Größenregel für Arbeitsblätter folgt, wenn die Grenze am iPad bekannt ist.

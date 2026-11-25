@@ -6,6 +6,7 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 
 | scobees-mcp | scobees-Oberfläche | Bundle | geprüft am | Umfang |
 |---|---|---|---|---|
+| 0.1.20 | v95.4 | main-OOYA2V42.js | 2026-11-23 | nur Skill geändert, Server unverändert gegenüber 0.1.19. scobees steht inzwischen auf v95.7; der Funktionstest dagegen steht noch aus. Abgabe-Prüfung für „Stift“ im Code der Schülerseite nachgelesen; geänderte Abgabeform an einer zugewiesenen Aufgabe zurückgelesen |
 | 0.1.19 | v95.4 | main-OOYA2V42.js | 2026-11-23 | scobees hat von v94.6 auf v95.4 gewechselt; `scripts/funktionstest.js` läuft unverändert durch (26 Schritte, zwei davon neu: gezieltes Ersetzen in Beschreibungen auf allen vier Ebenen; Status, `eigener`, Niveau-Warnung und abgeleitete Abgabeformen). Mit einem Dummy-Konto geprüft: Wirkung von Änderungen auf abgegebene, erledigte und angefangene Aufgaben; Pflichtabgabe ohne gespeicherte Abgabeformen-Liste |
 | 0.1.18 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | `scripts/funktionstest.js` mit `scobees_copy_aufgabe` (24 Schritte: Kopie mit Arbeitsblatt, Anhang, Musterlösung, Kachelbild und Ersetzung; Original unverändert; Fehlerfälle); Kopie in einen Lernpfad eines anderen Fachs von Hand geprüft; Abstände um Quizfragen mit einem Dummy-Konto gemessen |
 | 0.1.17 | v94.6 | main-FWSHPEPF.js | 2026-11-16 | nur Skill geändert, Server unverändert gegenüber 0.1.16; mit einem Dummy-Konto geprüft: HTML-Simulation als Aufgabe ohne Arbeitsblatt, Stift-Abgabe auf einem PDF mit Formularfeldern |
@@ -22,6 +23,15 @@ scobees hat keinen Versions-Endpunkt; die Versionsnummer steht unten rechts in d
 | 0.1.6 | v94.2 | main-LEMTLTST.js | 2026-11-04 | (überholt, siehe 0.1.7) erste Diagnose der Wahlpflicht-Lücke, noch ohne Lösung |
 | 0.1.5 | v94.2 | main-LEMTLTST.js | 2026-11-04 | Versions-Fingerabdruck, Serlo-Bild-Upload (Quellcode-Vergleich + Live-Test des `editor.serlo.org`-Aufrufs); eingebetteter Serlo-Editor-Chunk ist gegenüber v93.3 unverändert (gleicher Chunk-Name), daher kein Hinweis auf eine Markdown-/Serlo-Format-Änderung. Die übrigen Werkzeuge wurden für diese Version nicht erneut einzeln live geprüft |
 | 0.1.0 – 0.1.4 | v93.3 | main-LKRB3D56.js | 2026-10-27 | alle 20 Werkzeuge live (Testpfad, RAID-Lernpfad, Sichtprüfung Schüler-App) |
+
+## 0.1.20 – 2026-11-25
+
+Anlass: Im Unterricht konnten Lernende eine ausgefüllte PDF-Vorlage nicht abgeben, wenn sie sie in einer anderen App bearbeitet und hochgeladen hatten.
+
+- **Skill: PDF-Vorlagen bekommen `abgabeformen: ["file", "pen"]` statt `["pen"]` allein.** Mit „Stift“ als einziger Form zählt für scobees nur ein Strich mit den eigenen Stiftwerkzeugen; eine hochgeladene Datei erfüllt die Abgabe nicht, und die Oberfläche nennt den Grund nicht. Die Beschreibung der Aufgabe nennt jetzt beide Wege. `["pen"]` allein bleibt möglich, wenn die Lehrkraft das ausdrücklich will.
+- Skill, Modus C: `abgabeformen: ["pen"]` allein ist beim Gegenlesen ein Befund.
+- Werkzeug-Referenz und Beispiel-Grobplan angepasst.
+- Server unverändert.
 
 ## 0.1.19 – 2026-11-23
 

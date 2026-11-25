@@ -1,4 +1,4 @@
-# Werkzeuge des Servers scobees-mcp (Stand 0.1.19)
+# Werkzeuge des Servers scobees-mcp (Stand 0.1.20)
 
 Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültige Werte mit einer Fehlermeldung ab (Alias: `abgabeform` → `abgabeformen`). Die Antwort eines Schreibaufrufs enthält die neue `LI-…`-ID, die du für Unterelemente und Material brauchst.
 
@@ -46,7 +46,7 @@ Parameternamen sind verbindlich; der Server weist unbekannte Namen und ungültig
 | `abgabe_selbstkorrektur` | nach Abgabe Reiter „Selbstkorrektur“: eigene Abgabe neben der Musterlösung | Rechnung oder Skizze mit Musterlösung, Abgabe freiwillig |
 | `abgabe_pflicht_selbstkorrektur` | wie oben, Abgabe erzwungen | Standard für Rechnungen und Entwürfe mit Musterlösung |
 
-`abgabeformen`: `file` (Datei), `pen` (Stift auf PDF; braucht ein PDF als Material), `link` (Videolink). Mehrere = eine davon reicht. Aufgaben aus der Weboberfläche tragen oft keine gespeicherte Liste, obwohl sie eine Abgabe verlangen; `scobees_get_aufgabe` leitet die Formen dann aus den Schaltern der Aufgabe ab und sagt das in `abgabeformen_hinweis`. Mit einem Dummy-Konto geprüft: Lernende sehen dort „Zum Abgeben musst du eine Datei hochladen“. Die Serlo-Quizze haben mit der scobees-„Selbstkorrektur“ nichts zu tun; `selbstkontrolle` trägt deshalb bewusst kein Selbstkorrektur-Kennzeichen.
+`abgabeformen`: `file` (Datei), `pen` (Stift auf PDF; braucht ein PDF als Material), `link` (Videolink). Mehrere = eine davon reicht. `pen` allein verlangt mindestens einen Strich mit den Stiftwerkzeugen von scobees; eine hochgeladene Datei zählt dann nicht (so steht es im Code der Schülerseite, und so ist es im Unterricht aufgefallen). Für PDF-Vorlagen deshalb `["file", "pen"]`. Aufgaben aus der Weboberfläche tragen oft keine gespeicherte Liste, obwohl sie eine Abgabe verlangen; `scobees_get_aufgabe` leitet die Formen dann aus den Schaltern der Aufgabe ab und sagt das in `abgabeformen_hinweis`. Mit einem Dummy-Konto geprüft: Lernende sehen dort „Zum Abgeben musst du eine Datei hochladen“. Die Serlo-Quizze haben mit der scobees-„Selbstkorrektur“ nichts zu tun; `selbstkontrolle` trägt deshalb bewusst kein Selbstkorrektur-Kennzeichen.
 
 ## Aufgabentyp `aufgabentyp`
 
